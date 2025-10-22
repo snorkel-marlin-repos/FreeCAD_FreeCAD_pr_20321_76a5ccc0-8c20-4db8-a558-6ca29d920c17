@@ -57,8 +57,8 @@ public:
     ~DrawViewDetail() override;
 
     App::PropertyLink   BaseView;
-    App::PropertyPosition AnchorPoint;
-    App::PropertyLength   Radius;
+    App::PropertyVector AnchorPoint;
+    App::PropertyFloat  Radius;
     App::PropertyString Reference;
 
     App::PropertyBool   ShowMatting;
@@ -71,8 +71,6 @@ public:
         return "TechDrawGui::ViewProviderViewPart";
     }
     void unsetupObject() override;
-    void handleChangedPropertyType(
-        Base::XMLReader &reader, const char * TypeName, App::Property * prop) override;
 
 
     void detailExec(TopoDS_Shape& s,

@@ -26,7 +26,6 @@
 #include <algorithm>
 #include <cstdlib>
 #include <iterator>
-#include <limits>
 #endif
 
 #include "SphereFit.h"
@@ -42,7 +41,7 @@ SphereFit::SphereFit()
 void SphereFit::SetApproximations(double radius, const Base::Vector3d& center)
 {
     _bIsFitted = false;
-    _fLastResult = std::numeric_limits<float>::max();
+    _fLastResult = FLOAT_MAX;
     _numIter = 0;
     _dRadius = radius;
     _vCenter = center;
@@ -93,7 +92,7 @@ int SphereFit::GetNumIterations() const
 
 float SphereFit::GetDistanceToSphere(const Base::Vector3f& rcPoint) const
 {
-    float fResult = std::numeric_limits<float>::max();
+    float fResult = FLOAT_MAX;
     if (_bIsFitted) {
         fResult = Base::Vector3d((double)rcPoint.x - _vCenter.x,
                                  (double)rcPoint.y - _vCenter.y,
@@ -110,7 +109,7 @@ float SphereFit::GetStdDeviation() const
     // Variance: VAR=(N/N-1)*[(1/N)*SUM(Xi^2)-M^2]
     // Standard deviation: SD=SQRT(VAR)
     if (!_bIsFitted) {
-        return std::numeric_limits<float>::max();
+        return FLOAT_MAX;
     }
 
     double sumXi = 0.0, sumXi2 = 0.0, dist = 0.0;
@@ -157,7 +156,7 @@ void SphereFit::ProjectToSphere()
 void SphereFit::ComputeApproximations()
 {
     _bIsFitted = false;
-    _fLastResult = std::numeric_limits<float>::max();
+    _fLastResult = FLOAT_MAX;
     _numIter = 0;
     _vCenter.Set(0.0, 0.0, 0.0);
     _dRadius = 0.0;
@@ -183,12 +182,12 @@ void SphereFit::ComputeApproximations()
 float SphereFit::Fit()
 {
     _bIsFitted = false;
-    _fLastResult = std::numeric_limits<float>::max();
+    _fLastResult = FLOAT_MAX;
     _numIter = 0;
 
     // A minimum of 4 surface points is needed to define a sphere
     if (CountPoints() < 4) {
-        return std::numeric_limits<float>::max();
+        return FLOAT_MAX;
     }
 
     // If approximations have not been set/computed then compute some now
@@ -213,7 +212,7 @@ float SphereFit::Fit()
         // Solve the equations for the unknown corrections
         Eigen::LLT<Matrix4x4> llt(atpa);
         if (llt.info() != Eigen::Success) {
-            return std::numeric_limits<float>::max();
+            return FLOAT_MAX;
         }
         Eigen::VectorXd x = llt.solve(atpl);
 
@@ -228,7 +227,7 @@ float SphereFit::Fit()
         // convergence
         bool vConverged {};
         if (!computeResiduals(x, residuals, sigma0, _vConvLimit, vConverged)) {
-            return std::numeric_limits<float>::max();
+            return FLOAT_MAX;
         }
         if (!vConverged) {
             cont = true;
@@ -243,7 +242,7 @@ float SphereFit::Fit()
 
     // Check for convergence
     if (cont) {
-        return std::numeric_limits<float>::max();
+        return FLOAT_MAX;
     }
 
     _bIsFitted = true;

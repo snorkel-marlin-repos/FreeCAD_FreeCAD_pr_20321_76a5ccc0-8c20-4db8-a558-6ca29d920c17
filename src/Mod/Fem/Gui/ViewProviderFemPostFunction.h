@@ -27,7 +27,7 @@
 #include <QWidget>
 #include <boost/signals2.hpp>
 
-#include <Gui/ViewProviderDocumentObjectGroup.h>
+#include <Gui/ViewProviderDocumentObject.h>
 #include <Mod/Fem/App/FemPostFunction.h>
 
 
@@ -93,7 +93,7 @@ private:
     boost::signals2::scoped_connection m_connection;
 };
 
-class FemGuiExport ViewProviderFemPostFunctionProvider: public Gui::ViewProviderDocumentObjectGroup
+class FemGuiExport ViewProviderFemPostFunctionProvider: public Gui::ViewProviderDocumentObject
 {
     PROPERTY_HEADER_WITH_OVERRIDE(FemGui::ViewProviderFemPostFunctionProvider);
 
@@ -111,6 +111,8 @@ public:
     bool canDelete(App::DocumentObject* obj) const override;
 
 protected:
+    std::vector<App::DocumentObject*> claimChildren() const override;
+    std::vector<App::DocumentObject*> claimChildren3D() const override;
     void onChanged(const App::Property* prop) override;
     void updateData(const App::Property*) override;
 

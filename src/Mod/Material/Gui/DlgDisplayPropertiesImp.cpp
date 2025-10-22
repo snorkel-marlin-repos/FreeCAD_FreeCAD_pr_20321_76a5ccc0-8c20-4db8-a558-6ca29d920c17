@@ -199,6 +199,16 @@ void DlgDisplayPropertiesImp::setupFilters()
 
 void DlgDisplayPropertiesImp::setupConnections()
 {
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+    connect(d->ui.changeMode,
+            qOverload<const QString&>(&QComboBox::activated),
+            this,
+            &DlgDisplayPropertiesImp::onChangeModeActivated);
+    connect(d->ui.changePlot,
+            qOverload<const QString&>(&QComboBox::activated),
+            this,
+            &DlgDisplayPropertiesImp::onChangePlotActivated);
+#else
     connect(d->ui.changeMode,
             &QComboBox::textActivated,
             this,
@@ -207,6 +217,7 @@ void DlgDisplayPropertiesImp::setupConnections()
             &QComboBox::textActivated,
             this,
             &DlgDisplayPropertiesImp::onChangePlotActivated);
+#endif
     connect(d->ui.spinTransparency,
             qOverload<int>(&QSpinBox::valueChanged),
             this,

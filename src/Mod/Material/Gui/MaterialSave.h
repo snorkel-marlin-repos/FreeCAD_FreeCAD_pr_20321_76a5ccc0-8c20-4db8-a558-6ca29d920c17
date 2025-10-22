@@ -35,8 +35,6 @@
 namespace MatGui
 {
 
-class MaterialLibrary;
-
 class Ui_MaterialSave;
 
 class MaterialSave: public QDialog
@@ -78,6 +76,7 @@ public:
 
 private:
     std::unique_ptr<Ui_MaterialSave> ui;
+    Materials::MaterialManager _manager;
     std::shared_ptr<Materials::Material> _material;
     bool _saveInherited;
     QString _selectedPath;

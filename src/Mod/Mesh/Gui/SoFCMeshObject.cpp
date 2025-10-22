@@ -23,7 +23,7 @@
 #include "PreCompiled.h"
 #ifndef _PreComp_
 #include <algorithm>
-#include <limits>
+#include <climits>
 #ifdef FC_OS_WIN32
 #include <windows.h>
 #endif
@@ -607,7 +607,7 @@ void SoFCMeshObjectShape::initClass()
 }
 
 SoFCMeshObjectShape::SoFCMeshObjectShape()
-    : renderTriangleLimit(std::numeric_limits<unsigned>::max())
+    : renderTriangleLimit(UINT_MAX)
 {
     SO_NODE_CONSTRUCTOR(SoFCMeshObjectShape);
     setName(SoFCMeshObjectShape::getClassTypeId().getName());
@@ -1235,7 +1235,7 @@ void SoFCMeshSegmentShape::initClass()
 }
 
 SoFCMeshSegmentShape::SoFCMeshSegmentShape()
-    : renderTriangleLimit(std::numeric_limits<unsigned>::max())
+    : renderTriangleLimit(UINT_MAX)
 {
     SO_NODE_CONSTRUCTOR(SoFCMeshSegmentShape);
     SO_NODE_ADD_FIELD(index, (0));

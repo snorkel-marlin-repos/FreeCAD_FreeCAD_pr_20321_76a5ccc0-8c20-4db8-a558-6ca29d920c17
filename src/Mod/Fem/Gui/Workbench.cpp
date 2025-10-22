@@ -199,7 +199,6 @@ Gui::ToolBarItem* Workbench::setupToolBars() const
     *results << "Separator"
              << "FEM_PostApplyChanges"
              << "FEM_PostPipelineFromResult"
-             << "FEM_PostBranchFilter"
              << "Separator"
              << "FEM_PostFilterWarp"
              << "FEM_PostFilterClipScalar"
@@ -209,7 +208,6 @@ Gui::ToolBarItem* Workbench::setupToolBars() const
              << "FEM_PostFilterDataAlongLine"
              << "FEM_PostFilterLinearizedStresses"
              << "FEM_PostFilterDataAtPoint"
-             << "FEM_PostFilterCalculator"
              << "Separator"
              << "FEM_PostCreateFunctions";
 #endif
@@ -247,8 +245,7 @@ Gui::MenuItem* Workbench::setupMenuBar() const
     elec->setCommand("&Electromagnetic boundary conditions");
     *elec << "FEM_ConstraintElectrostaticPotential"
           << "FEM_ConstraintCurrentDensity"
-          << "FEM_ConstraintMagnetization"
-          << "FEM_ConstraintElectricChargeDensity";
+          << "FEM_ConstraintMagnetization";
 
     Gui::MenuItem* fluid = new Gui::MenuItem;
     fluid->setCommand("&Fluid boundary conditions");
@@ -358,7 +355,6 @@ Gui::MenuItem* Workbench::setupMenuBar() const
              << "FEM_PostFilterDataAlongLine"
              << "FEM_PostFilterLinearizedStresses"
              << "FEM_PostFilterDataAtPoint"
-             << "FEM_PostFilterCalculator"
              << "Separator"
              << "FEM_PostCreateFunctions";
 #endif

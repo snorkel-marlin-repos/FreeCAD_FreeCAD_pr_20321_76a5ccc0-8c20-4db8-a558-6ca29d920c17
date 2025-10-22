@@ -23,6 +23,7 @@
 #ifndef IMPORT_ImportOCAFAssembly_H
 #define IMPORT_ImportOCAFAssembly_H
 
+#include <climits>
 #include <map>
 #include <set>
 #include <string>

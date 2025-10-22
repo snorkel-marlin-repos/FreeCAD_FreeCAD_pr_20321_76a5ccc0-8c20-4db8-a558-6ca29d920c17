@@ -266,7 +266,7 @@ int main(int argc, char** argv)
                           "Python version information:\n%4\n")
                   .arg(appName,
                        QString::fromUtf8(e.what()),
-                       QString::fromStdString(Base::Interpreter().getPythonPath()),
+                       QString::fromUtf8(Py_EncodeLocale(Py_GetPath(), nullptr)),
                        QString::fromLatin1(Py_GetVersion()));
         const char* pythonhome = getenv("PYTHONHOME");
         if (pythonhome) {

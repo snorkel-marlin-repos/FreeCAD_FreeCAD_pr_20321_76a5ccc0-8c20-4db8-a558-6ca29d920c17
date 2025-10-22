@@ -62,7 +62,7 @@ class DlgCAMSimulator: public QWindow, public QOpenGLExtraFunctions
     Q_OBJECT
 public:
     explicit DlgCAMSimulator(QWindow* parent = nullptr);
-    ~DlgCAMSimulator() override;
+    ~DlgCAMSimulator() override = default;
 
     virtual void render(QPainter* painter);
     virtual void render();

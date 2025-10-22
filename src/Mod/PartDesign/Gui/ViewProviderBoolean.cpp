@@ -36,7 +36,6 @@
 #include <Gui/Control.h>
 #include <Gui/Command.h>
 #include <Gui/Document.h>
-#include <Gui/MainWindow.h>
 
 
 using namespace PartDesignGui;
@@ -75,7 +74,7 @@ bool ViewProviderBoolean::setEdit(int ModNum)
         if (booleanDlg && booleanDlg->getBooleanView() != this)
             booleanDlg = nullptr; // another pad left open its task panel
         if (dlg && !booleanDlg) {
-            QMessageBox msgBox(Gui::getMainWindow());
+            QMessageBox msgBox;
             msgBox.setText(QObject::tr("A dialog is already open in the task panel"));
             msgBox.setInformativeText(QObject::tr("Do you want to close this dialog?"));
             msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);

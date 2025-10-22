@@ -1,15 +1,9 @@
-add_library(FreeCADBase SHARED)
-
 if(WIN32)
     add_definitions(-DFCBase)
     add_definitions(-DPYCXX_DLL)
     add_definitions(-DBOOST_DYN_LINK)
     add_definitions(-DZIPIOS_UTF8)
 endif(WIN32)
-
-if(BUILD_TRACY_FRAME_PROFILER)
-    add_definitions(-DBUILD_TRACY_FRAME_PROFILER)
-endif()
 
 include_directories(
     ${CMAKE_BINARY_DIR}/src
@@ -18,15 +12,14 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_include_directories(
-    FreeCADBase
+include_directories(
     SYSTEM
-    PUBLIC
     ${Boost_INCLUDE_DIRS}
     ${PYCXX_INCLUDE_DIR}
     ${Python3_INCLUDE_DIRS}
     ${XercesC_INCLUDE_DIRS}
     ${ZLIB_INCLUDE_DIR}
+    ${PYCXX_INCLUDE_DIR}
     ${ZIPIOS_INCLUDES}
 )
 
@@ -72,11 +65,6 @@ endif(MSVC)
 include_directories(
     ${QtCore_INCLUDE_DIRS}
 )
-
-if(BUILD_TRACY_FRAME_PROFILER)
-    list(APPEND FreeCADBase_LIBS TracyClient)
-endif()
-
 list(APPEND FreeCADBase_LIBS ${QtCore_LIBRARIES})
 
 list(APPEND FreeCADBase_LIBS fmt::fmt)
@@ -90,18 +78,31 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     list(APPEND FreeCADBase_LIBS -lutil -ldl)
 endif()
 
+generate_from_xml(TypePy)
 generate_from_py(Type)
+generate_from_xml(BaseClassPy)
 generate_from_py(BaseClass)
+generate_from_xml(BoundBoxPy)
 generate_from_py(BoundBox)
+generate_from_xml(CoordinateSystemPy)
 generate_from_py(CoordinateSystem)
+generate_from_xml(PersistencePy)
 generate_from_py(Persistence)
+generate_from_xml(VectorPy)
 generate_from_py(Vector)
+generate_from_xml(MatrixPy)
 generate_from_py(Matrix)
+generate_from_xml(RotationPy)
 generate_from_py(Rotation)
+generate_from_xml(PlacementPy)
 generate_from_py(Placement)
+generate_from_xml(AxisPy)
 generate_from_py(Axis)
+generate_from_xml(UnitPy)
 generate_from_py(Unit)
+generate_from_xml(QuantityPy)
 generate_from_py(Quantity)
+generate_from_xml(PrecisionPy)
 generate_from_py(Precision)
 generate_from_any(Parameter.xsd Parameter.inl xmlSchemeString)
 
@@ -127,22 +128,22 @@ qt_find_and_add_translation(QM_SRCS "Resources/translations/*_*.ts"
 qt_create_resource_file(${FreeCADBase_TR_QRC} ${QM_SRCS})
 qt_add_resources(FreeCADBase_QRC_SRCS ${FreeCADBase_TR_QRC})
 
-SET(FreeCADBase_Pyi_SRCS
-    Axis.pyi
-    BaseClass.pyi
-    BoundBox.pyi
-    CoordinateSystem.pyi
-    Matrix.pyi
-    Persistence.pyi
-    Placement.pyi
-    Rotation.pyi
-    Vector.pyi
-    Quantity.pyi
-    Type.pyi
-    Unit.pyi
-    Precision.pyi
+SET(FreeCADBase_XML_SRCS
+    AxisPy.xml
+    BaseClassPy.xml
+    BoundBoxPy.xml
+    CoordinateSystemPy.xml
+    MatrixPy.xml
+    PersistencePy.xml
+    PlacementPy.xml
+    RotationPy.xml
+    VectorPy.xml
+    QuantityPy.xml
+    TypePy.xml
+    UnitPy.xml
+    PrecisionPy.xml
 )
-SOURCE_GROUP("Pyi" FILES ${FreeCADBase_Pyi_SRCS})
+SOURCE_GROUP("XML" FILES ${FreeCADBase_XML_SRCS})
 
 SET(FreeCADBase_UNITAPI_SRCS
     UnitsApi.cpp
@@ -220,6 +221,7 @@ SET(FreeCADBase_CPP_SRCS
     PyExport.cpp
     PyObjectBase.cpp
     PythonTypeExt.cpp
+    QtTools.cpp
     Reader.cpp
     Rotation.cpp
     RotationPyImp.cpp
@@ -287,6 +289,7 @@ SET(FreeCADBase_HPP_SRCS
     PyObjectBase.h
     PyWrapParseTupleAndKeywords.h
     PythonTypeExt.h
+    QtTools.h
     Reader.h
     Rotation.h
     ServiceProvider.h
@@ -301,7 +304,6 @@ SET(FreeCADBase_HPP_SRCS
     Tools3D.h
     Translate.h
     Type.h
-    UnlimitedUnsigned.h
     UniqueNameManager.h
     Uuid.h
     Vector3D.h
@@ -344,7 +346,8 @@ if(FREECAD_USE_PCH)
     ADD_MSVC_PRECOMPILED_HEADER(FreeCADBase PreCompiled.h PreCompiled.cpp FreeCADBase_CPP_SRCS)
 endif(FREECAD_USE_PCH)
 
-target_sources(FreeCADBase PRIVATE ${FreeCADBase_SRCS})
+add_library(FreeCADBase SHARED ${FreeCADBase_SRCS})
+
 target_link_libraries(FreeCADBase ${FreeCADBase_LIBS})
 if (FREECAD_WARN_ERROR)
     target_compile_warn_error(FreeCADBase)

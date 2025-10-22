@@ -23,8 +23,11 @@
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
+
+// to avoid compiler warnings of redefining contents of basic.h
+// later by #include <Gui/ViewProviderGeometryObject.h>
+# define _USE_MATH_DEFINES  // NOLINT
 # include <cmath>
-# include <limits>
 
 # include <Inventor/actions/SoGetBoundingBoxAction.h>
 # include <Inventor/nodes/SoCamera.h>
@@ -133,10 +136,9 @@ SectionCut::SectionCut(QWidget* parent)
 
 void SectionCut::initSpinBoxes()
 {
-    constexpr int max = std::numeric_limits<int>::max();
-    ui->cutX->setRange(-max, max);
-    ui->cutY->setRange(-max, max);
-    ui->cutZ->setRange(-max, max);
+    ui->cutX->setRange(-INT_MAX, INT_MAX);
+    ui->cutY->setRange(-INT_MAX, INT_MAX);
+    ui->cutZ->setRange(-INT_MAX, INT_MAX);
 }
 
 void SectionCut::initControls(const Base::BoundBox3d& BoundCompound)

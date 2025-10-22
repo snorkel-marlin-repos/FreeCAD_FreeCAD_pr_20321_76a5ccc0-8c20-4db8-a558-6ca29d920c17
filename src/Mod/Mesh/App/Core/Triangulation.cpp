@@ -23,7 +23,6 @@
 #include "PreCompiled.h"
 #ifndef _PreComp_
 #include <cmath>
-#include <limits>
 #include <queue>
 #endif
 
@@ -145,7 +144,7 @@ Base::Matrix4D AbstractPolygonTriangulator::GetTransformToFitPlane() const
         planeFit.AddPoint(point);
     }
 
-    if (planeFit.Fit() >= std::numeric_limits<float>::max()) {
+    if (planeFit.Fit() >= FLOAT_MAX) {
         throw Base::RuntimeError("Plane fit failed");
     }
 
@@ -216,7 +215,7 @@ void AbstractPolygonTriangulator::PostProcessing(const std::vector<Base::Vector3
         polyFit.AddPoint(pt);
     }
 
-    if (polyFit.CountPoints() >= uMinPts && polyFit.Fit() < std::numeric_limits<float>::max()) {
+    if (polyFit.CountPoints() >= uMinPts && polyFit.Fit() < FLOAT_MAX) {
         for (auto& newpoint : _newpoints) {
             newpoint.z = static_cast<float>(polyFit.Value(newpoint.x, newpoint.y));
         }
@@ -378,9 +377,7 @@ bool EarClippingTriangulator::Triangulate::InsideTriangle(float Ax,
     cCROSSap = cx * apy - cy * apx;
     bCROSScp = bx * cpy - by * cpx;
 
-    return ((aCROSSbp >= std::numeric_limits<float>::epsilon())
-            && (bCROSScp >= std::numeric_limits<float>::epsilon())
-            && (cCROSSap >= std::numeric_limits<float>::epsilon()));
+    return ((aCROSSbp >= FLOAT_EPS) && (bCROSScp >= FLOAT_EPS) && (cCROSSap >= FLOAT_EPS));
 }
 
 bool EarClippingTriangulator::Triangulate::Snip(const std::vector<Base::Vector3f>& contour,
@@ -402,8 +399,7 @@ bool EarClippingTriangulator::Triangulate::Snip(const std::vector<Base::Vector3f
     Cx = contour[V[w]].x;
     Cy = contour[V[w]].y;
 
-    constexpr float eps = std::numeric_limits<float>::epsilon();
-    if (eps > (((Bx - Ax) * (Cy - Ay)) - ((By - Ay) * (Cx - Ax)))) {
+    if (FLOAT_EPS > (((Bx - Ax) * (Cy - Ay)) - ((By - Ay) * (Cx - Ax)))) {
         return false;
     }
 

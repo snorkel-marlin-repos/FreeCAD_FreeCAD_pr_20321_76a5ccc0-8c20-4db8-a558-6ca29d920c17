@@ -45,7 +45,7 @@ using namespace Gui;
  * The internationalization of FreeCAD makes heavy use of the internationalization
  * support of Qt. For more details refer to your Qt documentation.
  *
- * \section stepbystep_language Step by step
+ * \section stepbystep Step by step
  * To integrate a new language into FreeCAD or one of its application modules
  * you have to perform the following steps:
  *
@@ -132,7 +132,6 @@ void Translator::destruct ()
 Translator::Translator()
 {
     // This is needed for Qt's lupdate
-    // clang-format off
     d = new TranslatorP;
     d->mapLanguageTopLevelDomain[QT_TR_NOOP("Afrikaans"            )] = "af";
     d->mapLanguageTopLevelDomain[QT_TR_NOOP("Arabic"               )] = "ar";
@@ -144,7 +143,6 @@ Translator::Translator()
     d->mapLanguageTopLevelDomain[QT_TR_NOOP("Chinese Traditional"  )] = "zh-TW";
     d->mapLanguageTopLevelDomain[QT_TR_NOOP("Croatian"             )] = "hr";
     d->mapLanguageTopLevelDomain[QT_TR_NOOP("Czech"                )] = "cs";
-    d->mapLanguageTopLevelDomain[QT_TR_NOOP("Danish"               )] = "da";
     d->mapLanguageTopLevelDomain[QT_TR_NOOP("Dutch"                )] = "nl";
     d->mapLanguageTopLevelDomain[QT_TR_NOOP("English"              )] = "en";
     d->mapLanguageTopLevelDomain[QT_TR_NOOP("Filipino"             )] = "fil";
@@ -178,6 +176,7 @@ Translator::Translator()
     d->mapLanguageTopLevelDomain[QT_TR_NOOP("Ukrainian"            )] = "uk";
     d->mapLanguageTopLevelDomain[QT_TR_NOOP("Valencian"            )] = "val-ES";
     d->mapLanguageTopLevelDomain[QT_TR_NOOP("Vietnamese"           )] = "vi";
+    d->mapLanguageTopLevelDomain[QT_TR_NOOP("Danish")] = "da";
 
     auto hGrp = App::GetApplication().GetParameterGroupByPath("User parameter:BaseApp/Preferences/General");
     auto entries = hGrp->GetASCII("AdditionalLanguageDomainEntries", "");
@@ -191,7 +190,6 @@ Translator::Translator()
         QString tld = match.captured(2);
         d->mapLanguageTopLevelDomain[language.toStdString()] = tld.toStdString();
     }
-    // clang-format on
 
     d->activatedLanguage = "English";
 
@@ -242,7 +240,7 @@ void Translator::activateLanguage (const char* lang)
     removeTranslators(); // remove the currently installed translators
     d->activatedLanguage = lang;
     TStringList languages = supportedLanguages();
-    if (std::ranges::find(languages, lang) != languages.end()) {
+    if (std::find(languages.begin(), languages.end(), lang) != languages.end()) {
         refresh();
     }
 }

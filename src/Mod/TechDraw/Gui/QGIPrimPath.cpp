@@ -47,7 +47,10 @@ using namespace TechDraw;
 using DGU = DrawGuiUtil;
 
 QGIPrimPath::QGIPrimPath():
-    m_brush(Qt::NoBrush)
+    m_width(0),
+    m_capStyle(Qt::RoundCap),
+    m_fillStyleCurrent (Qt::NoBrush),
+    m_fillOverride(false)
 {
     setCacheMode(QGraphicsItem::NoCache);
     setFlag(QGraphicsItem::ItemIsSelectable, true);
@@ -58,19 +61,26 @@ QGIPrimPath::QGIPrimPath():
     setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
 
+    isHighlighted = false;
     multiselectActivated = false;
 
+    m_colOverride = false;
     m_colNormal = getNormalColor();
-    m_pen.setColor(m_colNormal);
+    m_colCurrent = m_colNormal;
     m_styleNormal = Qt::SolidLine;
-    m_pen.setStyle(m_styleNormal);
-    m_pen.setCapStyle(prefCapStyle());
-    m_pen.setWidthF(0);
+    m_styleCurrent = m_styleNormal;
+    m_pen.setStyle(m_styleCurrent);
+    m_capStyle = prefCapStyle();
+    m_pen.setCapStyle(m_capStyle);
+    m_pen.setWidthF(m_width);
 
-    m_fillNormal = getDefaultFillStyle();
-    m_brush.setStyle(m_fillNormal);
+    m_fillDef = Qt::NoBrush;
+    m_fillSelect = Qt::SolidPattern;
+    m_fillNormal = m_fillDef;
+    m_fillStyleCurrent = m_fillNormal;
 
-    setFillColor(getDefaultFillColor());
+    m_colDefFill = Qt::white;
+    setFillColor(m_colDefFill);
 
     setPrettyNormal();
 }
@@ -109,18 +119,22 @@ void QGIPrimPath::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 
 void QGIPrimPath::setPrettyNormal() {
 
-    m_pen.setColor(m_colNormal);
-    m_brush.setColor(m_colNormalFill);
+    m_colCurrent = m_colNormal;
+    m_fillColorCurrent = m_colNormalFill;
 }
 
 void QGIPrimPath::setPrettyPre() {
-    m_pen.setColor(getPreColor());
-    m_brush.setColor(getPreColor());
+    m_colCurrent = getPreColor();
+    if (!m_fillOverride) {
+        m_fillColorCurrent = getPreColor();
+    }
 }
 
 void QGIPrimPath::setPrettySel() {
-    m_pen.setColor(getSelectColor());
-    m_brush.setColor(getSelectColor());
+    m_colCurrent = getSelectColor();
+    if (!m_fillOverride) {
+        m_fillColorCurrent = getSelectColor();
+    }
 }
 
 //wf: why would a face use its parent's normal colour?
@@ -128,6 +142,11 @@ void QGIPrimPath::setPrettySel() {
 QColor QGIPrimPath::getNormalColor()
 {
     QGIView *parent;
+
+    if (m_colOverride) {
+        return m_colNormal;
+    }
+
     QGraphicsItem* qparent = parentItem();
     if (!qparent) {
         parent = nullptr;
@@ -176,7 +195,8 @@ QColor QGIPrimPath::getSelectColor()
 void QGIPrimPath::setWidth(double w)
 {
 //    Base::Console().Message("QGIPP::setWidth(%.3f)\n", w);
-    m_pen.setWidthF(w);
+    m_width = w;
+    m_pen.setWidthF(m_width);
 }
 
 void QGIPrimPath::setStyle(Qt::PenStyle s)
@@ -184,25 +204,27 @@ void QGIPrimPath::setStyle(Qt::PenStyle s)
 // TODO: edge lines for faces are drawn with setStyle(Qt::NoPen) and trigger this message.
 //    Base::Console().Warning("QGIPP::setStyle(Qt: %d) is deprecated. Use setLinePen instead\n", s);
     m_styleNormal = s;
-    m_pen.setStyle(s);
+    m_styleCurrent = s;
 }
 
 void QGIPrimPath::setStyle(int s)
 {
 // TODO: edge lines for faces are drawn with setStyle(Qt::NoPen) and trigger this message.
 //    Base::Console().Warning("QGIPP::setStyle(int: %d) is deprecated. Use setLinePen instead\n", s);
+    m_styleCurrent = static_cast<Qt::PenStyle>(s);
     m_styleNormal = static_cast<Qt::PenStyle>(s);
-    m_pen.setStyle(m_styleNormal);
 }
 
 void QGIPrimPath::setNormalColor(QColor c)
 {
     m_colNormal = c;
-    m_pen.setColor(m_colNormal);
+    m_colOverride = true;
+    m_colCurrent = m_colNormal;
 }
 
 void QGIPrimPath::setCapStyle(Qt::PenCapStyle c)
 {
+    m_capStyle = c;
     m_pen.setCapStyle(c);
 }
 
@@ -264,32 +286,44 @@ void QGIPrimPath::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 void QGIPrimPath::setFill(QColor c, Qt::BrushStyle s) {
     setFillColor(c);
     m_fillNormal = s;
-    m_brush.setStyle(s);
+    m_fillStyleCurrent = s;
 }
 
 void QGIPrimPath::setFill(QBrush b) {
-    m_fillNormal = b.style();
     setFillColor(b.color());
-    m_brush.setStyle(b.style());
+    m_fillNormal = b.style();
+    m_fillStyleCurrent = b.style();
 }
 
 void QGIPrimPath::resetFill() {
-    m_colNormalFill = getDefaultFillColor();
-    m_fillNormal = getDefaultFillStyle();
-    m_brush.setStyle(m_fillNormal);
+    m_colNormalFill = m_colDefFill;
+    m_fillNormal = m_fillDef;
+    m_fillStyleCurrent = m_fillDef;
 }
 
 //set PlainFill
 void QGIPrimPath::setFillColor(QColor c)
 {
     m_colNormalFill = c;
+    m_fillColorCurrent = m_colNormalFill;
+}
+
+void QGIPrimPath::setCurrentPen()
+{
+    m_pen.setWidthF(m_width);
+    m_pen.setColor(m_colCurrent);
+    m_pen.setStyle(m_styleCurrent);
 }
 
 void QGIPrimPath::paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget) {
     QStyleOptionGraphicsItem myOption(*option);
     myOption.state &= ~QStyle::State_Selected;
 
+    setCurrentPen();
     setPen(m_pen);
+
+    m_brush.setColor(m_fillColorCurrent);
+    m_brush.setStyle(m_fillStyleCurrent);
     setBrush(m_brush);
 
     QGraphicsPathItem::paint (painter, &myOption, widget);

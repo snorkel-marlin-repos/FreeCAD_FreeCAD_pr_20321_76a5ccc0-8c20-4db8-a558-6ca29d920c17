@@ -83,9 +83,7 @@ void AutoSaver::renameFile(QString dirName, QString file, QString tmpFile)
             << " -> " << file.toUtf8().constData());
     QDir dir(dirName);
     dir.remove(file);
-    if (!dir.rename(tmpFile,file)) {
-        FC_ERR("Failed to rename autosave file " << tmpFile.toStdString() << " to " << file.toStdString() << "\n");
-    }
+    dir.rename(tmpFile,file);
 }
 
 void AutoSaver::setTimeout(int ms)

@@ -82,8 +82,13 @@ def check_for_drill_translate(
 
     if values["TRANSLATE_DRILL_CYCLES"] and command in values["DRILL_CYCLES_TO_TRANSLATE"]:
         if values["OUTPUT_COMMENTS"]:  # Comment the original command
-            comment = create_comment(values, format_command_line(values, command_line))
-            gcode.append(f"{linenumber(values)}{comment}{nl}")
+            comment = create_comment(
+                values,
+                values["COMMAND_SPACE"]
+                + format_command_line(values, command_line)
+                + values["COMMAND_SPACE"],
+            )
+            gcode += f"{linenumber(values)}{comment}{nl}"
         # wrap this block to ensure that the value of values["MOTION_MODE"]
         # is restored in case of error
         try:
@@ -116,7 +121,7 @@ def check_for_machine_specific_commands(values: Values, gcode: Gcode, command: s
         if m:
             raw_command = m.group(1)
             # pass literally to the controller
-            gcode.append(f"{linenumber(values)}{raw_command}{nl}")
+            gcode += f"{linenumber(values)}{raw_command}{nl}"
 
 
 def check_for_spindle_wait(
@@ -127,9 +132,9 @@ def check_for_spindle_wait(
     nl: str = "\n"
 
     if values["SPINDLE_WAIT"] > 0 and command in ("M3", "M03", "M4", "M04"):
-        gcode.append(f"{linenumber(values)}{format_command_line(values, command_line)}{nl}")
+        gcode += f"{linenumber(values)}{format_command_line(values, command_line)}{nl}"
         cmd = format_command_line(values, ["G4", f'P{values["SPINDLE_WAIT"]}'])
-        gcode.append(f"{linenumber(values)}{cmd}{nl}")
+        gcode += f"{linenumber(values)}{cmd}{nl}"
 
 
 def check_for_suppressed_commands(
@@ -142,8 +147,13 @@ def check_for_suppressed_commands(
     if command in values["SUPPRESS_COMMANDS"]:
         if values["OUTPUT_COMMENTS"]:
             # convert the command to a comment
-            comment = create_comment(values, format_command_line(values, command_line))
-            gcode.append(f"{linenumber(values)}{comment}{nl}")
+            comment = create_comment(
+                values,
+                values["COMMAND_SPACE"]
+                + format_command_line(values, command_line)
+                + values["COMMAND_SPACE"],
+            )
+            gcode += f"{linenumber(values)}{comment}{nl}"
         # remove the command
         return True
     return False
@@ -155,7 +165,7 @@ def check_for_tlo(values: Values, gcode: Gcode, command: str, params: PathParame
 
     if command in ("M6", "M06") and values["USE_TLO"]:
         cmd = format_command_line(values, ["G43", f'H{str(int(params["T"]))}'])
-        gcode.append(f"{linenumber(values)}{cmd}{nl}")
+        gcode += f"{linenumber(values)}{cmd}{nl}"
 
 
 def check_for_tool_change(
@@ -167,17 +177,22 @@ def check_for_tool_change(
     if command in ("M6", "M06"):
         if values["OUTPUT_COMMENTS"]:
             comment = create_comment(values, "Begin toolchange")
-            gcode.append(f"{linenumber(values)}{comment}{nl}")
+            gcode += f"{linenumber(values)}{comment}{nl}"
         if values["OUTPUT_TOOL_CHANGE"]:
             if values["STOP_SPINDLE_FOR_TOOL_CHANGE"]:
                 # stop the spindle
-                gcode.append(f"{linenumber(values)}M5{nl}")
+                gcode += f"{linenumber(values)}M5{nl}"
             for line in values["TOOL_CHANGE"].splitlines(False):
-                gcode.append(f"{linenumber(values)}{line}{nl}")
+                gcode += f"{linenumber(values)}{line}{nl}"
         elif values["OUTPUT_COMMENTS"]:
             # convert the tool change to a comment
-            comment = create_comment(values, format_command_line(values, command_line))
-            gcode.append(f"{linenumber(values)}{comment}{nl}")
+            comment = create_comment(
+                values,
+                values["COMMAND_SPACE"]
+                + format_command_line(values, command_line)
+                + values["COMMAND_SPACE"],
+            )
+            gcode += f"{linenumber(values)}{comment}{nl}"
             return True
     return False
 
@@ -270,7 +285,7 @@ def default_F_parameter(
             found = True
     if found:
         return format_for_feed(values, feed)
-    # else if any of A, B, or C are in the parameters, the feed is in degrees,
+    # else if any of A, B, or C are in the paramters, the feed is in degrees,
     #     which should not be converted when in --inches mode
     found = False
     for key in ("A", "B", "C"):
@@ -661,7 +676,7 @@ def parse_a_group(values: Values, gcode: Gcode, pathobj) -> None:
     if hasattr(pathobj, "Group"):  # We have a compound or project.
         if values["OUTPUT_COMMENTS"]:
             comment = create_comment(values, f"Compound: {pathobj.Label}")
-            gcode.append(f"{linenumber(values)}{comment}{nl}")
+            gcode += f"{linenumber(values)}{comment}{nl}"
         for p in pathobj.Group:
             parse_a_group(values, gcode, p)
     else:  # parsing simple path
@@ -670,7 +685,7 @@ def parse_a_group(values: Values, gcode: Gcode, pathobj) -> None:
             return
         if values["OUTPUT_PATH_LABELS"] and values["OUTPUT_COMMENTS"]:
             comment = create_comment(values, f"Path: {pathobj.Label}")
-            gcode.append(f"{linenumber(values)}{comment}{nl}")
+            gcode += f"{linenumber(values)}{comment}{nl}"
         parse_a_path(values, gcode, pathobj)
 
 
@@ -784,12 +799,12 @@ def parse_a_path(values: Values, gcode: Gcode, pathobj) -> None:
                     command_line[0],
                 ]  # swap the order of the commands
                 # Add a line number to the front and a newline to the end of the command line
-                gcode.append(
+                gcode += (
                     f"{linenumber(values)}{format_command_line(values, swapped_command_line)}{nl}"
                 )
             else:
                 # Add a line number to the front and a newline to the end of the command line
-                gcode.append(f"{linenumber(values)}{format_command_line(values, command_line)}{nl}")
+                gcode += f"{linenumber(values)}{format_command_line(values, command_line)}{nl}"
 
         check_for_tlo(values, gcode, command, c.Parameters)
         check_for_machine_specific_commands(values, gcode, command)

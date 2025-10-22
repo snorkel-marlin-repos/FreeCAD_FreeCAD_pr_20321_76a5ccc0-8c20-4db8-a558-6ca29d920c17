@@ -30,7 +30,6 @@
 #include <Gui/BitmapFactory.h>
 #include <Gui/Command.h>
 #include <Gui/Control.h>
-#include <Gui/MainWindow.h>
 #include <Gui/TaskView/TaskDialog.h>
 #include <Mod/PartDesign/App/FeaturePrimitive.h>
 
@@ -65,7 +64,7 @@ bool ViewProviderPrimitive::setEdit(int ModNum)
         Gui::TaskView::TaskDialog *dlg = Gui::Control().activeDialog();
         TaskPrimitiveParameters *primitiveDlg = qobject_cast<TaskPrimitiveParameters *>(dlg);
         if (dlg && !primitiveDlg) {
-            QMessageBox msgBox(Gui::getMainWindow());
+            QMessageBox msgBox;
             msgBox.setText(QObject::tr("A dialog is already open in the task panel"));
             msgBox.setInformativeText(QObject::tr("Do you want to close this dialog?"));
             msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);

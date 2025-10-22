@@ -48,6 +48,7 @@
 
 namespace MatGui
 {
+class CommandManager;
 class WidgetFactoryInst;
 class MaterialTreeWidgetPy;
 
@@ -206,13 +207,17 @@ private:
     int _recentMax;
     MaterialTreeWidgetPy* pyTreeWidget {nullptr};
 
+    Materials::MaterialManager _materialManager;
+
     // friends
     friend class Gui::WidgetFactoryInst;
 
 protected:
+    //   bool m_Restored = false;
+
     Materials::MaterialManager& getMaterialManager()
     {
-        return Materials::MaterialManager::getManager();
+        return _materialManager;
     }
 
     void getFavorites();

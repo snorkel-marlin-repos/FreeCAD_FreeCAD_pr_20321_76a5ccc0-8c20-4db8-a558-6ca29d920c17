@@ -25,6 +25,7 @@
 #ifndef ASSEMBLY_AssemblyUtils_H
 #define ASSEMBLY_AssemblyUtils_H
 
+
 #include <GeomAbs_CurveType.hxx>
 #include <GeomAbs_SurfaceType.hxx>
 

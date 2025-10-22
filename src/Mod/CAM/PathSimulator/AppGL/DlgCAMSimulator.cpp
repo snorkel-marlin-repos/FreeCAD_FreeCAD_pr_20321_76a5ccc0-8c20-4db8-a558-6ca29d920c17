@@ -46,11 +46,6 @@ DlgCAMSimulator::DlgCAMSimulator(QWindow* parent)
     mMillSimulator = new MillSimulation();
 }
 
-DlgCAMSimulator::~DlgCAMSimulator()
-{
-    delete mMillSimulator;
-}
-
 void DlgCAMSimulator::render(QPainter* painter)
 {
     Q_UNUSED(painter);

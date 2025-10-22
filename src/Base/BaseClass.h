@@ -65,7 +65,7 @@ private:                                                                        
     {                                                                                              \
         return _class_::classTypeId;                                                               \
     }                                                                                              \
-    Base::Type _class_::classTypeId = Base::Type::BadType;                                         \
+    Base::Type _class_::classTypeId = Base::Type::badType();                                       \
     void* _class_::create(void)                                                                    \
     {                                                                                              \
         return new _class_();                                                                      \
@@ -99,7 +99,7 @@ private:                                                                        
     {                                                                                              \
         return _class_::classTypeId;                                                               \
     }                                                                                              \
-    Base::Type _class_::classTypeId = Base::Type::BadType;                                         \
+    Base::Type _class_::classTypeId = Base::Type::badType();                                       \
     void* _class_::create(void)                                                                    \
     {                                                                                              \
         return 0;                                                                                  \

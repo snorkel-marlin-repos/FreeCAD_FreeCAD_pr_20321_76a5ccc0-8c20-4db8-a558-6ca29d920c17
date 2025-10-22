@@ -126,7 +126,8 @@ void CmdTechDrawHatch::activated(int iMsg)
             std::vector<std::string> hatchSubs = h->Source.getSubValues();
             for (auto& hs: hatchSubs) {        //all the Faces in this hatch object
                 int hatchFace = TechDraw::DrawUtil::getIndexFromName(hs);
-                if (auto it = std::ranges::find(selFaces, hatchFace); it != selFaces.end()) {
+                std::vector<int>::iterator it = std::find(selFaces.begin(), selFaces.end(), hatchFace);
+                if (it != selFaces.end()) {
                     std::pair< int, TechDraw::DrawHatch*> removeItem;
                     removeItem.first = hatchFace;
                     removeItem.second = h;

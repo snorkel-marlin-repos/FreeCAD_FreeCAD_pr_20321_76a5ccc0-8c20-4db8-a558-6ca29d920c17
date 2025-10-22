@@ -34,9 +34,6 @@
 
 #ifdef _PreComp_
 
-// stl
-#include <limits>
-
 // OpenCasCade
 #include <Mod/Part/App/OpenCascadeAll.h>
 

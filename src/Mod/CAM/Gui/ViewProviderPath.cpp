@@ -23,7 +23,6 @@
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
-#include <limits>
 #include <boost/algorithm/string/replace.hpp>
 
 #include <Inventor/SbVec3f.h>
@@ -184,11 +183,11 @@ ViewProviderPath::ViewProviderPath()
 
 
     ShowCountConstraints.LowerBound = 0;
-    ShowCountConstraints.UpperBound = std::numeric_limits<int>::max();
+    ShowCountConstraints.UpperBound = INT_MAX;
     ShowCountConstraints.StepSize = 1;
     ShowCount.setConstraints(&ShowCountConstraints);
     StartIndexConstraints.LowerBound = 0;
-    StartIndexConstraints.UpperBound = std::numeric_limits<int>::max();
+    StartIndexConstraints.UpperBound = INT_MAX;
     StartIndexConstraints.StepSize = 1;
     StartIndex.setConstraints(&StartIndexConstraints);
     ADD_PROPERTY_TYPE(StartPosition,

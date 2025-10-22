@@ -327,11 +327,10 @@ def export(objectslist, filename, argstring):
 
     print("Done postprocessing.")
 
-    if filename != "-":
-        with pyopen(filename, "w") as gfile:
-            gfile.write(final)
-
-    return final
+    # write the file
+    gfile = pyopen(filename, "w")
+    gfile.write(final)
+    gfile.close()
 
 
 def linenumber():

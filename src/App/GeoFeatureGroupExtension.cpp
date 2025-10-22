@@ -338,7 +338,7 @@ void GeoFeatureGroupExtension::getCSInList(const DocumentObject* obj,
         // check if the link is real Local scope one or if it is a expression one (could also be
         // both, so it is not enough to check the expressions)
         auto res = getScopedObjectsFromLinks(parent, LinkScope::Local);
-        if (std::ranges::find(res, obj) != res.end()) {
+        if (std::find(res.begin(), res.end(), obj) != res.end()) {
             vec.push_back(parent);
         }
     }
@@ -382,7 +382,7 @@ void GeoFeatureGroupExtension::recursiveCSRelevantLinks(const DocumentObject* ob
 
     // go on traversing the graph in all directions!
     for (auto o : links) {
-        if (!o || o == obj || std::ranges::find(vec, o) != vec.end()) {
+        if (!o || o == obj || std::find(vec.begin(), vec.end(), o) != vec.end()) {
             continue;
         }
 
@@ -421,8 +421,10 @@ bool GeoFeatureGroupExtension::extensionGetSubObject(DocumentObject*& ret,
             }
         }
         if (ret) {
-            ++dot;
-            if (*dot && !ret->hasExtension(App::LinkBaseExtension::getExtensionClassTypeId())
+            if (dot) {
+                ++dot;
+            }
+            if (dot && *dot && !ret->hasExtension(App::LinkBaseExtension::getExtensionClassTypeId())
                 && !ret->hasExtension(App::GeoFeatureGroupExtension::getExtensionClassTypeId())) {
                 // Consider this
                 // Body
@@ -449,7 +451,7 @@ bool GeoFeatureGroupExtension::extensionGetSubObject(DocumentObject*& ret,
                 *mat *=
                     const_cast<GeoFeatureGroupExtension*>(this)->placement().getValue().toMatrix();
             }
-            ret = ret->getSubObject(dot, pyObj, mat, true, depth + 1);
+            ret = ret->getSubObject(dot ? dot : "", pyObj, mat, true, depth + 1);
         }
     }
     return true;

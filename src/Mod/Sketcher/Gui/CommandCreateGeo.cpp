@@ -812,7 +812,7 @@ bool CmdSketcherCreateRectangleCenter::isActive()
 }
 
 
-// Rounded rectangle ===============================================================
+// Rounded rectange ================================================================
 
 DEF_STD_CMD_AU(CmdSketcherCreateOblong)
 

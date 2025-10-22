@@ -469,9 +469,9 @@ bool PropertyLinkBase::_updateElementReference(DocumentObject* feature,
                 const auto& newName =
                     elementName.newName.size() ? elementName.newName : elementName.oldName;
                 if (oldName != newName) {
-                    FC_LOG(propertyName(this)
-                           << " auto change element reference " << ret->getFullName() << " "
-                           << oldName << " -> " << newName);
+                    FC_WARN(propertyName(this)
+                            << " auto change element reference " << ret->getFullName() << " "
+                            << oldName << " -> " << newName);
                 }
             }
         }
@@ -702,7 +702,6 @@ void PropertyLink::resetLink()
             }
         }
     }
-    _pcLink = nullptr;
 }
 
 void PropertyLink::setValue(App::DocumentObject* lValue)
@@ -1955,7 +1954,7 @@ std::vector<std::string> updateLinkSubs(const App::DocumentObject* obj,
     std::vector<std::string> res;
     for (auto it = subs.begin(); it != subs.end(); ++it) {
         const auto& sub = *it;
-        auto new_sub = (*f)(obj, sub.c_str(), args...);
+        auto new_sub = (*f)(obj, sub.c_str(), std::forward<Args>(args)...);
         if (new_sub.size()) {
             if (res.empty()) {
                 res.reserve(subs.size());
@@ -3731,11 +3730,7 @@ PropertyXLink::PropertyXLink(bool _allowPartial, PropertyLinkBase* parent)
 
 PropertyXLink::~PropertyXLink()
 {
-    try {
-        unlink();
-    } catch (std::bad_weak_ptr &) {
-        FC_WARN("Bad pointer exception caught when destroying PropertyXLink\n");
-    }
+    unlink();
 }
 
 void PropertyXLink::setSyncSubObject(bool enable)

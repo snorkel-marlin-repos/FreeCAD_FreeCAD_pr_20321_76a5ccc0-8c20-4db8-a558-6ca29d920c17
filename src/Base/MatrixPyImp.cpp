@@ -23,10 +23,6 @@
 
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-#include <limits>
-#endif
-
 // inclusion of the generated files (generated out of MatrixPy.xml)
 #include "RotationPy.h"
 #include "VectorPy.h"
@@ -222,7 +218,7 @@ PyObject* MatrixPy::number_power_handler(PyObject* self, PyObject* other, PyObje
     }
 
     if (b < 0) {
-        if (fabs(a.determinant()) > std::numeric_limits<double>::epsilon()) {
+        if (fabs(a.determinant()) > DBL_EPSILON) {
             a.inverseGauss();
         }
         else {
@@ -671,7 +667,7 @@ PyObject* MatrixPy::invert()
 {
     PY_TRY
     {
-        if (fabs(getMatrixPtr()->determinant()) > std::numeric_limits<double>::epsilon()) {
+        if (fabs(getMatrixPtr()->determinant()) > DBL_EPSILON) {
             getMatrixPtr()->inverseGauss();
             Py_Return;
         }
@@ -686,7 +682,7 @@ PyObject* MatrixPy::inverse()
 {
     PY_TRY
     {
-        if (fabs(getMatrixPtr()->determinant()) > std::numeric_limits<double>::epsilon()) {
+        if (fabs(getMatrixPtr()->determinant()) > DBL_EPSILON) {
             Base::Matrix4D m = *getMatrixPtr();
             m.inverseGauss();
             return new MatrixPy(m);

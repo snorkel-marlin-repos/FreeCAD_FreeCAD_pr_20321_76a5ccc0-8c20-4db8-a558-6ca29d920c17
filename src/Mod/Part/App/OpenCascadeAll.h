@@ -174,6 +174,9 @@
 #include <BRepLib_MakeWire.hxx>
 #include <BRepLProp_SurfaceTool.hxx>
 
+#if OCC_VERSION_HEX < 0x070400
+# include <BRepMesh.hxx>
+#endif
 #include <BRepMesh_Edge.hxx>
 #include <BRepMesh_IncrementalMesh.hxx>
 #include <BRepMesh_Triangle.hxx>

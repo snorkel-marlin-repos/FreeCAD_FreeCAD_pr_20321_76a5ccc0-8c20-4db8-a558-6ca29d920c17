@@ -38,7 +38,7 @@ class Property;
 namespace Gui {
 namespace PropertyEditor {
 
-class GuiExport PropertyModel : public QAbstractItemModel
+class PropertyModel : public QAbstractItemModel
 {
     Q_OBJECT
 

@@ -24,7 +24,6 @@
 #ifndef _PreComp_
 #include <algorithm>
 #include <functional>
-#include <limits>
 #endif
 
 #include <QFuture>
@@ -424,14 +423,14 @@ CurvatureInfo FacetCurvature::Compute(FacetIndex index) const
             fMax = (float)dMax;
         }
         else {
-            fMin = std::numeric_limits<float>::max();
-            fMax = std::numeric_limits<float>::max();
+            fMin = FLT_MAX;
+            fMax = FLT_MAX;
         }
     }
     else {
         // too few points => cannot calc any properties
-        fMin = std::numeric_limits<float>::max();
-        fMax = std::numeric_limits<float>::max();
+        fMin = FLT_MAX;
+        fMax = FLT_MAX;
     }
 
     CurvatureInfo info;

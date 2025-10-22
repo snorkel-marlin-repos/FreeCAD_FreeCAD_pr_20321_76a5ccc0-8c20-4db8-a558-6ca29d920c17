@@ -344,7 +344,7 @@ CmdPartDesignSubShapeBinder::CmdPartDesignSubShapeBinder()
     sAppModule      = "PartDesign";
     sGroup          = QT_TR_NOOP("PartDesign");
     sMenuText       = QT_TR_NOOP("Create a sub-object(s) shape binder");
-    sToolTipText    = QT_TR_NOOP("Create a reference to geometry from one or more objects, allowing it to be used inside or outside a PartDesign Body. It tracks relative placements, supports multiple geometry types (solids, faces, edges, vertices), and can work with objects in the same or external documents.");
+    sToolTipText    = QT_TR_NOOP("Create a sub-object(s) shape binder");
     sWhatsThis      = "PartDesign_SubShapeBinder";
     sStatusTip      = sToolTipText;
     sPixmap         = "PartDesign_SubShapeBinder";
@@ -428,7 +428,7 @@ CmdPartDesignClone::CmdPartDesignClone()
     sAppModule      = "PartDesign";
     sGroup          = QT_TR_NOOP("PartDesign");
     sMenuText       = QT_TR_NOOP("Create a clone");
-    sToolTipText    = QT_TR_NOOP("Create a parametric copy of a solid object as the base feature of a new body");
+    sToolTipText    = QT_TR_NOOP("Create a new clone");
     sWhatsThis      = "PartDesign_Clone";
     sStatusTip      = sToolTipText;
     sPixmap         = "PartDesign_Clone";
@@ -528,18 +528,17 @@ bool CmdPartDesignNewSketch::isActive()
 // Common utility functions for all features creating solids
 //===========================================================================
 
-static void finishFeature(const Gui::Command* cmd, App::DocumentObject *feature,
+void finishFeature(const Gui::Command* cmd, App::DocumentObject *Feat,
                    App::DocumentObject* prevSolidFeature = nullptr,
                    const bool hidePrevSolid = true,
                    const bool updateDocument = true)
 {
-    PartDesign::Body *activeBody;
+    PartDesign::Body *pcActiveBody;
 
     if (prevSolidFeature) {
-        // insert into the same body as the given previous one
-        activeBody = PartDesignGui::getBodyFor(prevSolidFeature, /*messageIfNot = */false);
-    } else {
-        activeBody = PartDesignGui::getBody(/*messageIfNot = */false);
+        pcActiveBody = PartDesignGui::getBodyFor(prevSolidFeature, /*messageIfNot = */false);
+    } else { // insert into the same body as the given previous one
+        pcActiveBody = PartDesignGui::getBody(/*messageIfNot = */false);
     }
 
     if (hidePrevSolid && prevSolidFeature)
@@ -548,24 +547,27 @@ static void finishFeature(const Gui::Command* cmd, App::DocumentObject *feature,
     if (updateDocument)
         cmd->updateActive();
 
-    auto base = dynamic_cast<PartDesign::Feature*>(feature);
+    auto base = dynamic_cast<PartDesign::Feature*>(Feat);
     if (base)
         base = dynamic_cast<PartDesign::Feature*>(base->getBaseObject(true));
     App::DocumentObject *obj = base;
     if (!obj)
-        obj = activeBody;
+        obj = pcActiveBody;
 
     // Do this before calling setEdit to avoid to override the 'Shape preview' mode (#0003621)
     if (obj) {
-        cmd->copyVisual(feature, "ShapeAppearance", obj);
-        cmd->copyVisual(feature, "LineColor", obj);
-        cmd->copyVisual(feature, "PointColor", obj);
-        cmd->copyVisual(feature, "Transparency", obj);
-        cmd->copyVisual(feature, "DisplayMode", obj);
+        cmd->copyVisual(Feat, "ShapeAppearance", obj);
+        cmd->copyVisual(Feat, "LineColor", obj);
+        cmd->copyVisual(Feat, "PointColor", obj);
+        cmd->copyVisual(Feat, "Transparency", obj);
+        cmd->copyVisual(Feat, "DisplayMode", obj);
     }
 
-    PartDesignGui::setEdit(feature, activeBody);
+    // #0001721: use '0' as edit value to avoid switching off selection in
+    // ViewProviderGeometryObject::setEditViewer
+    PartDesignGui::setEdit(Feat,pcActiveBody);
     cmd->doCommand(cmd->Gui,"Gui.Selection.clearSelection()");
+    //cmd->doCommand(cmd->Gui,"Gui.Selection.addSelection(App.ActiveDocument.ActiveObject)");
 }
 
 //===========================================================================
@@ -890,7 +892,7 @@ void prepareProfileBased(PartDesign::Body *pcActiveBody, Gui::Command* cmd, cons
         (which.compare("Pocket") == 0)) {
 
         if (!pcActiveBody->isSolid()) {
-            QMessageBox msgBox(Gui::getMainWindow());
+            QMessageBox msgBox;
             msgBox.setText(QObject::tr("Cannot use this command as there is no solid to subtract from."));
             msgBox.setInformativeText(QObject::tr("Ensure that the body contains a feature before attempting a subtractive command."));
             msgBox.setStandardButtons(QMessageBox::Ok);
@@ -912,7 +914,7 @@ void prepareProfileBased(PartDesign::Body *pcActiveBody, Gui::Command* cmd, cons
             }
         }
         if (!onlyAllowed) {
-            QMessageBox msgBox(Gui::getMainWindow());
+            QMessageBox msgBox;
             msgBox.setText(QObject::tr("Cannot use selected object. Selected object must belong to the active body"));
             msgBox.setInformativeText(QObject::tr("Consider using a ShapeBinder or a BaseFeature to reference external geometry in a body."));
             msgBox.setStandardButtons(QMessageBox::Ok);
@@ -1010,7 +1012,7 @@ void prepareProfileBased(PartDesign::Body *pcActiveBody, Gui::Command* cmd, cons
         Gui::TaskView::TaskDialog *dlg = Gui::Control().activeDialog();
         PartDesignGui::TaskDlgFeaturePick *pickDlg = qobject_cast<PartDesignGui::TaskDlgFeaturePick *>(dlg);
         if (dlg && !pickDlg) {
-            QMessageBox msgBox(Gui::getMainWindow());
+            QMessageBox msgBox;
             msgBox.setText(QObject::tr("A dialog is already open in the task panel"));
             msgBox.setInformativeText(QObject::tr("Do you want to close this dialog?"));
             msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);

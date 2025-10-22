@@ -134,8 +134,9 @@ void DlgBooleanOperation::slotCreatedObject(const App::DocumentObject& obj)
 void DlgBooleanOperation::slotChangedObject(const App::DocumentObject& obj,
                                             const App::Property& prop)
 {
-    if (const auto it = std::ranges::find(observe, &obj);
-        it != observe.end() && prop.is<Part::PropertyPartShape>()) {
+    std::list<const App::DocumentObject*>::iterator it;
+    it = std::find(observe.begin(), observe.end(), &obj);
+    if (it != observe.end() && prop.is<Part::PropertyPartShape>()) {
         const TopoDS_Shape& shape = static_cast<const Part::PropertyPartShape&>(prop).getValue();
         if (!shape.IsNull()) {
             Gui::Document* activeGui = Gui::Application::Instance->getDocument(obj.getDocument());

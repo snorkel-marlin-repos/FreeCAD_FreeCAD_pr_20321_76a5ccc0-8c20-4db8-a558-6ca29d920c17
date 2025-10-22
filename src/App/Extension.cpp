@@ -57,11 +57,11 @@ App::PropertyData App::Extension::propertyData;
 
 void App::Extension::init()
 {
-    assert(Extension::classTypeId.isBad() && "don't init() twice!");
+    assert(Extension::classTypeId == Base::Type::badType() && "don't init() twice!");
 
     /* Set up entry in the type system. */
     Extension::classTypeId =
-        Base::Type::createType(Base::Type::BadType, "App::Extension", Extension::create);
+        Base::Type::createType(Base::Type::badType(), "App::Extension", Extension::create);
 }
 
 using namespace App;
@@ -194,11 +194,11 @@ void Extension::initExtensionSubclass(Base::Type& toInit,
                                       Base::Type::instantiationMethod method)
 {
     // don't init twice!
-    assert(toInit.isBad());
+    assert(toInit == Base::Type::badType());
     // get the parent class
     Base::Type parentType(Base::Type::fromName(ParentName));
     // forgot init parent!
-    assert(!parentType.isBad());
+    assert(parentType != Base::Type::badType());
 
     // create the new type
     toInit = Base::Type::createType(parentType, ClassName, method);

@@ -23,7 +23,6 @@
 
 #include "PreCompiled.h"
 #ifndef _PreComp_
-#include <limits>
 #include <Inventor/actions/SoGetBoundingBoxAction.h>
 #include <Inventor/nodes/SoClipPlane.h>
 #include <Inventor/nodes/SoGroup.h>
@@ -110,21 +109,20 @@ Clipping::Clipping(Gui::View3DInventor* view, QWidget* parent)
     d->ui.setupUi(this);
     setupConnections();
 
-    constexpr int max = std::numeric_limits<int>::max();
-    d->ui.clipView->setRange(-max, max);
+    d->ui.clipView->setRange(-INT_MAX, INT_MAX);
     d->ui.clipView->setSingleStep(0.1f);
-    d->ui.clipX->setRange(-max, max);
+    d->ui.clipX->setRange(-INT_MAX, INT_MAX);
     d->ui.clipX->setSingleStep(0.1f);
-    d->ui.clipY->setRange(-max, max);
+    d->ui.clipY->setRange(-INT_MAX, INT_MAX);
     d->ui.clipY->setSingleStep(0.1f);
-    d->ui.clipZ->setRange(-max, max);
+    d->ui.clipZ->setRange(-INT_MAX, INT_MAX);
     d->ui.clipZ->setSingleStep(0.1f);
 
-    d->ui.dirX->setRange(-max, max);
+    d->ui.dirX->setRange(-INT_MAX, INT_MAX);
     d->ui.dirX->setSingleStep(0.1f);
-    d->ui.dirY->setRange(-max, max);
+    d->ui.dirY->setRange(-INT_MAX, INT_MAX);
     d->ui.dirY->setSingleStep(0.1f);
-    d->ui.dirZ->setRange(-max, max);
+    d->ui.dirZ->setRange(-INT_MAX, INT_MAX);
     d->ui.dirZ->setSingleStep(0.1f);
     d->ui.dirZ->setValue(1.0f);
 

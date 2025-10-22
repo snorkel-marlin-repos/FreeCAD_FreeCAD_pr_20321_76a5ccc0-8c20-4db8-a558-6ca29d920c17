@@ -25,8 +25,6 @@
 #ifndef _PreComp_
 #include <vtkDataSet.h>
 #include <vtkXMLDataSetWriter.h>
-#include <vtkXMLMultiBlockDataWriter.h>
-#include <vtkTransform.h>
 #endif
 
 #include <Base/Exception.h>
@@ -44,41 +42,16 @@ PROPERTY_SOURCE(Fem::FemPostObject, App::GeoFeature)
 FemPostObject::FemPostObject()
 {
     ADD_PROPERTY(Data, (nullptr));
-
-    m_transform_filter = vtkSmartPointer<vtkTransformFilter>::New();
-
-    // define default transform
-    double data[16];
-    auto matrix = Placement.getValue().toMatrix();
-    matrix.getMatrix(data);
-    vtkTransform* transform = vtkTransform::New();
-    transform->SetMatrix(data);
-    m_transform_filter->SetTransform(transform);
 }
 
 FemPostObject::~FemPostObject() = default;
-
-vtkDataSet* FemPostObject::getDataSet()
-{
-
-    if (!Data.getValue()) {
-        return nullptr;
-    }
-
-    if (Data.getValue()->IsA("vtkDataSet")) {
-        return vtkDataSet::SafeDownCast(Data.getValue());
-    }
-
-    // we could be a composite dataset... hope that our subclasses handle this,
-    // as this should only be possible for input data (So FemPostPipeline)
-    return nullptr;
-}
 
 vtkBoundingBox FemPostObject::getBoundingBox()
 {
 
     vtkBoundingBox box;
-    vtkDataSet* dset = getDataSet();
+
+    vtkDataSet* dset = vtkDataSet::SafeDownCast(Data.getValue());
     if (dset) {
         box.AddBounds(dset->GetBounds());
     }
@@ -98,34 +71,13 @@ PyObject* FemPostObject::getPyObject()
     return Py::new_reference_to(PythonObject);
 }
 
-void FemPostObject::onChanged(const App::Property* prop)
-{
-    if (prop == &Placement) {
-        // we update the transform filter to match the placement!
-        double data[16];
-        auto matrix = Placement.getValue().toMatrix();
-        matrix.getMatrix(data);
-        vtkTransform* transform = vtkTransform::New();
-        transform->SetMatrix(data);
-        m_transform_filter->SetTransform(transform);
-        // note: no call to Update(), as we do not know the frame to use. has to happen
-        // in derived class
-
-        // placement would not recompute, as it is a "not touch" prop.
-        this->touch();
-    }
-
-    App::GeoFeature::onChanged(prop);
-}
-
 namespace
 {
 
 template<typename T>
 void femVTKWriter(const char* filename, const vtkSmartPointer<vtkDataObject>& dataObject)
 {
-    if (dataObject->IsA("vtkDataSet")
-        && vtkDataSet::SafeDownCast(dataObject)->GetNumberOfPoints() <= 0) {
+    if (vtkDataSet::SafeDownCast(dataObject)->GetNumberOfPoints() <= 0) {
         throw Base::ValueError("Empty data object");
     }
 
@@ -155,9 +107,6 @@ std::string vtkWriterExtension(const vtkSmartPointer<vtkDataObject>& dataObject)
         case VTK_UNIFORM_GRID:
             extension = "vti";
             break;
-        case VTK_MULTIBLOCK_DATA_SET:
-            extension = "vtm";
-            break;
         default:
             break;
     }
@@ -186,10 +135,5 @@ void FemPostObject::writeVTK(const char* filename) const
         name = name.append(".").append(extension);
     }
 
-    if (extension == "vtm") {
-        femVTKWriter<vtkXMLMultiBlockDataWriter>(name.c_str(), data);
-    }
-    else {
-        femVTKWriter<vtkXMLDataSetWriter>(name.c_str(), data);
-    }
+    femVTKWriter<vtkXMLDataSetWriter>(name.c_str(), data);
 }

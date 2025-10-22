@@ -158,11 +158,13 @@ public:
 
         verticalLayout->addWidget(rbAndroidScheme);
 
+
         gridLayout->addWidget(ActionGroup1, 0, 1, 1, 1);
 
         verticalSpacer = new QSpacerItem(20, 57, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         gridLayout->addItem(verticalSpacer, 1, 1, 1, 1);
+
 
         retranslateUi(MainWindow2);
 
@@ -244,6 +246,7 @@ public:
 
         verticalLayout_3->addWidget(line_2);
 
+
         verticalLayout->addLayout(verticalLayout_3);
 
         gridLayout_2 = new QGridLayout();
@@ -305,6 +308,7 @@ public:
 
         verticalLayout_4->addWidget(line);
 
+
         verticalLayout->addLayout(verticalLayout_4);
 
         verticalLayout_2 = new QVBoxLayout();
@@ -339,7 +343,9 @@ public:
 
         verticalLayout_2->addWidget(ActionLabel3);
 
+
         verticalLayout->addLayout(verticalLayout_2);
+
 
         retranslateUi(MainWindow);
     } // setupUi

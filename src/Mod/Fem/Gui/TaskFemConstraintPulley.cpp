@@ -25,7 +25,6 @@
 
 #ifndef _PreComp_
 #include <QMessageBox>
-#include <limits>
 #endif
 
 #include <Gui/Command.h>
@@ -77,15 +76,15 @@ TaskFemConstraintPulley::TaskFemConstraintPulley(ViewProviderFemConstraintPulley
 
     // Fill data into dialog elements
     ui->spinOtherDiameter->setMinimum(0);
-    ui->spinOtherDiameter->setMaximum(std::numeric_limits<float>::max());
+    ui->spinOtherDiameter->setMaximum(FLOAT_MAX);
     ui->spinOtherDiameter->setValue(otherdia);
     ui->spinCenterDistance->setMinimum(0);
-    ui->spinCenterDistance->setMaximum(std::numeric_limits<float>::max());
+    ui->spinCenterDistance->setMaximum(FLOAT_MAX);
     ui->spinCenterDistance->setValue(centerdist);
     ui->checkIsDriven->setChecked(isdriven);
-    ui->spinForce->setMinimum(-std::numeric_limits<float>::max());
+    ui->spinForce->setMinimum(-FLOAT_MAX);
     ui->spinTensionForce->setMinimum(0);
-    ui->spinTensionForce->setMaximum(std::numeric_limits<float>::max());
+    ui->spinTensionForce->setMaximum(FLOAT_MAX);
     ui->spinTensionForce->setValue(tensionforce);
 
     // Adjust ui

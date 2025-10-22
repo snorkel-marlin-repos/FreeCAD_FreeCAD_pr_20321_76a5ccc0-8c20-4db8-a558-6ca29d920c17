@@ -21,10 +21,17 @@ include_directories(
 
 include_directories(
     SYSTEM
+    ${Boost_INCLUDE_DIRS}
+    ${COIN3D_INCLUDE_DIRS}
+    ${ZLIB_INCLUDE_DIR}
+    ${OCC_INCLUDE_DIR}
+    ${PYCXX_INCLUDE_DIR}
+    ${Python3_INCLUDE_DIRS}
     ${SMESH_INCLUDE_DIR}
     ${VTK_INCLUDE_DIRS}
 )
 
+link_directories(${OCC_LIBRARY_DIR})
 link_directories(${SMESH_LIB_PATH})
 
 set(FemGui_LIBS
@@ -87,7 +94,6 @@ if(BUILD_FEM_VTK)
         CylinderWidget.ui
         PlaneWidget.ui
         SphereWidget.ui
-        TaskPostCalculator.ui
         TaskPostClip.ui
         TaskPostContours.ui
         TaskPostCut.ui
@@ -96,8 +102,6 @@ if(BUILD_FEM_VTK)
         TaskPostDisplay.ui
         TaskPostScalarClip.ui
         TaskPostWarpVector.ui
-        TaskPostFrames.ui
-        TaskPostBranch.ui
     )
 endif(BUILD_FEM_VTK)
 
@@ -282,7 +286,6 @@ if(BUILD_FEM_VTK)
         SphereWidget.ui
         TaskPostBoxes.h
         TaskPostBoxes.cpp
-        TaskPostCalculator.ui
         TaskPostClip.ui
         TaskPostContours.ui
         TaskPostCut.ui
@@ -337,8 +340,6 @@ if(BUILD_FEM_VTK)
         ViewProviderFemPostObject.cpp
         ViewProviderFemPostPipeline.h
         ViewProviderFemPostPipeline.cpp
-        ViewProviderFemPostBranchFilter.h
-        ViewProviderFemPostBranchFilter.cpp
         ViewProviderFemPostFunction.h
         ViewProviderFemPostFunction.cpp
         ViewProviderFemPostFilter.h
@@ -371,7 +372,6 @@ SET(FemGuiIcon_SVG
 SET(FemGuiSymbol_IV
     Resources/symbols/ConstraintContact.iv
     Resources/symbols/ConstraintDisplacement.iv
-    Resources/symbols/ConstraintElectricChargeDensity.iv
     Resources/symbols/ConstraintElectrostaticPotential.iv
     Resources/symbols/ConstraintCurrentDensity.iv
     Resources/symbols/ConstraintFixed.iv
@@ -408,7 +408,6 @@ SET(FemGuiPythonUI_SRCS
     Resources/ui/ConstraintSectionPrint.ui
     Resources/ui/CurrentDensity.ui
     Resources/ui/DlgSettingsNetgen.ui
-    Resources/ui/ElectricChargeDensity.ui
     Resources/ui/ElectrostaticPotential.ui
     Resources/ui/ElementFluid1D.ui
     Resources/ui/ElementGeometry1D.ui

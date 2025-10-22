@@ -49,7 +49,7 @@ QGIVertex::QGIVertex(int index) :
     setRadius(m_radius);
 }
 
-void QGIVertex::setRadius(double r)
+void QGIVertex::setRadius(float r)
 {
     m_radius = r;
     QPainterPath p;

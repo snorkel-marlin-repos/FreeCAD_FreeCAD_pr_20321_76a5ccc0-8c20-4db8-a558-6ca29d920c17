@@ -111,26 +111,13 @@ ViewProviderInspection::ViewProviderInspection()
 
 ViewProviderInspection::~ViewProviderInspection()
 {
-    try {
-        pcColorRoot->unref();
-        pcCoords->unref();
-        pcMatBinding->unref();
-        pcColorMat->unref();
-        pcLinkRoot->unref();
-        pcPointStyle->unref();
-        deleteColorBar();
-    }
-    catch (Base::Exception& e) {
-        Base::Console().DestructorError(
-            "ViewProviderInspection",
-            "ViewProviderInspection::deleteColorBar() threw an exception: %s\n",
-            e.what());
-    }
-    catch (...) {
-        Base::Console().DestructorError(
-            "ViewProviderInspection",
-            "ViewProviderInspection destructor threw an unknown exception");
-    }
+    pcColorRoot->unref();
+    pcCoords->unref();
+    pcMatBinding->unref();
+    pcColorMat->unref();
+    deleteColorBar();
+    pcLinkRoot->unref();
+    pcPointStyle->unref();
 }
 
 void ViewProviderInspection::onChanged(const App::Property* prop)

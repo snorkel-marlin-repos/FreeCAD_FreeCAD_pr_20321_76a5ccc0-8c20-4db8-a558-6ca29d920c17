@@ -462,6 +462,7 @@ public:
 
     QSize sizeHint() const;
     QSize minimumSizeHint() const;
+    bool event(QEvent* event);
 
 public Q_SLOTS:
     /// Sets the field with a quantity

@@ -132,20 +132,6 @@ def makeConstraintDisplacement(doc, name="ConstraintDisplacement"):
     return obj
 
 
-def makeConstraintElectricChargeDensity(doc, name="ElectricChargeDensity"):
-    """makeConstraintElectricChargeDensity(document, [name]):
-    makes a Fem ElectricChargeDensity object"""
-    obj = doc.addObject("Fem::ConstraintPython", name)
-    from femobjects import constraint_electricchargedensity
-
-    constraint_electricchargedensity.ConstraintElectricChargeDensity(obj)
-    if FreeCAD.GuiUp:
-        from femviewprovider import view_constraint_electricchargedensity
-
-        view_constraint_electricchargedensity.VPConstraintElectricChargeDensity(obj.ViewObject)
-    return obj
-
-
 def makeConstraintElectrostaticPotential(doc, name="ConstraintElectrostaticPotential"):
     """makeConstraintElectrostaticPotential(document, [name]):
     makes a Fem ElectrostaticPotential object"""
@@ -617,7 +603,10 @@ def makePostVtkFilterClipRegion(doc, base_vtk_result, name="VtkFilterClipRegion"
     """makePostVtkFilterClipRegion(document, base_vtk_result, [name]):
     creates a FEM post processing region clip filter object (vtk based)"""
     obj = doc.addObject("Fem::FemPostClipFilter", name)
-    base_vtk_result.addObject(obj)
+    tmp_filter_list = base_vtk_result.Filter
+    tmp_filter_list.append(obj)
+    base_vtk_result.Filter = tmp_filter_list
+    del tmp_filter_list
     return obj
 
 
@@ -625,7 +614,10 @@ def makePostVtkFilterClipScalar(doc, base_vtk_result, name="VtkFilterClipScalar"
     """makePostVtkFilterClipScalar(document, base_vtk_result, [name]):
     creates a FEM post processing scalar clip filter object (vtk based)"""
     obj = doc.addObject("Fem::FemPostScalarClipFilter", name)
-    base_vtk_result.addObject(obj)
+    tmp_filter_list = base_vtk_result.Filter
+    tmp_filter_list.append(obj)
+    base_vtk_result.Filter = tmp_filter_list
+    del tmp_filter_list
     return obj
 
 
@@ -633,7 +625,10 @@ def makePostVtkFilterCutFunction(doc, base_vtk_result, name="VtkFilterCutFunctio
     """makePostVtkFilterCutFunction(document, base_vtk_result, [name]):
     creates a FEM post processing cut function filter object (vtk based)"""
     obj = doc.addObject("Fem::FemPostClipFilter", name)
-    base_vtk_result.addObject(obj)
+    tmp_filter_list = base_vtk_result.Filter
+    tmp_filter_list.append(obj)
+    base_vtk_result.Filter = tmp_filter_list
+    del tmp_filter_list
     return obj
 
 
@@ -641,7 +636,10 @@ def makePostVtkFilterWarp(doc, base_vtk_result, name="VtkFilterWarp"):
     """makePostVtkFilterWarp(document, base_vtk_result, [name]):
     creates a FEM post processing warp filter object (vtk based)"""
     obj = doc.addObject("Fem::FemPostWarpVectorFilter", name)
-    base_vtk_result.addObject(obj)
+    tmp_filter_list = base_vtk_result.Filter
+    tmp_filter_list.append(obj)
+    base_vtk_result.Filter = tmp_filter_list
+    del tmp_filter_list
     return obj
 
 
@@ -649,20 +647,19 @@ def makePostVtkFilterContours(doc, base_vtk_result, name="VtkFilterContours"):
     """makePostVtkFilterContours(document, base_vtk_result, [name]):
     creates a FEM post processing contours filter object (vtk based)"""
     obj = doc.addObject("Fem::FemPostContoursFilter", name)
-    base_vtk_result.addObject(obj)
+    tmp_filter_list = base_vtk_result.Filter
+    tmp_filter_list.append(obj)
+    base_vtk_result.Filter = tmp_filter_list
+    del tmp_filter_list
     return obj
 
 
-def makePostVtkResult(doc, result_data, name="VtkResult"):
+def makePostVtkResult(doc, base_result, name="VtkResult"):
     """makePostVtkResult(document, base_result, [name]):
-    creates a FEM post processing result data (vtk based) to hold FEM results
-    Note: Result data get expanded, it can either be single result [result] or everything
-          needed for a multistep result: [results_list, value_list, unit, description]
-    """
-
+    creates a FEM post processing result object (vtk based) to hold FEM results"""
     Pipeline_Name = "Pipeline_" + name
     obj = doc.addObject("Fem::FemPostPipeline", Pipeline_Name)
-    obj.load(*result_data)
+    obj.load(base_result)
     if FreeCAD.GuiUp:
         obj.ViewObject.SelectionStyle = "BoundBox"
         # to assure the user sees something, set the default to Surface

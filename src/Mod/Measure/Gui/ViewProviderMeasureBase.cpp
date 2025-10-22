@@ -351,7 +351,8 @@ void ViewProviderMeasureBase::updateData(const App::Property* prop)
 
     // Check if one of the input properties has been changed
     auto inputProps = obj->getInputProps();
-    if (std::ranges::find(inputProps, std::string(prop->getName())) != inputProps.end()) {
+    if (std::find(inputProps.begin(), inputProps.end(), std::string(prop->getName()))
+        != inputProps.end()) {
         doUpdate = true;
 
         // Add connections to be notified when the measured objects are changed

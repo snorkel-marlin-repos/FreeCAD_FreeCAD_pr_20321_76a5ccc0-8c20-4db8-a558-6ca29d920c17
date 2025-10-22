@@ -40,7 +40,6 @@
 // STL
 #include <algorithm>
 #include <bitset>
-#include <limits>
 #include <list>
 #include <map>
 #include <queue>
@@ -82,7 +81,6 @@
 #include <QSlider>
 #include <QStackedWidget>
 #include <QString>
-#include <QStringList>
 #include <QTextCharFormat>
 #include <QTextStream>
 #include <QThread>

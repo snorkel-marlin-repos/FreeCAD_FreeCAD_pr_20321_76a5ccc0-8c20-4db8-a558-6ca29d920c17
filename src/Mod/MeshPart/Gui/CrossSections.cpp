@@ -22,7 +22,7 @@
 
 #include "PreCompiled.h"
 #ifndef _PreComp_
-#include <limits>
+#include <cfloat>
 #include <sstream>
 
 #include <BRepBuilderAPI_MakePolygon.hxx>
@@ -179,10 +179,9 @@ CrossSections::CrossSections(const Base::BoundBox3d& bb, QWidget* parent, Qt::Wi
     ui->setupUi(this);
     setupConnections();
 
-    constexpr double max = std::numeric_limits<double>::max();
-    ui->position->setRange(-max, max);
+    ui->position->setRange(-DBL_MAX, DBL_MAX);
     ui->position->setUnit(Base::Unit::Length);
-    ui->distance->setRange(0, max);
+    ui->distance->setRange(0, DBL_MAX);
     ui->distance->setUnit(Base::Unit::Length);
     ui->spinEpsilon->setMinimum(0.0001);
     vp = new ViewProviderCrossSections();

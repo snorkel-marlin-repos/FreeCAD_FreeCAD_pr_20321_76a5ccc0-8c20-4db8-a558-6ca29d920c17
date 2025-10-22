@@ -44,7 +44,7 @@ FilterOrigin::FilterOrigin() : FilterBase()
 bool FilterOrigin::goFilter(const Vertex &vertexIn, const Graph &graphIn, const GraphLinkContainer &linkIn) const
 {
   Base::Type originType = Base::Type::fromName("App::Origin");
-  assert (!originType.isBad());
+  assert (originType != Base::Type::badType());
   //if child of origin hide.
   InEdgeIterator it, itEnd;
   for (boost::tie(it, itEnd) = boost::in_edges(vertexIn, graphIn); it != itEnd; ++it)
@@ -72,7 +72,7 @@ bool FilterTyped::goFilter(const Gui::DAG::Vertex& vertexIn, const Graph& graphI
   if (type.empty())
     return false;
   Base::Type theType = Base::Type::fromName(type.c_str());
-  if (theType.isBad())
+  if (theType == Base::Type::badType())
     return false;
 
   const GraphLinkRecord &sourceRecord = findRecord(vertexIn, linkIn);

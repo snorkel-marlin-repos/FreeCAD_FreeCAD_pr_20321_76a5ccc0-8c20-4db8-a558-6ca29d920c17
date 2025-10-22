@@ -6,11 +6,8 @@ macro(SetupCoin3D)
         find_library(COIN3D_LIBRARIES Coin)
     endif ()
 
-    # Try CONFIG mode -- Coin supports very old CMake files, which emits noisy warnings. Silence them.
-    set(CMAKE_WARN_DEPRECATED_OLD_STATE ${CMAKE_WARN_DEPRECATED})
-    set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
+    # Try CONFIG mode
     find_package(Coin CONFIG)
-    set(CMAKE_WARN_DEPRECATED ${CMAKE_WARN_DEPRECATED_OLD_STATE} CACHE BOOL "" FORCE)
     if (Coin_FOUND)
         set(COIN3D_INCLUDE_DIRS ${Coin_INCLUDE_DIR})
         set(COIN3D_LIBRARIES ${Coin_LIBRARIES})

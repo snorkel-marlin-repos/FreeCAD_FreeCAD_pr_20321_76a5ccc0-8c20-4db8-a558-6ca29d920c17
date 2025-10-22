@@ -26,7 +26,6 @@
 
 #include <App/Application.h>
 #include "../App/DisplayedFilesModel.h"
-#include <algorithm>
 
 namespace StartGui
 {
@@ -62,12 +61,12 @@ int FileCardView::heightForWidth(int width) const
     }
     int numCards = model->rowCount();
     auto cardSize = delegate->sizeHint(QStyleOptionViewItem(), model->index(0, 0));
-    int cardsPerRow = std::max(1, static_cast<int>(width / (cardSize.width() + m_cardSpacing)));
+    int cardsPerRow = static_cast<int>(width / cardSize.width());
     int numRows =
         static_cast<int>(ceil(static_cast<double>(numCards) / static_cast<double>(cardsPerRow)));
     int neededHeight = numRows * cardSize.height();
-    constexpr int extra = 4;  // avoid tiny scrollbars
-    return neededHeight + m_cardSpacing * (numRows - 1) + 2 * m_cardSpacing + extra;
+
+    return neededHeight + m_cardSpacing * (numRows - 1) + 2 * m_cardSpacing;
 }
 
 QSize FileCardView::sizeHint() const

@@ -103,7 +103,7 @@ private:
                 endpoint = centerPoint + length * Base::Vector2d(cos(endAngle), sin(endAngle));
 
                 double angle1 = endAngle - startAngle;
-                double angle2 = angle1 + (angle1 < 0. ? 2 : -2) * std::numbers::pi;
+                double angle2 = angle1 + (angle1 < 0. ? 2 : -2) * M_PI;
                 totalAngle = abs(angle1 - totalAngle) < abs(angle2 - totalAngle) ? angle1 : angle2;
 
                 CreateAndDrawShapeGeometry();
@@ -408,11 +408,10 @@ private:
                             // the new geometry.
                             /*if (cstr->Type == DistanceX || cstr->Type == DistanceY) {
                                 //DistanceX/Y can be applied only if the rotation if 90 or 180.
-                                if (fabs(fmod(individualAngle, std::numbers::pi)) <
-                            Precision::Confusion()) {
+                                if (fabs(fmod(individualAngle, M_PI)) < Precision::Confusion()) {
                                     // ok and nothing to do actually
                                 }
-                                else if (fabs(fmod(individualAngle, std::numbers::pi * 0.5)) <
+                                else if (fabs(fmod(individualAngle, M_PI * 0.5)) <
                             Precision::Confusion()) { cstr->Type = cstr->Type == DistanceX ?
                             DistanceY : DistanceX;
                                 }
@@ -568,7 +567,7 @@ void DSHRotateControllerBase::doEnforceControlParameters(Base::Vector2d& onSketc
 
                 double arcAngle =
                     Base::toRadians(onViewParameters[OnViewParameter::Third]->getValue());
-                if (fmod(fabs(arcAngle), 2 * std::numbers::pi) < Precision::Confusion()) {
+                if (fmod(fabs(arcAngle), 2 * M_PI) < Precision::Confusion()) {
                     unsetOnViewParameter(onViewParameters[OnViewParameter::Third].get());
                     return;
                 }
@@ -581,7 +580,7 @@ void DSHRotateControllerBase::doEnforceControlParameters(Base::Vector2d& onSketc
 
                 double arcAngle =
                     Base::toRadians(onViewParameters[OnViewParameter::Fourth]->getValue());
-                if (fmod(fabs(arcAngle), 2 * std::numbers::pi) < Precision::Confusion()) {
+                if (fmod(fabs(arcAngle), 2 * M_PI) < Precision::Confusion()) {
                     unsetOnViewParameter(onViewParameters[OnViewParameter::Fourth].get());
                     return;
                 }

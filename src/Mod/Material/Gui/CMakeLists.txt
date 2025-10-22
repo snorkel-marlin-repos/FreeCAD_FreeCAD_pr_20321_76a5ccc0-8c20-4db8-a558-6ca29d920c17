@@ -11,6 +11,19 @@ include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
+include_directories(
+    SYSTEM
+    ${Boost_INCLUDE_DIRS}
+    ${COIN3D_INCLUDE_DIRS}
+    ${OCC_INCLUDE_DIR}
+    ${PYCXX_INCLUDE_DIR}
+    ${Python3_INCLUDE_DIRS}
+    ${XercesC_INCLUDE_DIRS}
+    ${ZIPIOS_INCLUDES}
+    ${ZLIB_INCLUDE_DIR}
+)
+link_directories(${OCC_LIBRARY_DIR})
+
 set(MatGui_LIBS
     Materials
     FreeCADGui
@@ -30,10 +43,10 @@ qt_find_and_add_translation(QM_SRCS "Resources/translations/*_*.ts"
 qt_create_resource_file(${Material_TR_QRC} ${QM_SRCS})
 qt_add_resources(MatGui_QRC_SRCS Resources/Material.qrc ${Material_TR_QRC})
 
-generate_from_py(MaterialTreeWidget)
+generate_from_xml(MaterialTreeWidgetPy)
 
 SET(Python_SRCS
-    MaterialTreeWidget.pyi
+    MaterialTreeWidgetPy.xml
     MaterialTreeWidgetPyImp.cpp
 )
 SOURCE_GROUP("Python" FILES ${Python_SRCS})

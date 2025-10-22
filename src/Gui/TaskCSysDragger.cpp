@@ -264,7 +264,7 @@ void TaskTransform::setupGui()
         connect(rotationSpinBox,
                 qOverload<double>(&QuantitySpinBox::valueChanged),
                 this,
-                [this,rotationSpinBox](double) {
+                [=](double) {
                     onRotationChange(rotationSpinBox);
                 });
     }

@@ -37,6 +37,7 @@
 #include <XCAFDoc_DocumentTool.hxx>
 #include <XCAFDoc_Location.hxx>
 #include <XCAFDoc_ShapeTool.hxx>
+#include <climits>
 #include <sstream>
 #endif
 

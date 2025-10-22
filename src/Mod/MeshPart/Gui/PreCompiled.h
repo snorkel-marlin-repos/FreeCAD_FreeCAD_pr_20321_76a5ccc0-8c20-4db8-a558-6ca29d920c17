@@ -34,6 +34,7 @@
 #ifdef _PreComp_
 
 // STL
+#include <cfloat>
 #include <sstream>
 
 // Qt Toolkit

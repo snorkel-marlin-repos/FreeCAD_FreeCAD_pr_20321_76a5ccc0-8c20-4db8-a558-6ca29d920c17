@@ -484,7 +484,7 @@ public:
      */
     bool hasSubSelection(const char *doc=nullptr, bool subElement=false) const;
 
-    /// Check if there is any preselection
+    /// Check if there is any pre-selection
     bool hasPreselection() const;
 
     /// Size of selected entities for all documents

@@ -24,7 +24,6 @@
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
-#include <limits>
 #include <Adaptor3d_IsoCurve.hxx>
 #include <BRepAdaptor_CompCurve.hxx>
 #include <BRepAdaptor_Curve.hxx>
@@ -76,10 +75,7 @@ using Adaptor3d_HSurface = Adaptor3d_Surface;
 using BRepAdaptor_HSurface = BRepAdaptor_Surface;
 #endif
 
-static const App::PropertyFloatConstraint::Constraints scaleConstraint = {
-    0.0,
-    std::numeric_limits<double>::max(),
-    0.1};
+static const App::PropertyFloatConstraint::Constraints scaleConstraint = {0.0, DBL_MAX, 0.1};
 
 PROPERTY_SOURCE(Fem::Constraint, App::DocumentObject)
 
@@ -201,13 +197,14 @@ void Constraint::onChanged(const App::Property* prop)
     App::DocumentObject::onChanged(prop);
 }
 
-void Constraint::slotChangedObject(const App::DocumentObject& Obj, const App::Property& Prop)
+void Constraint::slotChangedObject(const App::DocumentObject& obj, const App::Property& prop)
 {
-    if (Obj.isDerivedFrom<App::GeoFeature>()
-        && (Prop.isDerivedFrom<App::PropertyPlacement>() || Obj.isRemoving())) {
-        for (const auto ref : References.getValues()) {
+    if (obj.isDerivedFrom<App::GeoFeature>()
+        && (prop.isDerivedFrom<App::PropertyPlacement>() || obj.isRemoving())) {
+        auto values = References.getValues();
+        for (const auto ref : values) {
             auto v = ref->getInListEx(true);
-            if ((&Obj == ref) || (std::ranges::find(v, &Obj) != v.end())) {
+            if ((&obj == ref) || (std::find(v.begin(), v.end(), &obj) != v.end())) {
                 this->touch();
                 return;
             }

@@ -25,7 +25,6 @@ SET(TestData_SRCS
     TestData/bad_xml.xml
     TestData/bad_version.xml
     TestData/content_items.xml
-    TestData/DXFSample.dxf
 )
 
 SOURCE_GROUP("" FILES ${Test_SRCS} ${TestData_SRCS})

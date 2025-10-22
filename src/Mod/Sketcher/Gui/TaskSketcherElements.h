@@ -125,8 +125,6 @@ public:
     /// Observer message from the Selection
     void onSelectionChanged(const Gui::SelectionChanges& msg) override;
 
-    bool hasInputWidgetFocused();
-
 private:
     void slotElementsChanged();
     void updateVisibility();

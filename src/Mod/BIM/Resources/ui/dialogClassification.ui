@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>bimDialogClassification</class>
+ <class>Dialog</class>
  <widget class="QDialog" name="bimDialogClassification">
   <property name="geometry">
    <rect>
@@ -69,7 +69,8 @@
             </property>
             <property name="icon">
              <iconset theme="format-text-direction-ltr">
-              <normaloff>.</normaloff>.</iconset>
+              <normaloff/>
+             </iconset>
             </property>
            </item>
            <item>
@@ -78,7 +79,8 @@
             </property>
             <property name="icon">
              <iconset theme="application-drawing">
-              <normaloff>.</normaloff>.</iconset>
+              <normaloff/>
+             </iconset>
             </property>
            </item>
            <item>
@@ -173,7 +175,7 @@
             </size>
            </property>
            <property name="toolTip">
-            <string>Apply the selected class to selected objects</string>
+            <string>Apply the selected class to selected materials</string>
            </property>
            <property name="text">
             <string>&lt;&lt; Apply to selected</string>
@@ -183,7 +185,7 @@
          <item>
           <widget class="QPushButton" name="buttonRename">
            <property name="toolTip">
-            <string>Use this class as object name</string>
+            <string>Use this class as material name</string>
            </property>
            <property name="text">
             <string>&lt;&lt; Set as name</string>
@@ -195,7 +197,7 @@
        <item>
         <widget class="QCheckBox" name="checkPrefix">
          <property name="text">
-          <string>Prefix with classification system name</string>
+          <string>Prefix with class name when applying</string>
          </property>
          <property name="checked">
           <bool>true</bool>
@@ -230,22 +232,44 @@
     </widget>
    </item>
   </layout>
+  <zorder>labelDownload</zorder>
+  <zorder>buttonBox</zorder>
+  <zorder>groupMaterials</zorder>
+  <zorder>groupClasses</zorder>
+  <zorder>groupMaterials</zorder>
+  <zorder>groupClasses</zorder>
  </widget>
  <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>Dialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>bimDialogClassification</receiver>
+   <receiver>Dialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>503</x>
-     <y>496</y>
+     <x>316</x>
+     <y>260</y>
     </hint>
     <hint type="destinationlabel">
-     <x>547</x>
-     <y>-18</y>
+     <x>286</x>
+     <y>274</y>
     </hint>
    </hints>
   </connection>

@@ -50,6 +50,8 @@
 #include <fcntl.h>
 #include <cctype>
 #include <typeinfo>
+#include <cfloat>
+#include <climits>
 
 #ifdef FC_OS_WIN32
 #include <Windows.h>
@@ -65,10 +67,8 @@
 #include <algorithm>
 #include <atomic>
 #include <bitset>
-#include <limits>
 #include <list>
 #include <map>
-#include <numbers>
 #include <queue>
 #include <random>
 #include <set>

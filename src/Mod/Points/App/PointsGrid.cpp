@@ -808,7 +808,7 @@ bool PointsGridIterator::InitOnRay(const Base::Vector3d& rclPt,
     // needed in NextOnRay() to avoid an infinite loop
     _cSearchPositions.clear();
 
-    _fMaxSearchArea = std::numeric_limits<float>::max();
+    _fMaxSearchArea = FLOAT_MAX;
 
     raulElements.clear();
 

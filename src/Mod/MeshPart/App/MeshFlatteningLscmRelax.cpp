@@ -26,9 +26,12 @@
 #include <cmath>
 #include <iostream>
 #include <map>
-#include <numbers>
 #include <set>
 #include <vector>
+#endif
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846f
 #endif
 
 #include <Eigen/SparseCholesky>
@@ -646,7 +649,7 @@ void LscmRelax::rotate_by_min_bound_area()
     // rotate vector by 90 degree and find min area
     for (int i = 0; i < n + 1; i++ )
     {
-        phi = i * std::numbers::pi / n;
+        phi = i * M_PI / n;
         Eigen::VectorXd x_proj = this->flat_vertices.transpose() * Vector2(std::cos(phi), std::sin(phi));
         Eigen::VectorXd y_proj = this->flat_vertices.transpose() * Vector2(-std::sin(phi), std::cos(phi));
         double x_distance = x_proj.maxCoeff() - x_proj.minCoeff();
@@ -660,7 +663,7 @@ void LscmRelax::rotate_by_min_bound_area()
         }
     }
     Eigen::Matrix<double, 2, 2> rot;
-    min_phi += x_dominant * std::numbers::pi / 2;
+    min_phi += x_dominant * M_PI / 2;
     rot << std::cos(min_phi), std::sin(min_phi), -std::sin(min_phi), std::cos(min_phi);
     this->flat_vertices = rot * this->flat_vertices;
 }

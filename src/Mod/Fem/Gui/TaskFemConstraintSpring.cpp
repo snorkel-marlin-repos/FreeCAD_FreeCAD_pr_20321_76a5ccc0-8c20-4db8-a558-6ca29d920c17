@@ -26,7 +26,6 @@
 #ifndef _PreComp_
 #include <QAction>
 #include <QMessageBox>
-#include <limits>
 #include <sstream>
 #endif
 
@@ -77,11 +76,11 @@ TaskFemConstraintSpring::TaskFemConstraintSpring(ViewProviderFemConstraintSpring
 
     // Fill data into dialog elements
     ui->qsb_norm->setUnit(pcConstraint->NormalStiffness.getUnit());
-    ui->qsb_norm->setMaximum(std::numeric_limits<float>::max());
+    ui->qsb_norm->setMaximum(FLOAT_MAX);
     ui->qsb_norm->setValue(pcConstraint->NormalStiffness.getQuantityValue());
 
     ui->qsb_tan->setUnit(pcConstraint->TangentialStiffness.getUnit());
-    ui->qsb_tan->setMaximum(std::numeric_limits<float>::max());
+    ui->qsb_tan->setMaximum(FLOAT_MAX);
     ui->qsb_tan->setValue(pcConstraint->TangentialStiffness.getQuantityValue());
 
     ui->cb_elmer_stiffness->clear();
@@ -148,7 +147,9 @@ void TaskFemConstraintSpring::addToSelection()
                 QMessageBox::warning(this, tr("Selection error"), tr("Only faces can be picked"));
                 return;
             }
-            for (auto itr = std::ranges::find(SubElements, subName); itr != SubElements.end();
+            for (std::vector<std::string>::iterator itr =
+                     std::find(SubElements.begin(), SubElements.end(), subName);
+                 itr != SubElements.end();
                  itr = std::find(++itr,
                                  SubElements.end(),
                                  subName)) {  // for every sub element in selection that
@@ -195,7 +196,9 @@ void TaskFemConstraintSpring::removeFromSelection()
         const App::DocumentObject* obj = it.getObject();
 
         for (const auto& subName : subNames) {  // for every selected sub element
-            for (auto itr = std::ranges::find(SubElements, subName); itr != SubElements.end();
+            for (std::vector<std::string>::iterator itr =
+                     std::find(SubElements.begin(), SubElements.end(), subName);
+                 itr != SubElements.end();
                  itr = std::find(++itr,
                                  SubElements.end(),
                                  subName)) {  // for every sub element in selection that

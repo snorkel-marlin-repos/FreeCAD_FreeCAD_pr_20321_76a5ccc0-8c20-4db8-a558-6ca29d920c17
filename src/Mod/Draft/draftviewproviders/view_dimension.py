@@ -376,7 +376,7 @@ class ViewProviderLinearDimension(ViewProviderDimensionBase):
         vobj = obj.ViewObject
 
         if prop == "Diameter":
-            if getattr(vobj, "Override", False):
+            if hasattr(vobj, "Override") and vobj.Override:
                 if obj.Diameter:
                     vobj.Override = vobj.Override.replace("R $dim", "Ø $dim")
                 else:
@@ -503,7 +503,7 @@ class ViewProviderLinearDimension(ViewProviderDimensionBase):
         else:
             self.trot = (0, 0, 0, 1)
 
-        if getattr(vobj, "FlipArrows", False):
+        if hasattr(vobj, "FlipArrows") and vobj.FlipArrows:
             u = u.negative()
 
         v2 = norm.cross(u)
@@ -535,7 +535,7 @@ class ViewProviderLinearDimension(ViewProviderDimensionBase):
         else:
             offset = DraftVecUtils.scaleTo(v1, 0.05)
 
-        if getattr(vobj, "FlipText", False):
+        if hasattr(vobj, "FlipText") and vobj.FlipText:
             _rott = App.Rotation(self.trot[0], self.trot[1], self.trot[2], self.trot[3])
             self.trot = _rott.multiply(App.Rotation(App.Vector(0, 0, 1), 180)).Q
             offset = offset.negative()
@@ -602,7 +602,7 @@ class ViewProviderLinearDimension(ViewProviderDimensionBase):
                                                  None,
                                                  'Length', show_unit, unit)
 
-        if getattr(vobj, "Override", False):
+        if hasattr(vobj, "Override") and vobj.Override:
             self.string = vobj.Override.replace("$dim", self.string)
 
         self.text_wld.string = utils.string_encode_coin(self.string)
@@ -723,6 +723,11 @@ class ViewProviderLinearDimension(ViewProviderDimensionBase):
         if not hasattr(vobj, "ArrowType"):
             return
 
+        if self.p3.x < self.p2.x:
+            inv = False
+        else:
+            inv = True
+
         # Set scale
         symbol = utils.ARROW_TYPES.index(vobj.ArrowType)
         s = vobj.ArrowSize.Value * vobj.ScaleMultiplier
@@ -740,7 +745,7 @@ class ViewProviderLinearDimension(ViewProviderDimensionBase):
             else:
                 s1.addChild(self.trans1)
 
-            s1.addChild(gui_utils.dim_symbol(symbol, invert=False))
+            s1.addChild(gui_utils.dim_symbol(symbol, invert=not inv))
             self.marks.addChild(s1)
 
         s2 = coin.SoSeparator()
@@ -749,7 +754,7 @@ class ViewProviderLinearDimension(ViewProviderDimensionBase):
         else:
             s2.addChild(self.trans2)
 
-        s2.addChild(gui_utils.dim_symbol(symbol, invert=True))
+        s2.addChild(gui_utils.dim_symbol(symbol, invert=inv))
         self.marks.addChild(s2)
 
         self.node_wld.insertChild(self.marks, 2)
@@ -930,7 +935,7 @@ class ViewProviderAngularDimension(ViewProviderDimensionBase):
                                       obj.LastAngle.Value)
         self.p2 = self.circle.Vertexes[0].Point
         self.p3 = self.circle.Vertexes[-1].Point
-        midp = DraftGeomUtils.findMidpoint(self.circle)
+        midp = DraftGeomUtils.findMidpoint(self.circle.Edges[0])
         ray = midp - obj.Center
 
         # Set text value
@@ -1080,15 +1085,11 @@ class ViewProviderAngularDimension(ViewProviderDimensionBase):
         r = App.Placement(_plane_rot_3).Rotation
         offset = r.multVec(App.Vector(0, 1, 0))
 
-        if hasattr(vobj, "TextSpacing") and hasattr(vobj, "ScaleMultiplier"):
-            ts = vobj.TextSpacing.Value * vobj.ScaleMultiplier
-            offset = DraftVecUtils.scaleTo(offset, ts)
+        if hasattr(vobj, "TextSpacing"):
+            offset = DraftVecUtils.scaleTo(offset,
+                                           vobj.TextSpacing.Value)
         else:
             offset = DraftVecUtils.scaleTo(offset, 0.05)
-
-        if getattr(vobj, "FlipText", False):
-            r = r.multiply(App.Rotation(App.Vector(0, 0, 1), 180))
-            offset = offset.negative()
 
         if m == "Screen":
             offset = offset.negative()

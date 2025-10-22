@@ -15,93 +15,89 @@
 
 namespace QSint
 {
+
+
 class ActionPanelScheme;
 class ActionGroup;
 
+
 /**
- * @brief Provides a panel of actions, similar to Windows XP task panels.
- *
- * An ActionPanel contains ActionGroups, which in turn contain actions (represented by ActionLabels).
- */
+    \brief Class representing panels of actions similar to Windows XP task panels.
+    \since 0.2
+
+    \image html ActionPanel1.png An example of ActionPanel
+
+    ActionPanel acts like a container for ActionGroup which in turn are containers for
+    the actions represented by ActionLabel.
+
+    The look and fill is complete styleable via setScheme().
+    Currently the following schemes available: ActionPanelScheme (the default),
+    WinXPPanelScheme and WinXPPanelScheme2 (blue Windows XP schemes),
+    WinVistaPanelScheme (Windows Vista variation), MacPanelScheme (MacOS variation),
+    AndroidPanelScheme (Android variation).
+*/
 class QSINT_EXPORT ActionPanel : public QFrame
 {
-    using BaseClass = QFrame;
+    typedef QFrame BaseClass;
 
     Q_OBJECT
 
 public:
-    /**
-     * @brief Constructs an ActionPanel.
-     * @param parent The parent widget.
-     */
+    /** Constructor.
+      */
     explicit ActionPanel(QWidget *parent = nullptr);
 
-    /**
-     * @brief Adds a widget to the ActionPanel.
-     * @param w The widget to add.
-     */
+    /** Adds a widget \a w to the ActionPanel's vertical layout.
+      */
     void addWidget(QWidget *w);
 
-    /**
-     * @brief Removes a widget from the ActionPanel.
-     * @param w The widget to remove.
-     */
+    /** Removes the widget \a w from the ActionPanel's vertical layout.
+      */
     void removeWidget(QWidget *w);
 
-    /**
-     * @brief Adds a spacer to bottom of the ActionPanel.
-     * @param s The width of the spacer..
-     */
+    /** Adds a spacer with width \a s to the ActionPanel's vertical layout.
+        Normally you should do this after all the ActionGroups were added, in order to
+        maintain some space below.
+      */
     void addStretch(int s = 0);
 
-    /**
-     * @brief Removes the spacer from the ActionPanel  (if one was added).
-     */
+    /** Removes the spacer -- if added -- from the ActionPanel's vertical layout.
+      */
     void removeStretch();
 
-    /**
-     * @brief Creates and adds an empty ActionGroup (without a header) to the panel.
-     * @return The newly created ActionGroup.
-     */
+    /** Creates and adds to the ActionPanel's vertical layout an empty ActionGroup without header.
+      */
     ActionGroup* createGroup();
 
-    /**
-     * @brief Creates and adds an ActionGroup (with a header) to the panel.
-     * @param title The title of the group's header.
-     * @param expandable If `true` (default), the group can be expanded/collapsed.
-     * @return The newly created ActionGroup.
-     */
+    /** Creates and adds to the ActionPanel's vertical layout an empty ActionGroup with header's
+        text set to \a title, but with no icon.
+
+        If \a expandable set to \a true (default), the group can be expanded/collapsed by the user.
+      */
     ActionGroup* createGroup(const QString &title, bool expandable = true);
 
-    /**
-     * @brief Creates and adds an ActionGroup (with a header) to the panel.
-     * @param icon The icon for the group's header.
-     * @param title The title of the group's header.
-     * @param expandable If `true` (default), the group can be expanded/collapsed.
-     * @return The newly created ActionGroup.
-     */
+    /** Creates and adds to the ActionPanel's vertical layout an empty ActionGroup with header's
+        text set to \a title and icon set to \a icon.
+
+        If \a expandable set to \a true (default), the group can be expanded/collapsed by the user.
+      */
     ActionGroup* createGroup(const QPixmap &icon, const QString &title, bool expandable = true);
 
-    /**
-     * @brief Sets the color scheme for the panel and its child groups.
-     * @param scheme The new scheme to use.  Defaults to `ActionPanelScheme::defaultScheme()`
-     *               if not set.
-     */
+    /** Sets the scheme of the panel and all the child groups to \a scheme.
+
+        By default, ActionPanelScheme::defaultScheme() is used.
+      */
     void setScheme(ActionPanelScheme *scheme);
 
-    /**
-     * @brief Returns the recommended minimum size for the panel.
-     * @return The minimum size hint.
-     */
     QSize minimumSizeHint() const override;
 
 protected:
-    /** @brief The color scheme used by the panel. */
-    ActionPanelScheme *myScheme;
+    //virtual void paintEvent ( QPaintEvent * event );
 
-    /** @brief The spacer used for bottom spacing. */
+    ActionPanelScheme *myScheme;
     QSpacerItem *mySpacer;
 };
+
 
 } // namespace
 

@@ -40,7 +40,6 @@
 
 #include <Mod/Part/App/PartFeature.h>
 #include <Mod/Part/App/TopoShape.h>
-#include <Mod/Part/App/DatumFeature.h>
 
 #include <Mod/Measure/App/Measurement.h>
 
@@ -134,8 +133,8 @@ bool QuickMeasure::shouldMeasure(const Gui::SelectionChanges& msg) const
 
 bool QuickMeasure::isObjAcceptable(App::DocumentObject* obj)
 {
-    // only measure shapes. Exclude datums that derive from Part::Feature
-    if (obj && obj->isDerivedFrom<Part::Feature>() && !obj->isDerivedFrom<Part::Datum>()) {
+    // only measure shapes
+    if (obj && obj->isDerivedFrom<Part::Feature>()) {
         return true;
     }
 

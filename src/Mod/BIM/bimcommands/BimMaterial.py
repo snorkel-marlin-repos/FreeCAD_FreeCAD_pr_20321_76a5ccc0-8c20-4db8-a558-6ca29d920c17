@@ -121,18 +121,13 @@ class BIM_Material:
             buttonClear.clicked.connect(self.onClearSearch)
             lay.addLayout(searchLayout)
 
-            createButtonsLayoutBox = QtGui.QGroupBox(
-                translate("BIM", " Material operations"), self.dlg
-            )
-            createButtonsLayoutBox.setObjectName("matOpsGrpBox")
-            createButtonsLayout = QtGui.QGridLayout()
-
             # create
+            createLayout = QtGui.QHBoxLayout()
             buttonCreate = QtGui.QPushButton(
                 translate("BIM", "Create new material"), self.dlg
             )
             buttonCreate.setIcon(QtGui.QIcon(":/icons/Arch_Material.svg"))
-            createButtonsLayout.addWidget(buttonCreate, 0, 0)
+            createLayout.addWidget(buttonCreate)
             buttonCreate.clicked.connect(self.onCreate)
 
             # create multi
@@ -140,8 +135,9 @@ class BIM_Material:
                 translate("BIM", "Create new multi-material"), self.dlg
             )
             buttonMulti.setIcon(QtGui.QIcon(":/icons/Arch_Material_Multi.svg"))
-            createButtonsLayout.addWidget(buttonMulti, 0, 1)
+            createLayout.addWidget(buttonMulti)
             buttonMulti.clicked.connect(self.onMulti)
+            lay.addLayout(createLayout)
 
             # merge dupes
             opsLayout = QtGui.QHBoxLayout()
@@ -149,22 +145,17 @@ class BIM_Material:
                 translate("BIM", "Merge duplicates"), self.dlg
             )
             buttonMergeDupes.setIcon(QtGui.QIcon(":/icons/view-refresh.svg"))
-            createButtonsLayout.addWidget(buttonMergeDupes, 1, 0)
-            self.dlg.buttonMergeDupes = buttonMergeDupes
+            opsLayout.addWidget(buttonMergeDupes)
             buttonMergeDupes.clicked.connect(self.onMergeDupes)
-            if len(self.dlg.materials) < 2:
-                buttonMergeDupes.setEnabled(False)
 
             # delete unused
             buttonDeleteUnused = QtGui.QPushButton(
                 translate("BIM", "Delete unused"), self.dlg
             )
             buttonDeleteUnused.setIcon(QtGui.QIcon(":/icons/delete.svg"))
-            createButtonsLayout.addWidget(buttonDeleteUnused, 1, 1)
+            opsLayout.addWidget(buttonDeleteUnused)
             buttonDeleteUnused.clicked.connect(self.onDeleteUnused)
-
-            createButtonsLayoutBox.setLayout(createButtonsLayout)
-            lay.addWidget(createButtonsLayoutBox)
+            lay.addLayout(opsLayout)
 
             # add standard buttons
             buttonBox = QtGui.QDialogButtonBox(self.dlg)
@@ -211,15 +202,20 @@ class BIM_Material:
             first = True
             for mat in self.dlg.materials:
                 orig = None
-                if (
-                    mat.Label[-1].isdigit()
-                    and mat.Label[-2].isdigit()
-                    and mat.Label[-3].isdigit()
-                ):
-                    for om in self.dlg.materials:
-                        if om.Label == mat.Label[:-3].strip():
-                            orig = om
-                            break
+                for om in mats:
+                    if om.Label == mat.Label:
+                        orig = om
+                        break
+                else:
+                    if (
+                        mat.Label[-1].isdigit()
+                        and mat.Label[-2].isdigit()
+                        and mat.Label[-3].isdigit()
+                    ):
+                        for om in self.dlg.materials:
+                            if om.Label == mat.Label[:-3].strip():
+                                orig = om
+                                break
                 if orig:
                     for par in mat.InList:
                         for prop in par.PropertiesList:
@@ -520,9 +516,6 @@ class BIM_Material:
                     i.setFlags(i.flags() | QtCore.Qt.ItemIsEditable)
                     if o.Name == name:
                         self.dlg.matList.setCurrentItem(i)
-            if hasattr(self.dlg, "buttonMergeDupes"):
-                hasMultipleMaterials = len(self.dlg.materials) > 1
-                self.dlg.buttonMergeDupes.setEnabled(hasMultipleMaterials)
 
     def createIcon(self, obj):
         from PySide import QtCore, QtGui

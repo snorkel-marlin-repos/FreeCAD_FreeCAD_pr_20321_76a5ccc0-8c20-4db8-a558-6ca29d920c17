@@ -7,12 +7,21 @@ include_directories(
 
 include_directories(
     SYSTEM
+    ${Boost_INCLUDE_DIRS}
+    ${OCC_INCLUDE_DIR}
+    ${QT_INCLUDE_DIR}
+    ${ZIPIOS_INCLUDES}
+    ${ZLIB_INCLUDE_DIR}
+    ${PYCXX_INCLUDE_DIR}
+    ${Python3_INCLUDE_DIRS}
+    ${XercesC_INCLUDE_DIRS}
+    ${QT_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/src/3rdParty/json/single_include/nlohmann/
 )
 link_directories(${OCC_LIBRARY_DIR})
 
-generate_from_py(Body)
-generate_from_py(Feature)
+generate_from_xml(BodyPy)
+generate_from_xml(FeaturePy)
 
 
 set(PartDesign_LIBS
@@ -123,9 +132,9 @@ SOURCE_GROUP("Module" FILES ${Module_SRCS})
 
 
 SET(Python_SRCS
-    Body.pyi
+    BodyPy.xml
     BodyPyImp.cpp
-    Feature.pyi
+    FeaturePy.xml
     FeaturePyImp.cpp
 )
 SOURCE_GROUP("Python" FILES ${Python_SRCS})

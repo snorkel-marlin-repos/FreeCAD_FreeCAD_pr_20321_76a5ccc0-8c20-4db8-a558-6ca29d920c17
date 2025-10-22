@@ -491,9 +491,9 @@ protected:
                 executeCommands();
 
                 if (sugConstraints.size() > 0) {
-                    beforeCreateAutoConstraints();
-
                     generateAutoConstraints();
+
+                    beforeCreateAutoConstraints();
 
                     createAutoConstraints();
                 }
@@ -988,20 +988,13 @@ protected:
             // redundants anymore
         }
 
-        // This can happen if OVP generated constraints and autoconstraints are conflicting
-        // For instance : https://github.com/FreeCAD/FreeCAD/issues/17722
+        // This is an awful situation. It should not be possible if the DSH works properly. It is
+        // just a safeguard.
         if (sketchobject->getLastHasConflicts()) {
-            auto lastsketchconstraintindex = sketchobject->Constraints.getSize() - 1;
-
-            auto conflicting = sketchobject->getLastConflicting();
-
-            for (int index = conflicting.size() - 1; index >= 0; index--) {
-                int conflictingIndex = conflicting[index] - 1;
-                if (conflictingIndex > lastsketchconstraintindex) {
-                    int removeindex = conflictingIndex - lastsketchconstraintindex - 1;
-                    AutoConstraints.erase(std::next(AutoConstraints.begin(), removeindex));
-                }
-            }
+            THROWM(Base::RuntimeError,
+                   QT_TRANSLATE_NOOP(
+                       "Notifications",
+                       "Autoconstraints cause conflicting constraints - Please report!") "\n");
         }
     }
 

@@ -27,7 +27,6 @@
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
-#include <limits>
 #include <BRepAlgo_NormalProjection.hxx>
 #include <BRepBndLib.hxx>
 #include <BRepBuilderAPI_Copy.hxx>
@@ -97,7 +96,7 @@ gp_Ax2 ShapeUtils::getViewAxis(const Base::Vector3d origin, const Base::Vector3d
         cross = cross.Cross(stdZ);
     }
 
-    if (cross.IsEqual(stdOrg, std::numeric_limits<float>::epsilon())) {
+    if (cross.IsEqual(stdOrg, FLT_EPSILON)) {
         viewAxis = gp_Ax2(inputCenter, gp_Dir(direction.x, direction.y, direction.z));
         return viewAxis;
     }
@@ -143,7 +142,7 @@ gp_Ax2 ShapeUtils::legacyViewAxis1(const Base::Vector3d origin, const Base::Vect
         cross = cross.Cross(stdZ);
     }
 
-    if (cross.IsEqual(stdOrg, std::numeric_limits<float>::epsilon())) {
+    if (cross.IsEqual(stdOrg, FLT_EPSILON)) {
         return gp_Ax2(inputCenter, gp_Dir(flipDirection.x, flipDirection.y, flipDirection.z));
     }
 
@@ -274,7 +273,7 @@ TopoDS_Shape ShapeUtils::rotateShape(const TopoDS_Shape& input, const gp_Ax2& vi
     }
 
     gp_Ax1 rotAxis = viewAxis.Axis();
-    double rotation = rotAngle * std::numbers::pi / 180.0;
+    double rotation = rotAngle * M_PI / 180.0;
 
     try {
         gp_Trsf tempTransform;
@@ -400,8 +399,8 @@ std::pair<Base::Vector3d, Base::Vector3d> ShapeUtils::getEdgeEnds(TopoDS_Edge ed
     gp_Pnt gpFirst = BRep_Tool::Pnt(tvFirst);
     gp_Pnt gpLast = BRep_Tool::Pnt(tvLast);
 
-    result.first = Base::convertTo<Base::Vector3d>(gpFirst);
-    result.second = Base::convertTo<Base::Vector3d>(gpLast);
+    result.first = DU::toVector3d(gpFirst);
+    result.second = DU::toVector3d(gpLast);
     return result;
 }
 

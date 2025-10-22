@@ -135,16 +135,6 @@ void EditModeGeometryCoinManager::updateGeometryColor(const GeoListFacade& geoli
         return false;
     };
 
-    auto isExternalDefiningGeomPoint = [&geolistfacade](int GeoId) {
-        auto geom = geolistfacade.getGeometryFacadeFromGeoId(GeoId);
-        if (geom) {
-            auto egf = ExternalGeometryFacade::getFacade(geom->clone());
-            auto ref = egf->getRef();
-            return egf->testFlag(ExternalGeometryExtension::Defining);
-        }
-        return false;
-    };
-
     auto isCoincident = [&](int GeoId, Sketcher::PointPos PosId) {
         const std::vector<Sketcher::Constraint*>& constraints =
             ViewProviderSketchCoinAttorney::getConstraints(viewProvider);
@@ -212,9 +202,7 @@ void EditModeGeometryCoinManager::updateGeometryColor(const GeoListFacade& geoli
                     pcolor[i] = drawingParameters.ConstrIcoColor;
                 }
                 else {
-                    pcolor[i] = isExternalDefiningGeomPoint(GeoId)
-                        ? drawingParameters.CurveExternalDefiningColor
-                        : drawingParameters.CurveExternalColor;
+                    pcolor[i] = drawingParameters.CurveExternalColor;
                 }
             }
             else if (issketchinvalid) {
@@ -435,9 +423,7 @@ void EditModeGeometryCoinManager::updateGeometryColor(const GeoListFacade& geoli
                         color[i] = drawingParameters.InvalidSketchColor;
                     }
                     else {
-                        color[i] = egf->testFlag(ExternalGeometryExtension::Defining)
-                            ? drawingParameters.CurveExternalDefiningColor
-                            : drawingParameters.CurveExternalColor;
+                        color[i] = drawingParameters.CurveExternalColor;
                     }
                     for (int k = j; j < k + indexes; j++) {
                         verts[j].getValue(x, y, z);
@@ -656,15 +642,6 @@ void EditModeGeometryCoinManager::createEditModeCurveInventorNodes()
         drawingParameters.ExternalPattern;
     editModeScenegraphNodes.CurvesExternalDrawStyle->linePatternScaleFactor = 2;
 
-    editModeScenegraphNodes.CurvesExternalDefiningDrawStyle = new SoDrawStyle;
-    editModeScenegraphNodes.CurvesExternalDefiningDrawStyle->setName(
-        "CurvesExternalDefiningDrawStyle");
-    editModeScenegraphNodes.CurvesExternalDefiningDrawStyle->lineWidth =
-        drawingParameters.ExternalDefiningWidth * drawingParameters.pixelScalingFactor;
-    editModeScenegraphNodes.CurvesExternalDefiningDrawStyle->linePattern =
-        drawingParameters.ExternalDefiningPattern;
-    editModeScenegraphNodes.CurvesExternalDefiningDrawStyle->linePatternScaleFactor = 2;
-
     for (int i = 0; i < geometryLayerParameters.getCoinLayerCount(); i++) {
         editModeScenegraphNodes.CurvesMaterials.emplace_back();
         editModeScenegraphNodes.CurvesCoordinate.emplace_back();
@@ -696,9 +673,6 @@ void EditModeGeometryCoinManager::createEditModeCurveInventorNodes()
             }
             else if (geometryLayerParameters.isExternalSubLayer(t)) {
                 sep->addChild(editModeScenegraphNodes.CurvesExternalDrawStyle);
-            }
-            else if (geometryLayerParameters.isExternalDefiningSubLayer(t)) {
-                sep->addChild(editModeScenegraphNodes.CurvesExternalDefiningDrawStyle);
             }
             else {
                 sep->addChild(editModeScenegraphNodes.CurvesDrawStyle);

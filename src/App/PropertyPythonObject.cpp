@@ -48,11 +48,7 @@ PropertyPythonObject::~PropertyPythonObject()
     // this is needed because the release of the pickled object may need the
     // GIL. Thus, we grab the GIL and replace the pickled with an empty object
     Base::PyGILStateLocker lock;
-    try {
-        this->object = Py::Object();
-    } catch (Py::TypeError &) {
-        Base::Console().Warning("Py::TypeError Exception caught while destroying PropertyPythonObject\n");
-    }
+    this->object = Py::Object();
 }
 
 void PropertyPythonObject::setValue(const Py::Object& py)

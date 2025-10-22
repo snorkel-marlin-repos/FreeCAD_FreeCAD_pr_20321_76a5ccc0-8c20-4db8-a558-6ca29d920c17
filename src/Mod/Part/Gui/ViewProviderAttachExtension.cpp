@@ -23,6 +23,10 @@
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
+# ifdef _MSC_VER
+#  define _USE_MATH_DEFINES
+#  include <cmath>
+# endif
 # include <QAction>
 # include <QMenu>
 #endif

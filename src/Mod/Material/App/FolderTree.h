@@ -34,21 +34,18 @@ template<class T>
 class FolderTreeNode
 {
 public:
-    enum class NodeType
+    enum NodeType
     {
-        UnknownNode,
         DataNode,
         FolderNode
     };
 
     FolderTreeNode()
-        : _type(NodeType::UnknownNode)
     {}
     virtual ~FolderTreeNode() = default;
 
     NodeType getType() const
     {
-        // assert(_type == NodeType::DataNode || _type == NodeType::FolderNode);
         return _type;
     }
     void setType(NodeType type)
@@ -56,47 +53,33 @@ public:
         _type = type;
     }
 
-    std::shared_ptr<std::map<QString, std::shared_ptr<FolderTreeNode<T>>>> getFolder() const
+    const std::shared_ptr<std::map<QString, std::shared_ptr<FolderTreeNode<T>>>> getFolder() const
     {
-        assert(_type == NodeType::FolderNode);
         return _folder;
     }
     std::shared_ptr<std::map<QString, std::shared_ptr<FolderTreeNode<T>>>> getFolder()
     {
-        assert(_type == NodeType::FolderNode);
         return _folder;
     }
     std::shared_ptr<T> getData() const
     {
-        assert(_type == NodeType::DataNode);
         return _data;
-    }
-    QString getUUID() const
-    {
-        assert(_type == NodeType::DataNode);
-        return _uuid;
     }
 
     void setFolder(std::shared_ptr<std::map<QString, std::shared_ptr<FolderTreeNode<T>>>> folder)
     {
-        setType(NodeType::FolderNode);
+        setType(FolderNode);
         _folder = folder;
     }
     void setData(std::shared_ptr<T> data)
     {
-        setType(NodeType::DataNode);
+        setType(DataNode);
         _data = data;
-    }
-    void setUUID(const QString& uuid)
-    {
-        setType(NodeType::DataNode);
-        _uuid = uuid;
     }
 
 private:
     NodeType _type;
     std::shared_ptr<std::map<QString, std::shared_ptr<FolderTreeNode<T>>>> _folder;
-    QString _uuid;
     std::shared_ptr<T> _data;
 };
 

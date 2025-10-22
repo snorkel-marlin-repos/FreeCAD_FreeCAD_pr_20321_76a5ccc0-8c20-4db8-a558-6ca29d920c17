@@ -29,8 +29,6 @@
 #include <QTimer>
 #endif
 
-#include <ranges>
-
 #include <fmt/format.h>
 
 #include <App/Document.h>
@@ -557,7 +555,9 @@ void TaskFeaturePick::onDoubleClick(QListWidgetItem* item)
 
 void TaskFeaturePick::slotDeletedObject(const Gui::ViewProviderDocumentObject& Obj)
 {
-    if (const auto it = std::ranges::find(origins, &Obj); it != origins.end()) {
+    std::vector<Gui::ViewProviderCoordinateSystem*>::iterator it;
+    it = std::find(origins.begin(), origins.end(), &Obj);
+    if (it != origins.end()) {
         origins.erase(it);
     }
 }

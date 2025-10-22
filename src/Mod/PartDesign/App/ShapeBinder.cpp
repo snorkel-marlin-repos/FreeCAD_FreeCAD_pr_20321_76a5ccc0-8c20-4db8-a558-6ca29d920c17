@@ -317,7 +317,8 @@ void ShapeBinder::slotChangedObject(const App::DocumentObject& Obj, const App::P
             list = obj->getInListRecursive();
             chain.insert(chain.end(), list.begin(), list.end());
 
-            if (const auto it = std::ranges::find(chain, &Obj); it != chain.end()) {
+            auto it = std::find(chain.begin(), chain.end(), &Obj);
+            if (it != chain.end()) {
                 if (hasPlacementChanged()) {
                     enforceRecompute();
                 }

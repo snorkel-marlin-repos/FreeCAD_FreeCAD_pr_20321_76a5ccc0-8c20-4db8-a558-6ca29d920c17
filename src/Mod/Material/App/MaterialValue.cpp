@@ -26,6 +26,7 @@
 #endif
 
 #include <App/Application.h>
+#include <Base/QtTools.h>
 #include <Base/Quantity.h>
 #include <Gui/MetaTypes.h>
 
@@ -100,44 +101,6 @@ bool MaterialValue::operator==(const MaterialValue& other) const
     }
 
     return (_valueType == other._valueType) && (_value == other._value);
-}
-
-void MaterialValue::validate(const MaterialValue& other) const
-{
-    if (_valueType != other._valueType) {
-        throw InvalidProperty("Material property value types don't match");
-    }
-    if (_valueType == Quantity) {
-        auto q1 = _value.value<Base::Quantity>();
-        auto q2 = other._value.value<Base::Quantity>();
-        if (q1.isValid()) {
-            if (!q2.isValid()) {
-                throw InvalidProperty("Invalid remote Material property quantity value");
-            }
-            if (q1.getUserString() != q2.getUserString()) {
-                // Direct comparisons of the quantities may have precision issues
-                // throw InvalidProperty("Material property quantity values don't match");
-            }
-        }
-        else {
-            if (q2.isValid()) {
-                throw InvalidProperty("Remote Material property quantity should not have a value");
-            }
-        }
-    }
-    else if (_valueType == Array2D) {
-        auto a1 = static_cast<const Materials::Array2D*>(this);
-        auto a2 = static_cast<const Materials::Array2D*>(&other);
-        a1->validate(*a2);
-    }
-    else if (_valueType == Array3D) {
-        auto a1 = static_cast<const Materials::Array3D*>(this);
-        auto a2 = static_cast<const Materials::Array3D*>(&other);
-        a1->validate(*a2);
-    }
-    else if (!(_value.isNull() && other._value.isNull()) && (_value != other._value)) {
-        throw InvalidProperty("Material property values don't match");
-    }
 }
 
 QString MaterialValue::escapeString(const QString& source)
@@ -243,11 +206,6 @@ void MaterialValue::setList(const QList<QVariant>& value)
 }
 
 bool MaterialValue::isNull() const
-{
-    return isEmpty();
-}
-
-bool MaterialValue::isEmpty() const
 {
     if (_value.isNull()) {
         return true;
@@ -360,24 +318,24 @@ const Base::QuantityFormat MaterialValue::getQuantityFormat()
 
 //===
 
-TYPESYSTEM_SOURCE(Materials::Array2D, Materials::MaterialValue)
+TYPESYSTEM_SOURCE(Materials::Material2DArray, Materials::MaterialValue)
 
-Array2D::Array2D()
-    : MaterialValue(MaterialValue::Array2D, MaterialValue::Array2D)
+Material2DArray::Material2DArray()
+    : MaterialValue(Array2D, Array2D)
     , _columns(0)
 {
     // Initialize separatelt to prevent recursion
     // setType(Array2D);
 }
 
-Array2D::Array2D(const Array2D& other)
+Material2DArray::Material2DArray(const Material2DArray& other)
     : MaterialValue(other)
     , _columns(other._columns)
 {
     deepCopy(other);
 }
 
-Array2D& Array2D::operator=(const Array2D& other)
+Material2DArray& Material2DArray::operator=(const Material2DArray& other)
 {
     if (this == &other) {
         return *this;
@@ -391,7 +349,7 @@ Array2D& Array2D::operator=(const Array2D& other)
     return *this;
 }
 
-void Array2D::deepCopy(const Array2D& other)
+void Material2DArray::deepCopy(const Material2DArray& other)
 {
     // Deep copy
     for (auto& row : other._rows) {
@@ -404,55 +362,26 @@ void Array2D::deepCopy(const Array2D& other)
     }
 }
 
-bool Array2D::isNull() const
-{
-    return isEmpty();
-}
-
-bool Array2D::isEmpty() const
+bool Material2DArray::isNull() const
 {
     return rows() <= 0;
 }
 
-void Array2D::validateRow(int row) const
+void Material2DArray::validateRow(int row) const
 {
     if (row < 0 || row >= rows()) {
         throw InvalidIndex();
     }
 }
 
-void Array2D::validateColumn(int column) const
+void Material2DArray::validateColumn(int column) const
 {
     if (column < 0 || column >= columns()) {
         throw InvalidIndex();
     }
 }
 
-void Array2D::validate(const Array2D& other) const
-{
-    if (rows() != other.rows()) {
-        Base::Console().Log("Local row count %d, remote %d\n", rows(), other.rows());
-        throw InvalidProperty("Material property value row counts don't match");
-    }
-    if (columns() != other.columns()) {
-        Base::Console().Log("Local column count %d, remote %d\n", columns(), other.columns());
-        throw InvalidProperty("Material property value column counts don't match");
-    }
-    try {
-        for (int i = 0; i < rows(); i++) {
-            for (int j = 0; j < columns(); j++) {
-                if (getValue(i, j) != other.getValue(i, j)) {
-                    throw InvalidProperty("Material property values don't match");
-                }
-            }
-        }
-    }
-    catch (const InvalidIndex&) {
-        throw InvalidProperty("Material property value invalid array index");
-    }
-}
-
-std::shared_ptr<QList<QVariant>> Array2D::getRow(int row) const
+std::shared_ptr<QList<QVariant>> Material2DArray::getRow(int row) const
 {
     validateRow(row);
 
@@ -464,7 +393,7 @@ std::shared_ptr<QList<QVariant>> Array2D::getRow(int row) const
     }
 }
 
-std::shared_ptr<QList<QVariant>> Array2D::getRow(int row)
+std::shared_ptr<QList<QVariant>> Material2DArray::getRow(int row)
 {
     validateRow(row);
 
@@ -476,17 +405,17 @@ std::shared_ptr<QList<QVariant>> Array2D::getRow(int row)
     }
 }
 
-void Array2D::addRow(const std::shared_ptr<QList<QVariant>>& row)
+void Material2DArray::addRow(const std::shared_ptr<QList<QVariant>>& row)
 {
     _rows.push_back(row);
 }
 
-void Array2D::insertRow(int index, const std::shared_ptr<QList<QVariant>>& row)
+void Material2DArray::insertRow(int index, const std::shared_ptr<QList<QVariant>>& row)
 {
     _rows.insert(_rows.begin() + index, row);
 }
 
-void Array2D::deleteRow(int row)
+void Material2DArray::deleteRow(int row)
 {
     if (row >= static_cast<int>(_rows.size()) || row < 0) {
         throw InvalidIndex();
@@ -494,18 +423,7 @@ void Array2D::deleteRow(int row)
     _rows.erase(_rows.begin() + row);
 }
 
-void Array2D::setRows(int rowCount)
-{
-    while (rows() < rowCount) {
-        auto row = std::make_shared<QList<QVariant>>();
-        for (int i = 0; i < columns(); i++) {
-            row->append(QVariant());
-        }
-        addRow(row);
-    }
-}
-
-void Array2D::setValue(int row, int column, const QVariant& value)
+void Material2DArray::setValue(int row, int column, const QVariant& value)
 {
     validateRow(row);
     validateColumn(column);
@@ -519,7 +437,7 @@ void Array2D::setValue(int row, int column, const QVariant& value)
     }
 }
 
-QVariant Array2D::getValue(int row, int column) const
+QVariant Material2DArray::getValue(int row, int column) const
 {
     validateColumn(column);
 
@@ -532,7 +450,7 @@ QVariant Array2D::getValue(int row, int column) const
     }
 }
 
-void Array2D::dumpRow(const std::shared_ptr<QList<QVariant>>& row)
+void Material2DArray::dumpRow(const std::shared_ptr<QList<QVariant>>& row)
 {
     Base::Console().Log("row: ");
     for (auto& column : *row) {
@@ -541,14 +459,14 @@ void Array2D::dumpRow(const std::shared_ptr<QList<QVariant>>& row)
     Base::Console().Log("\n");
 }
 
-void Array2D::dump() const
+void Material2DArray::dump() const
 {
     for (auto& row : _rows) {
         dumpRow(row);
     }
 }
 
-QString Array2D::getYAMLString() const
+QString Material2DArray::getYAMLString() const
 {
     if (isNull()) {
         return QString();
@@ -594,10 +512,10 @@ QString Array2D::getYAMLString() const
 
 //===
 
-TYPESYSTEM_SOURCE(Materials::Array3D, Materials::MaterialValue)
+TYPESYSTEM_SOURCE(Materials::Material3DArray, Materials::MaterialValue)
 
-Array3D::Array3D()
-    : MaterialValue(MaterialValue::Array3D, MaterialValue::Array3D)
+Material3DArray::Material3DArray()
+    : MaterialValue(Array3D, Array3D)
     , _currentDepth(0)
     , _columns(0)
 {
@@ -605,71 +523,26 @@ Array3D::Array3D()
     // setType(Array3D);
 }
 
-Array3D::Array3D(const Array3D& other)
-    : MaterialValue(other)
-    , _currentDepth(other._currentDepth)
-    , _columns(other._columns)
-{
-    deepCopy(other);
-}
-
-Array3D& Array3D::operator=(const Array3D& other)
-{
-    if (this == &other) {
-        return *this;
-    }
-
-    MaterialValue::operator=(other);
-    _columns = other._columns;
-    _currentDepth = other._currentDepth;
-
-    deepCopy(other);
-
-    return *this;
-}
-
-void Array3D::deepCopy(const Array3D& other)
-{
-    // Deep copy
-    _rowMap.clear();
-    for (auto& depthTable : other._rowMap) {
-        auto depth = addDepth(depthTable.first);
-        auto rows = depthTable.second;
-        for (auto row : *rows) {
-            auto newRow = std::make_shared<QList<Base::Quantity>>();
-            for (auto column : *row) {
-                newRow->append(column);
-            }
-            addRow(depth, newRow);
-        }
-    }
-}
-
-bool Array3D::isNull() const
-{
-    return isEmpty();
-}
-
-bool Array3D::isEmpty() const
+bool Material3DArray::isNull() const
 {
     return depth() <= 0;
 }
 
-void Array3D::validateDepth(int level) const
+void Material3DArray::validateDepth(int level) const
 {
     if (level < 0 || level >= depth()) {
         throw InvalidIndex();
     }
 }
 
-void Array3D::validateColumn(int column) const
+void Material3DArray::validateColumn(int column) const
 {
     if (column < 0 || column >= columns()) {
         throw InvalidIndex();
     }
 }
 
-void Array3D::validateRow(int level, int row) const
+void Material3DArray::validateRow(int level, int row) const
 {
     validateDepth(level);
 
@@ -678,18 +551,8 @@ void Array3D::validateRow(int level, int row) const
     }
 }
 
-void Array3D::validate(const Array3D& other) const
-{
-    if (depth() != other.depth()) {
-        throw InvalidProperty("Material property value row counts don't match");
-    }
-    if (columns() != other.columns()) {
-        throw InvalidProperty("Material property value column counts don't match");
-    }
-}
-
 const std::shared_ptr<QList<std::shared_ptr<QList<Base::Quantity>>>>&
-Array3D::getTable(const Base::Quantity& depth) const
+Material3DArray::getTable(const Base::Quantity& depth) const
 {
     for (auto& it : _rowMap) {
         if (std::get<0>(it) == depth) {
@@ -701,7 +564,7 @@ Array3D::getTable(const Base::Quantity& depth) const
 }
 
 const std::shared_ptr<QList<std::shared_ptr<QList<Base::Quantity>>>>&
-Array3D::getTable(int depthIndex) const
+Material3DArray::getTable(int depthIndex) const
 {
     try {
         return std::get<1>(_rowMap.at(depthIndex));
@@ -711,7 +574,7 @@ Array3D::getTable(int depthIndex) const
     }
 }
 
-std::shared_ptr<QList<Base::Quantity>> Array3D::getRow(int depth, int row) const
+std::shared_ptr<QList<Base::Quantity>> Material3DArray::getRow(int depth, int row) const
 {
     validateRow(depth, row);
 
@@ -723,13 +586,13 @@ std::shared_ptr<QList<Base::Quantity>> Array3D::getRow(int depth, int row) const
     }
 }
 
-std::shared_ptr<QList<Base::Quantity>> Array3D::getRow(int row) const
+std::shared_ptr<QList<Base::Quantity>> Material3DArray::getRow(int row) const
 {
     // Check if we can convert otherwise throw error
     return getRow(_currentDepth, row);
 }
 
-std::shared_ptr<QList<Base::Quantity>> Array3D::getRow(int depth, int row)
+std::shared_ptr<QList<Base::Quantity>> Material3DArray::getRow(int depth, int row)
 {
     validateRow(depth, row);
 
@@ -741,12 +604,12 @@ std::shared_ptr<QList<Base::Quantity>> Array3D::getRow(int depth, int row)
     }
 }
 
-std::shared_ptr<QList<Base::Quantity>> Array3D::getRow(int row)
+std::shared_ptr<QList<Base::Quantity>> Material3DArray::getRow(int row)
 {
     return getRow(_currentDepth, row);
 }
 
-void Array3D::addRow(int depth, const std::shared_ptr<QList<Base::Quantity>>& row)
+void Material3DArray::addRow(int depth, const std::shared_ptr<QList<Base::Quantity>>& row)
 {
     try {
         getTable(depth)->push_back(row);
@@ -756,12 +619,12 @@ void Array3D::addRow(int depth, const std::shared_ptr<QList<Base::Quantity>>& ro
     }
 }
 
-void Array3D::addRow(const std::shared_ptr<QList<Base::Quantity>>& row)
+void Material3DArray::addRow(const std::shared_ptr<QList<Base::Quantity>>& row)
 {
     addRow(_currentDepth, row);
 }
 
-int Array3D::addDepth(int depth, const Base::Quantity& value)
+int Material3DArray::addDepth(int depth, const Base::Quantity& value)
 {
     if (depth == this->depth()) {
         // Append to the end
@@ -777,7 +640,7 @@ int Array3D::addDepth(int depth, const Base::Quantity& value)
     return depth;
 }
 
-int Array3D::addDepth(const Base::Quantity& value)
+int Material3DArray::addDepth(const Base::Quantity& value)
 {
     auto rowVector = std::make_shared<QList<std::shared_ptr<QList<Base::Quantity>>>>();
     auto entry = std::make_pair(value, rowVector);
@@ -786,22 +649,13 @@ int Array3D::addDepth(const Base::Quantity& value)
     return depth() - 1;
 }
 
-void Array3D::deleteDepth(int depth)
+void Material3DArray::deleteDepth(int depth)
 {
     deleteRows(depth);  // This may throw an InvalidIndex
     _rowMap.erase(_rowMap.begin() + depth);
 }
 
-void Array3D::setDepth(int depthCount)
-{
-    Base::Quantity dummy;
-    dummy.setInvalid();
-    while (depth() < depthCount) {
-        addDepth(dummy);
-    }
-}
-
-void Array3D::insertRow(int depth,
+void Material3DArray::insertRow(int depth,
                                 int row,
                                 const std::shared_ptr<QList<Base::Quantity>>& rowData)
 {
@@ -814,12 +668,12 @@ void Array3D::insertRow(int depth,
     }
 }
 
-void Array3D::insertRow(int row, const std::shared_ptr<QList<Base::Quantity>>& rowData)
+void Material3DArray::insertRow(int row, const std::shared_ptr<QList<Base::Quantity>>& rowData)
 {
     insertRow(_currentDepth, row, rowData);
 }
 
-void Array3D::deleteRow(int depth, int row)
+void Material3DArray::deleteRow(int depth, int row)
 {
     auto table = getTable(depth);
     if (row >= static_cast<int>(table->size()) || row < 0) {
@@ -828,23 +682,23 @@ void Array3D::deleteRow(int depth, int row)
     table->erase(table->begin() + row);
 }
 
-void Array3D::deleteRow(int row)
+void Material3DArray::deleteRow(int row)
 {
     deleteRow(_currentDepth, row);
 }
 
-void Array3D::deleteRows(int depth)
+void Material3DArray::deleteRows(int depth)
 {
     auto table = getTable(depth);
     table->clear();
 }
 
-void Array3D::deleteRows()
+void Material3DArray::deleteRows()
 {
     deleteRows(_currentDepth);
 }
 
-int Array3D::rows(int depth) const
+int Material3DArray::rows(int depth) const
 {
     if (depth < 0 || (depth == 0 && this->depth() == 0)) {
         return 0;
@@ -854,21 +708,7 @@ int Array3D::rows(int depth) const
     return getTable(depth)->size();
 }
 
-void Array3D::setRows(int depth, int rowCount)
-{
-    Base::Quantity dummy;
-    dummy.setInvalid();
-
-    while (rows(depth) < rowCount) {
-        auto row = std::make_shared<QList<Base::Quantity>>();
-        for (int i = 0; i < columns(); i++) {
-            row->append(dummy);
-        }
-        addRow(depth, row);
-    }
-}
-
-void Array3D::setValue(int depth, int row, int column, const Base::Quantity& value)
+void Material3DArray::setValue(int depth, int row, int column, const Base::Quantity& value)
 {
     validateRow(depth, row);
     validateColumn(column);
@@ -882,12 +722,12 @@ void Array3D::setValue(int depth, int row, int column, const Base::Quantity& val
     }
 }
 
-void Array3D::setValue(int row, int column, const Base::Quantity& value)
+void Material3DArray::setValue(int row, int column, const Base::Quantity& value)
 {
     setValue(_currentDepth, row, column, value);
 }
 
-void Array3D::setDepthValue(int depth, const Base::Quantity& value)
+void Material3DArray::setDepthValue(int depth, const Base::Quantity& value)
 {
     try {
         auto oldRows = getTable(depth);
@@ -898,13 +738,13 @@ void Array3D::setDepthValue(int depth, const Base::Quantity& value)
     }
 }
 
-void Array3D::setDepthValue(const Base::Quantity& value)
+void Material3DArray::setDepthValue(const Base::Quantity& value)
 {
     setDepthValue(_currentDepth, value);
 }
 
 
-Base::Quantity Array3D::getValue(int depth, int row, int column) const
+Base::Quantity Material3DArray::getValue(int depth, int row, int column) const
 {
     // getRow validates depth and row. Do that first
     auto val = getRow(depth, row);
@@ -918,12 +758,12 @@ Base::Quantity Array3D::getValue(int depth, int row, int column) const
     }
 }
 
-Base::Quantity Array3D::getValue(int row, int column) const
+Base::Quantity Material3DArray::getValue(int row, int column) const
 {
     return getValue(_currentDepth, row, column);
 }
 
-Base::Quantity Array3D::getDepthValue(int depth) const
+Base::Quantity Material3DArray::getDepthValue(int depth) const
 {
     validateDepth(depth);
 
@@ -935,12 +775,12 @@ Base::Quantity Array3D::getDepthValue(int depth) const
     }
 }
 
-int Array3D::currentDepth() const
+int Material3DArray::currentDepth() const
 {
     return _currentDepth;
 }
 
-void Array3D::setCurrentDepth(int depth)
+void Material3DArray::setCurrentDepth(int depth)
 {
     validateDepth(depth);
 
@@ -955,7 +795,7 @@ void Array3D::setCurrentDepth(int depth)
     }
 }
 
-QString Array3D::getYAMLString() const
+QString Material3DArray::getYAMLString() const
 {
     if (isNull()) {
         return QString();

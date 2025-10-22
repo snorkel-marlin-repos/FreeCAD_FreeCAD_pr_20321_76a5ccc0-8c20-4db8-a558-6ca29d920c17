@@ -759,26 +759,24 @@ TechDraw::DrawViewDetail* GeometryObject::isParentDetail()
 
 bool GeometryObject::isWithinArc(double theta, double first, double last, bool cw) const
 {
-    using std::numbers::pi;
-
-    if (fabs(last - first) >= 2 * pi) {
+    if (fabs(last - first) >= 2 * M_PI) {
         return true;
     }
 
     // Put params within [0, 2*pi) - not totally sure this is necessary
-    theta = fmod(theta, 2 * pi);
+    theta = fmod(theta, 2 * M_PI);
     if (theta < 0) {
-        theta += 2 * pi;
+        theta += 2 * M_PI;
     }
 
-    first = fmod(first, 2 * pi);
+    first = fmod(first, 2 * M_PI);
     if (first < 0) {
-        first += 2 * pi;
+        first += 2 * M_PI;
     }
 
-    last = fmod(last, 2 * pi);
+    last = fmod(last, 2 * M_PI);
     if (last < 0) {
-        last += 2 * pi;
+        last += 2 * M_PI;
     }
 
     if (cw) {

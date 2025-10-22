@@ -118,7 +118,7 @@ struct DocumentP
     std::map<SoSeparator *,ViewProviderDocumentObject*> _CoinMap;
     std::map<std::string,ViewProvider*> _ViewProviderMapAnnotation;
     std::list<ViewProviderDocumentObject*> _redoViewProviders;
-
+    
     using Connection = boost::signals2::connection;
     Connection connectNewObject;
     Connection connectDelObject;
@@ -672,14 +672,13 @@ void Document::setEditingTransform(const Base::Matrix4D &mat) {
 
 void Document::resetEdit() {
     bool vpIsNotNull = d->_editViewProvider != nullptr;
-    bool vpHasChanged = d->_editViewProvider != d->_editViewProviderPrevious;
     int modeToRestore = d->_editModePrevious;
     Gui::ViewProvider* vpToRestore = d->_editViewProviderPrevious;
     bool shouldRestorePrevious = d->_editWantsRestorePrevious;
 
     Application::Instance->setEditDocument(nullptr);
 
-    if (vpIsNotNull && vpHasChanged && shouldRestorePrevious) {
+    if (vpIsNotNull && shouldRestorePrevious) {
         setEdit(vpToRestore, modeToRestore);
     }
 }
@@ -2484,11 +2483,11 @@ void Document::setActiveWindow(Gui::MDIView* view)
     std::list<MDIView*> mdis = getMDIViews();
 
     // this document is not active
-    if (std::ranges::find(mdis, active) == mdis.end())
+    if (std::find(mdis.begin(), mdis.end(), active) == mdis.end())
         return;
 
     // the view is not part of the document
-    if (std::ranges::find(mdis, view) == mdis.end())
+    if (std::find(mdis.begin(), mdis.end(), view) == mdis.end())
         return;
 
     getMainWindow()->setActiveWindow(view);

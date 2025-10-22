@@ -38,7 +38,9 @@ using namespace TechDrawGui;
 using namespace TechDraw;
 
 QGIDecoration::QGIDecoration() :
-    m_pen(Qt::SolidLine),
+    m_colCurrent(Qt::black),
+    m_styleCurrent(Qt::SolidLine),
+    m_brushCurrent(Qt::SolidPattern),
     m_dragState(DragState::NoDrag)
 {
     setCacheMode(QGraphicsItem::NoCache);
@@ -66,18 +68,22 @@ void QGIDecoration::paint ( QPainter * painter, const QStyleOptionGraphicsItem *
 
 void QGIDecoration::setWidth(double w)
 {
-    m_pen.setWidthF(w);
+    m_width = w;
+    m_pen.setWidthF(m_width);
 }
 
 void QGIDecoration::setStyle(Qt::PenStyle s)
 {
-    m_pen.setStyle(s);
+    m_styleCurrent = s;
+    m_pen.setStyle(m_styleCurrent);
 }
 
 void QGIDecoration::setColor(QColor c)
 {
-    m_pen.setColor(c);
-    m_brush.setColor(c);
+    m_colNormal = c;
+    m_colCurrent = c;
+    m_pen.setColor(m_colCurrent);
+    m_brush.setColor(m_colCurrent);
 }
 
 QColor QGIDecoration::prefNormalColor()

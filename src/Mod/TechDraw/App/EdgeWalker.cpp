@@ -29,7 +29,6 @@
 
 #ifndef _PreComp_
 # include <cmath>
-# include <limits>
 # include <sstream>
 # include <BRep_Tool.hxx>
 # include <BRepBuilderAPI_MakeWire.hxx>
@@ -308,11 +307,11 @@ std::vector<WalkerEdge> EdgeWalker::makeWalkerEdges(std::vector<TopoDS_Edge> edg
         TopoDS_Vertex edgeVertex1 = TopExp::FirstVertex(e);
         TopoDS_Vertex edgeVertex2 = TopExp::LastVertex(e);
         std::size_t vertex1Index = findUniqueVert(edgeVertex1, verts);
-        if (vertex1Index == std::numeric_limits<std::size_t>::max()) {
+        if (vertex1Index == SIZE_MAX) {
             continue;
         }
         std::size_t vertex2Index = findUniqueVert(edgeVertex2, verts);
-        if (vertex2Index == std::numeric_limits<std::size_t>::max()) {
+        if (vertex2Index == SIZE_MAX) {
             continue;
         }
 
@@ -339,7 +338,7 @@ size_t EdgeWalker::findUniqueVert(TopoDS_Vertex vx, std::vector<TopoDS_Vertex> &
         }
         idx++;
     }
-    return std::numeric_limits<std::size_t>::max();
+    return SIZE_MAX;
 }
 
 std::vector<TopoDS_Wire> EdgeWalker::sortStrip(std::vector<TopoDS_Wire> fw, bool includeBiggest)
@@ -451,13 +450,6 @@ std::vector<edge_t> EdgeWalker::getEmbeddingRow(int v)
 //*******************************************
 // WalkerEdge Methods
 //*******************************************
-WalkerEdge::WalkerEdge()
-{
-    // Ensure the edge is properly initialized (Coverity defect 316559)
-    ed.m_source = 0;
-    ed.m_target = 0;
-}
-
 bool WalkerEdge::isEqual(WalkerEdge w)
 {
     if ((v1 == w.v1 && v2 == w.v2)  ||
@@ -557,7 +549,7 @@ std::string embedItem::dump()
     std::stringstream builder;
     builder << "embedItem - vertex: " << iVertex  << " incidenceList: ";
     for (auto& ii : incidenceList) {
-        builder << " e:" << ii.iEdge << "/a:" << (ii.angle * (180.0/std::numbers::pi)) << "/ed:" << ii.eDesc;
+        builder << " e:" << ii.iEdge << "/a:" << (ii.angle * (180.0/M_PI)) << "/ed:" << ii.eDesc;
     }
     return builder.str();
 }

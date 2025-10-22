@@ -24,7 +24,6 @@
 
 #ifndef _PreComp_
 #include <cassert>
-#include <limits>
 #endif
 
 #include <boost/algorithm/string/predicate.hpp>
@@ -131,7 +130,7 @@ ObjectIdentifier::ObjectIdentifier(const App::PropertyContainer* _owner,
     }
     if (!property.empty()) {
         addComponent(SimpleComponent(property));
-        if (index != std::numeric_limits<int>::max()) {
+        if (index != INT_MAX) {
             addComponent(ArrayComponent(index));
         }
     }
@@ -180,7 +179,7 @@ ObjectIdentifier::ObjectIdentifier(const Property& prop, int index)
     setDocumentObjectName(docObj);
 
     addComponent(SimpleComponent(String(prop.getName())));
-    if (index != std::numeric_limits<int>::max()) {
+    if (index != INT_MAX) {
         addComponent(ArrayComponent(index));
     }
 }
@@ -704,9 +703,8 @@ Py::Object ObjectIdentifier::Component::get(const Py::Object& pyobj) const
     }
     else {
         assert(isRange());
-        constexpr int max = std::numeric_limits<int>::max();
         Py::Object slice(PySlice_New(Py::Long(begin).ptr(),
-                                     end != max ? Py::Long(end).ptr() : nullptr,
+                                     end != INT_MAX ? Py::Long(end).ptr() : nullptr,
                                      step != 1 ? Py::Long(step).ptr() : nullptr),
                          true);
         PyObject* r = PyObject_GetItem(pyobj.ptr(), slice.ptr());
@@ -744,9 +742,8 @@ void ObjectIdentifier::Component::set(Py::Object& pyobj, const Py::Object& value
     }
     else {
         assert(isRange());
-        constexpr int max = std::numeric_limits<int>::max();
         Py::Object slice(PySlice_New(Py::Long(begin).ptr(),
-                                     end != max ? Py::Long(end).ptr() : nullptr,
+                                     end != INT_MAX ? Py::Long(end).ptr() : nullptr,
                                      step != 1 ? Py::Long(step).ptr() : nullptr),
                          true);
         if (PyObject_SetItem(pyobj.ptr(), slice.ptr(), value.ptr()) < 0) {
@@ -773,9 +770,8 @@ void ObjectIdentifier::Component::del(Py::Object& pyobj) const
     }
     else {
         assert(isRange());
-        constexpr int max = std::numeric_limits<int>::max();
         Py::Object slice(PySlice_New(Py::Long(begin).ptr(),
-                                     end != max ? Py::Long(end).ptr() : nullptr,
+                                     end != INT_MAX ? Py::Long(end).ptr() : nullptr,
                                      step != 1 ? Py::Long(step).ptr() : nullptr),
                          true);
         if (PyObject_DelItem(pyobj.ptr(), slice.ptr()) < 0) {
@@ -901,11 +897,11 @@ void ObjectIdentifier::Component::toString(std::ostream& ss, bool toPython) cons
             break;
         case Component::RANGE:
             ss << '[';
-            if (begin != std::numeric_limits<int>::max()) {
+            if (begin != INT_MAX) {
                 ss << begin;
             }
             ss << ':';
-            if (end != std::numeric_limits<int>::max()) {
+            if (end != INT_MAX) {
                 ss << end;
             }
             if (step != 1) {

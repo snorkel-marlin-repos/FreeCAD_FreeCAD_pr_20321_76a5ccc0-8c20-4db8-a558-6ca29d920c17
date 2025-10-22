@@ -22,10 +22,6 @@
 
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-#include <limits>
-#endif
-
 #include "VectorListEditor.h"
 #include "ui_VectorListEditor.h"
 #include "QuantitySpinBox.h"
@@ -259,8 +255,8 @@ QWidget *VectorTableDelegate::createEditor(QWidget *parent, const QStyleOptionVi
 {
     auto editor = new QDoubleSpinBox(parent);
     editor->setDecimals(decimals);
-    editor->setMinimum(std::numeric_limits<int>::min());
-    editor->setMaximum(std::numeric_limits<int>::max());
+    editor->setMinimum(INT_MIN);
+    editor->setMaximum(INT_MAX);
     editor->setSingleStep(0.1);
 
     return editor;
@@ -303,14 +299,11 @@ VectorListEditor::VectorListEditor(int decimals, QWidget* parent)
     ui->tableWidget->setModel(model);
     ui->widget->hide();
 
-    ui->coordX->setRange(std::numeric_limits<int>::min(),
-                         std::numeric_limits<int>::max());
+    ui->coordX->setRange(INT_MIN, INT_MAX);
     ui->coordX->setDecimals(decimals);
-    ui->coordY->setRange(std::numeric_limits<int>::min(),
-                         std::numeric_limits<int>::max());
+    ui->coordY->setRange(INT_MIN, INT_MAX);
     ui->coordY->setDecimals(decimals);
-    ui->coordZ->setRange(std::numeric_limits<int>::min(),
-                         std::numeric_limits<int>::max());
+    ui->coordZ->setRange(INT_MIN, INT_MAX);
     ui->coordZ->setDecimals(decimals);
 
     ui->toolButtonMouse->setDisabled(true);

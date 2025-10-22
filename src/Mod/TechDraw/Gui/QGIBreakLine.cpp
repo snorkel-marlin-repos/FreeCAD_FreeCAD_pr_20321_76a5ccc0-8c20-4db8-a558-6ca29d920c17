@@ -64,7 +64,9 @@ QGIBreakLine::QGIBreakLine()
 
 
     setColor(PreferencesGui::sectionLineQColor());
-    m_brush.setStyle(Qt::SolidPattern);
+
+    // setFill(Qt::NoBrush);
+    setFill(Qt::SolidPattern);
 }
 
 void QGIBreakLine::draw()
@@ -251,6 +253,9 @@ void QGIBreakLine::paint ( QPainter * painter, const QStyleOptionGraphicsItem * 
 
 void QGIBreakLine::setTools()
 {
+    m_pen.setWidthF(m_width);
+    m_pen.setColor(m_colCurrent);
+    m_brush.setStyle(m_brushCurrent);
     m_brush.setColor(PreferencesGui::pageQColor());
 
     m_line0->setPen(m_pen);

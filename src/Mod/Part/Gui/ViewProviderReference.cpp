@@ -23,6 +23,9 @@
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
+// to avoid compiler warnings of redefining contents of basic.h
+// later by #include "ViewProvider.h"
+# define _USE_MATH_DEFINES
 # include <cmath>
 
 # include <Inventor/nodes/SoGroup.h>

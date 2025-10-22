@@ -28,7 +28,6 @@
 #include <QAction>
 #include <QMessageBox>
 #include <TopoDS.hxx>
-#include <limits>
 #include <sstream>
 #endif
 
@@ -67,19 +66,18 @@ TaskFemConstraintBearing::TaskFemConstraintBearing(ViewProviderFemConstraint* Co
     this->groupLayout()->addWidget(proxy);
 
     // setup ranges
-    constexpr float max = std::numeric_limits<float>::max();
-    ui->spinDiameter->setMinimum(-max);
-    ui->spinDiameter->setMaximum(max);
-    ui->spinOtherDiameter->setMinimum(-max);
-    ui->spinOtherDiameter->setMaximum(max);
-    ui->spinCenterDistance->setMinimum(-max);
-    ui->spinCenterDistance->setMaximum(max);
-    ui->spinForce->setMinimum(-max);
-    ui->spinForce->setMaximum(max);
-    ui->spinTensionForce->setMinimum(-max);
-    ui->spinTensionForce->setMaximum(max);
-    ui->spinDistance->setMinimum(-max);
-    ui->spinDistance->setMaximum(max);
+    ui->spinDiameter->setMinimum(-FLOAT_MAX);
+    ui->spinDiameter->setMaximum(FLOAT_MAX);
+    ui->spinOtherDiameter->setMinimum(-FLOAT_MAX);
+    ui->spinOtherDiameter->setMaximum(FLOAT_MAX);
+    ui->spinCenterDistance->setMinimum(-FLOAT_MAX);
+    ui->spinCenterDistance->setMaximum(FLOAT_MAX);
+    ui->spinForce->setMinimum(-FLOAT_MAX);
+    ui->spinForce->setMaximum(FLOAT_MAX);
+    ui->spinTensionForce->setMinimum(-FLOAT_MAX);
+    ui->spinTensionForce->setMaximum(FLOAT_MAX);
+    ui->spinDistance->setMinimum(-FLOAT_MAX);
+    ui->spinDistance->setMaximum(FLOAT_MAX);
 
     // Get the feature data
     Fem::ConstraintBearing* pcConstraint = ConstraintView->getObject<Fem::ConstraintBearing>();

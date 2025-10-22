@@ -143,7 +143,7 @@ App::DocumentObjectExecReturn *Revolution::execute()
         gp_Ax1 revAx(pnt, dir);
 
         //read out revolution angle
-        double angle = Angle.getValue()/180.0f * std::numbers::pi;
+        double angle = Angle.getValue()/180.0f*M_PI;
         if (fabs(angle) < Precision::Angular())
             angle = angle_edge;
 

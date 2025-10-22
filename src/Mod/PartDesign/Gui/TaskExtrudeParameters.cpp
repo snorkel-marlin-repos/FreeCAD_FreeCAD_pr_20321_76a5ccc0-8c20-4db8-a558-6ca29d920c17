@@ -179,8 +179,10 @@ void TaskExtrudeParameters::setupDialog()
         auto shortcut = rcCmdMgr.getCommandByName("Std_Delete")->getShortcut();
         unselectShapeFaceAction->setShortcut(QKeySequence(shortcut));
     }
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     // display shortcut behind the context menu entry
     unselectShapeFaceAction->setShortcutVisibleInContextMenu(true);
+#endif
 
     ui->listWidgetReferences->addAction(unselectShapeFaceAction);
     ui->listWidgetReferences->setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -402,18 +404,19 @@ void TaskExtrudeParameters::selectedShapeFace(const Gui::SelectionChanges& msg)
     }
 
     std::vector<std::string> faces = getShapeFaces();
-    const std::string subName(msg.pSubName);
+    std::string subName(msg.pSubName);
 
     if (subName.empty()) {
         return;
     }
 
-    if (const auto positionInList = std::ranges::find(faces, subName);
-        positionInList != faces.end()) {  // it's in the list
-        faces.erase(positionInList);  // remove it.
+    auto positionInList = std::find(faces.begin(), faces.end(), subName);
+
+    if (positionInList != faces.end()) {  // If it's found then it's in the list so we remove it.
+        faces.erase(positionInList);
     }
-    else {
-        faces.push_back(subName);  // not yet in the list so add it.
+    else {  // if it's not found then it's not yet in the list so we add it.
+        faces.push_back(subName);
     }
 
     extrude->UpToShape.setValue(base, faces);

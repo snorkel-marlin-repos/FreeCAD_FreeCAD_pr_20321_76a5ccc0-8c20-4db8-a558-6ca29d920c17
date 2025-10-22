@@ -158,6 +158,7 @@ int AssemblyObject::solve(bool enableRedo, bool updateJCS)
     }
 
     try {
+        // mbdAssembly->runPreDrag();  // solve() is causing some issues with limits.
         mbdAssembly->runKINEMATIC();
     }
     catch (const std::exception& e) {
@@ -196,6 +197,7 @@ int AssemblyObject::generateSimulation(App::DocumentObject* sim)
     jointParts(joints);
 
     create_mbdSimulationParameters(sim);
+
 
     try {
         mbdAssembly->runKINEMATIC();
@@ -257,7 +259,7 @@ void AssemblyObject::preDrag(std::vector<App::DocumentObject*> dragParts)
     draggedParts.clear();
     for (auto part : dragParts) {
         // make sure no duplicate
-        if (std::ranges::find(draggedParts, part) != draggedParts.end()) {
+        if (std::find(draggedParts.begin(), draggedParts.end(), part) != draggedParts.end()) {
             continue;
         }
 
@@ -382,6 +384,7 @@ bool AssemblyObject::validateNewPlacements()
 
     // TODO: We could do further tests
     // For example check if the joints connectors are correctly aligned.
+
     return true;
 }
 
@@ -590,6 +593,7 @@ App::DocumentObject* AssemblyObject::getJointOfPartConnectingToGround(App::Docum
             return joint;
         }
     }
+
     return nullptr;
 }
 
@@ -648,7 +652,7 @@ AssemblyObject::getJoints(bool updateJCS, bool delBadJoints, bool subJoints)
         }
 
         auto* prop = dynamic_cast<App::PropertyBool*>(joint->getPropertyByName("Activated"));
-        if (joint->isError() || !prop || !prop->getValue()) {
+        if (!prop || !prop->getValue()) {
             // Filter grounded joints and deactivated joints.
             continue;
         }
@@ -749,6 +753,7 @@ std::vector<App::DocumentObject*> AssemblyObject::getJointsOfPart(App::DocumentO
             jointsOf.push_back(joint);
         }
     }
+
     return jointsOf;
 }
 
@@ -1120,7 +1125,7 @@ std::shared_ptr<ASMTJoint> AssemblyObject::makeMbdJointOfType(App::DocumentObjec
     }
     else if (type == JointType::Angle) {
         double angle = fabs(Base::toRadians(getJointDistance(joint)));
-        if (fmod(angle, 2 * std::numbers::pi) < Precision::Confusion()) {
+        if (fmod(angle, 2 * M_PI) < Precision::Confusion()) {
             return CREATE<ASMTParallelAxesJoint>::With();
         }
         else {
@@ -1488,7 +1493,7 @@ AssemblyObject::makeMbdJoint(App::DocumentObject* joint)
     std::vector<App::DocumentObject*> done;
     // Add motions if needed
     for (auto* motion : motions) {
-        if (std::ranges::find(done, motion) != done.end()) {
+        if (std::find(done.begin(), done.end(), motion) != done.end()) {
             continue;  // don't process twice (can happen in case of cylindrical)
         }
 
@@ -1799,6 +1804,7 @@ AssemblyObject::MbDPartData AssemblyObject::getMbDData(App::DocumentObject* part
 
         addConnectedFixedParts(part, addConnectedFixedParts);
     }
+
     return data;
 }
 
@@ -1807,6 +1813,7 @@ std::shared_ptr<ASMTPart> AssemblyObject::getMbDPart(App::DocumentObject* part)
     if (!part) {
         return nullptr;
     }
+
     return getMbDData(part).part;
 }
 
@@ -1824,6 +1831,7 @@ AssemblyObject::makeMbdPart(std::string& name, Base::Placement plc, double mass)
 
     Base::Vector3d pos = plc.getPosition();
     mbdPart->setPosition3D(pos.x, pos.y, pos.z);
+    // Base::Console().Warning("MbD Part placement : (%f, %f, %f)\n", pos.x, pos.y, pos.z);
 
     // TODO : replace with quaternion to simplify
     Base::Rotation rot = plc.getRotation();
