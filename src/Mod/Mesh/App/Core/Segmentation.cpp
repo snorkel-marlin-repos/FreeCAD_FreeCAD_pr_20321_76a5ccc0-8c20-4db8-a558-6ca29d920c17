@@ -24,7 +24,6 @@
 #ifndef _PreComp_
 #include <algorithm>
 #include <cmath>
-#include <limits>
 #endif
 
 #include "Algorithm.h"
@@ -54,7 +53,7 @@ void MeshSurfaceSegment::AddSegment(const std::vector<FacetIndex>& segm)
 MeshSegment MeshSurfaceSegment::FindSegment(FacetIndex index) const
 {
     for (const auto& segment : segments) {
-        if (std::ranges::find(segment, index) != segment.end()) {
+        if (std::find(segment.begin(), segment.end(), index) != segment.end()) {
             return segment;
         }
     }
@@ -202,7 +201,7 @@ std::vector<float> PlaneSurfaceFit::Parameters() const
 // --------------------------------------------------------
 
 CylinderSurfaceFit::CylinderSurfaceFit()
-    : radius(std::numeric_limits<float>::max())
+    : radius(FLOAT_MAX)
     , fitter(new CylinderFit)
 {
     axis.Set(0, 0, 0);
@@ -267,7 +266,7 @@ float CylinderSurfaceFit::Fit()
     }
 
     float fit = fitter->Fit();
-    if (fit < std::numeric_limits<float>::max()) {
+    if (fit < FLOAT_MAX) {
         basepoint = fitter->GetBase();
         axis = fitter->GetAxis();
         radius = fitter->GetRadius();
@@ -310,7 +309,7 @@ std::vector<float> CylinderSurfaceFit::Parameters() const
 // --------------------------------------------------------
 
 SphereSurfaceFit::SphereSurfaceFit()
-    : radius(std::numeric_limits<float>::max())
+    : radius(FLOAT_MAX)
     , fitter(new SphereFit)
 {
     center.Set(0, 0, 0);
@@ -368,7 +367,7 @@ float SphereSurfaceFit::Fit()
     }
 
     float fit = fitter->Fit();
-    if (fit < std::numeric_limits<float>::max()) {
+    if (fit < FLOAT_MAX) {
         center = fitter->GetCenter();
         radius = fitter->GetRadius();
     }

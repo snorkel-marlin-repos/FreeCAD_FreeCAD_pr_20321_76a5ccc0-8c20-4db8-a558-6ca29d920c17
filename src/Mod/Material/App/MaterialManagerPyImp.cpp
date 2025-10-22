@@ -47,7 +47,7 @@ std::string MaterialManagerPy::representation() const
 PyObject* MaterialManagerPy::PyMake(struct _typeobject*, PyObject*, PyObject*)  // Python wrapper
 {
     // never create such objects with the constructor
-    return new MaterialManagerPy(&(MaterialManager::getManager()));
+    return new MaterialManagerPy(new MaterialManager());
 }
 
 // constructor method
@@ -136,25 +136,15 @@ PyObject* MaterialManagerPy::inheritMaterial(PyObject* args)
 
 Py::List MaterialManagerPy::getMaterialLibraries() const
 {
-    auto libraries = getMaterialManagerPtr()->getLibraries();
+    auto libraries = getMaterialManagerPtr()->getMaterialLibraries();
     Py::List list;
 
     for (auto it = libraries->begin(); it != libraries->end(); it++) {
         auto lib = *it;
         Py::Tuple libTuple(3);
-        if (lib->isLocal()) {
-            auto materialLibrary =
-                reinterpret_cast<const std::shared_ptr<Materials::MaterialLibraryLocal>&>(lib);
-            libTuple.setItem(0, Py::String(materialLibrary->getName().toStdString()));
-            libTuple.setItem(1, Py::String(materialLibrary->getDirectoryPath().toStdString()));
-            libTuple.setItem(2, Py::String(materialLibrary->getIconPath().toStdString()));
-        }
-        else
-        {
-            libTuple.setItem(0, Py::String());
-            libTuple.setItem(1, Py::String());
-            libTuple.setItem(2, Py::String());
-        }
+        libTuple.setItem(0, Py::String(lib->getName().toStdString()));
+        libTuple.setItem(1, Py::String(lib->getDirectoryPath().toStdString()));
+        libTuple.setItem(2, Py::String(lib->getIconPath().toStdString()));
 
         list.append(libTuple);
     }
@@ -166,7 +156,7 @@ Py::Dict MaterialManagerPy::getMaterials() const
 {
     Py::Dict dict;
 
-    auto materials = getMaterialManagerPtr()->getLocalMaterials();
+    auto materials = getMaterialManagerPtr()->getMaterials();
 
     for (auto it = materials->begin(); it != materials->end(); it++) {
         QString key = it->first;
@@ -294,19 +284,17 @@ PyObject* MaterialManagerPy::save(PyObject* args, PyObject* kwds)
     return Py_None;
 }
 
-void addMaterials(MaterialManager *manager,
-                  Py::List& list,
+void addMaterials(Py::List& list,
                   const std::shared_ptr<std::map<QString, std::shared_ptr<MaterialTreeNode>>>& tree)
 {
     for (auto& node : *tree) {
-        if (node.second->getType() == MaterialTreeNode::NodeType::DataNode) {
-            auto uuid = node.second->getUUID();
-            auto material = manager->getMaterial(uuid);
+        if (node.second->getType() == MaterialTreeNode::DataNode) {
+            auto material = node.second->getData();
             PyObject* materialPy = new MaterialPy(new Material(*material));
             list.append(Py::Object(materialPy, true));
         }
         else {
-            addMaterials(manager, list, node.second->getFolder());
+            addMaterials(list, node.second->getFolder());
         }
     }
 }
@@ -339,13 +327,13 @@ PyObject* MaterialManagerPy::filterMaterials(PyObject* args, PyObject* kwds)
 
     auto filter = std::make_shared<MaterialFilter>(*(static_cast<MaterialFilterPy*>(filterPy)->getMaterialFilterPtr()));
 
-    auto libraries = getMaterialManagerPtr()->getLibraries();
+    auto libraries = getMaterialManagerPtr()->getMaterialLibraries();
     Py::List list;
 
     for (auto lib : *libraries) {
         auto tree = getMaterialManagerPtr()->getMaterialTree(lib, filter, options);
         if (tree->size() > 0) {
-            addMaterials(getMaterialManagerPtr(), list, tree);
+            addMaterials(list, tree);
         }
     }
 

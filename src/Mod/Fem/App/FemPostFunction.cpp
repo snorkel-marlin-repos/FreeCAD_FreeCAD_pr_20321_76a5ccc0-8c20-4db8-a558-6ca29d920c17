@@ -23,7 +23,6 @@
 #include "PreCompiled.h"
 
 #include "FemPostFunction.h"
-#include <App/Document.h>
 
 
 using namespace Fem;
@@ -32,39 +31,19 @@ using namespace App;
 PROPERTY_SOURCE(Fem::FemPostFunctionProvider, App::DocumentObject)
 
 FemPostFunctionProvider::FemPostFunctionProvider()
-    : DocumentObjectGroup()
-{}
+    : DocumentObject()
+{
+
+    ADD_PROPERTY(Functions, (nullptr));
+}
 
 FemPostFunctionProvider::~FemPostFunctionProvider() = default;
 
-bool FemPostFunctionProvider::allowObject(App::DocumentObject* obj)
+void FemPostFunctionProvider::onChanged(const Property* prop)
 {
-    return obj->isDerivedFrom<FemPostFunction>();
+    App::DocumentObject::onChanged(prop);
 }
 
-void FemPostFunctionProvider::unsetupObject()
-{
-    // remove all children!
-    auto document = getExtendedObject()->getDocument();
-    for (const auto& obj : Group.getValues()) {
-        document->removeObject(obj->getNameInDocument());
-    }
-}
-
-void FemPostFunctionProvider::handleChangedPropertyName(Base::XMLReader& reader,
-                                                        const char* typeName,
-                                                        const char* propName)
-{
-    if (strcmp(propName, "Functions") == 0
-        && Base::Type::fromName(typeName) == App::PropertyLinkList::getClassTypeId()) {
-
-        // restore the property into Group, instead of the old Functions property
-        Group.Restore(reader);
-    }
-    else {
-        App::DocumentObject::handleChangedPropertyName(reader, typeName, propName);
-    }
-}
 
 PROPERTY_SOURCE(Fem::FemPostFunction, App::DocumentObject)
 

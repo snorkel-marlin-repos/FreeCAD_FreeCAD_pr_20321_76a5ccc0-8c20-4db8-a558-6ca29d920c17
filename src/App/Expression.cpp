@@ -34,8 +34,6 @@
 #include <boost/math/special_functions/round.hpp>
 #include <boost/math/special_functions/trunc.hpp>
 
-#include <numbers>
-#include <limits>
 #include <sstream>
 #include <stack>
 #include <string>
@@ -54,10 +52,28 @@
 #include "ExpressionParser.h"
 
 
+/** \defgroup Expression Expressions framework
+    \ingroup APP
+    \brief The expression system allows users to write expressions and formulas that produce values
+*/
+
 using namespace Base;
 using namespace App;
 
 FC_LOG_LEVEL_INIT("Expression", true, true)
+
+#ifndef M_PI
+#define M_PI       3.14159265358979323846
+#endif
+#ifndef M_E
+#define M_E        2.71828182845904523536
+#endif
+#ifndef  DOUBLE_MAX
+# define DOUBLE_MAX 1.7976931348623157E+308    /* max decimal value of a "double"*/
+#endif
+#ifndef  DOUBLE_MIN
+# define DOUBLE_MIN 2.2250738585072014E-308    /* min decimal value of a "double"*/
+#endif
 
 #if defined(_MSC_VER)
 #define strtoll _strtoi64
@@ -320,22 +336,22 @@ static inline int essentiallyInteger(double a, long &l, int &i) {
     double intpart;
     if (std::modf(a,&intpart) == 0.0) {
         if (intpart<0.0) {
-            if (intpart >= std::numeric_limits<int>::min()) {
+            if (intpart >= INT_MIN) {
                 i = static_cast<int>(intpart);
                 l = i;
                 return 1;
             }
-            if (intpart >= std::numeric_limits<long>::min()) {
+            if (intpart >= LONG_MIN) {
                 l = static_cast<long>(intpart);
                 return 2;
             }
         }
-        else if (intpart <= std::numeric_limits<int>::max()) {
+        else if (intpart <= INT_MAX) {
             i = static_cast<int>(intpart);
             l = i;
             return 1;
         }
-        else if (intpart <= static_cast<double>(std::numeric_limits<long>::max())) {
+        else if (intpart <= static_cast<double>(LONG_MAX)) {
             l = static_cast<int>(intpart);
             return 2;
         }
@@ -347,12 +363,12 @@ static inline bool essentiallyInteger(double a, long &l) {
     double intpart;
     if (std::modf(a,&intpart) == 0.0) {
         if (intpart<0.0) {
-            if (intpart >= std::numeric_limits<long>::min()) {
+            if (intpart >= LONG_MIN) {
                 l = static_cast<long>(intpart);
                 return true;
             }
         }
-        else if (intpart <= static_cast<double>(std::numeric_limits<long>::max())) {
+        else if (intpart <= static_cast<double>(LONG_MAX)) {
             l = static_cast<long>(intpart);
             return true;
         }
@@ -1712,7 +1728,7 @@ FunctionExpression::FunctionExpression(const DocumentObject *_owner, Function _f
     : UnitExpression(_owner)
     , f(_f)
     , fname(std::move(name))
-    , args(std::move(_args))
+    , args(_args)
 {
     switch (f) {
     case ABS:
@@ -2134,8 +2150,6 @@ Base::Vector3d FunctionExpression::extractVectorArgument(
 
 Py::Object FunctionExpression::evaluate(const Expression *expr, int f, const std::vector<Expression*> &args)
 {
-    using std::numbers::pi;
-
     if(!expr || !expr->getOwner())
         _EXPR_THROW("Invalid owner.", expr);
 
@@ -2172,7 +2186,7 @@ Py::Object FunctionExpression::evaluate(const Expression *expr, int f, const std
         Py::Object pyobj = args[0]->getPyValue();
         if (PyObject_TypeCheck(pyobj.ptr(), &Base::MatrixPy::Type)) {
             auto m = static_cast<Base::MatrixPy*>(pyobj.ptr())->value();
-            if (fabs(m.determinant()) <= std::numeric_limits<double>::epsilon())
+            if (fabs(m.determinant()) <= DBL_EPSILON)
                 _EXPR_THROW("Cannot invert singular matrix.", expr);
             m.inverseGauss();
             return Py::asObject(new Base::MatrixPy(m));
@@ -2213,7 +2227,7 @@ Py::Object FunctionExpression::evaluate(const Expression *expr, int f, const std
 
         Rotation rotation = Base::Rotation(
             Vector3d(static_cast<double>(f == MROTATEX), static_cast<double>(f == MROTATEY), static_cast<double>(f == MROTATEZ)),
-            rotationAngle.getValue() * pi / 180.0);
+            rotationAngle.getValue() * M_PI / 180.0);
         Base::Matrix4D rotationMatrix;
         rotation.getValue(rotationMatrix);
 
@@ -2352,7 +2366,7 @@ Py::Object FunctionExpression::evaluate(const Expression *expr, int f, const std
 
         switch (f) {
         case VANGLE:
-            return Py::asObject(new QuantityPy(new Quantity(vector1.GetAngle(vector2) * 180 / pi, Unit::Angle)));
+            return Py::asObject(new QuantityPy(new Quantity(vector1.GetAngle(vector2) * 180 / M_PI, Unit::Angle)));
         case VCROSS:
             return Py::asObject(new Base::VectorPy(vector1.Cross(vector2)));
         case VDOT:
@@ -2411,7 +2425,7 @@ Py::Object FunctionExpression::evaluate(const Expression *expr, int f, const std
             _EXPR_THROW("Unit must be either empty or an angle.", expr);
 
         // Convert value to radians
-        value *= pi / 180.0;
+        value *= M_PI / 180.0;
         unit = Unit();
         break;
     case ACOS:
@@ -2420,7 +2434,7 @@ Py::Object FunctionExpression::evaluate(const Expression *expr, int f, const std
         if (!v1.isDimensionless())
             _EXPR_THROW("Unit must be empty.", expr);
         unit = Unit::Angle;
-        scaler = 180.0 / pi;
+        scaler = 180.0 / M_PI;
         break;
     case EXP:
     case LOG:
@@ -2452,7 +2466,7 @@ Py::Object FunctionExpression::evaluate(const Expression *expr, int f, const std
         if (v1.getUnit() != v2.getUnit())
             _EXPR_THROW("Units must be equal.",expr);
         unit = Unit::Angle;
-        scaler = 180.0 / pi;
+        scaler = 180.0 / M_PI;
         break;
     case MOD:
         if (e2.isNone())
@@ -2629,7 +2643,7 @@ Expression *FunctionExpression::simplify() const
         return eval();
     }
     else
-        return new FunctionExpression(owner, f, std::string(fname), std::move(a));
+        return new FunctionExpression(owner, f, std::string(fname), a);
 }
 
 /**
@@ -2797,7 +2811,7 @@ Expression *FunctionExpression::_copy() const
         a.push_back((*i)->copy());
         ++i;
     }
-    return new FunctionExpression(owner, f, std::string(fname), std::move(a));
+    return new FunctionExpression(owner, f, std::string(fname), a);
 }
 
 void FunctionExpression::_visit(ExpressionVisitor &v)

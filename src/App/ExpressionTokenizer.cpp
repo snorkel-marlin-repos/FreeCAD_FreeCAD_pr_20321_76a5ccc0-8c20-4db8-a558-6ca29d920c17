@@ -75,17 +75,14 @@ QString ExpressionTokenizer::perform(const QString& prefix, int pos)
     // Pop those trailing tokens depending on the given position, which may be
     // in the middle of a token, and we shall include that token.
     for (auto it = tokens.begin(); it != tokens.end(); ++it) {
-        int tokenType = std::get<0>(*it);
-        int location = std::get<1>(*it);
-        int tokenLength = static_cast<int> (std::get<2>(*it).size());
-        if (location >= pos) {
+        if (std::get<1>(*it) >= pos) {
             // Include the immediately followed '.' or '#', because we'll be
             // inserting these separators too, in ExpressionCompleteModel::pathFromIndex()
-            if (it != tokens.begin() && tokenType != '.' && tokenType != '#') {
+            if (it != tokens.begin() && std::get<0>(*it) != '.' && std::get<0>(*it) != '#') {
                 it = it - 1;
             }
-            tokens.resize(it - tokens.begin() + 1); // Invalidates it, but we already calculated tokenLength
-            prefixEnd = start + location + tokenLength;
+            tokens.resize(it - tokens.begin() + 1);
+            prefixEnd = start + std::get<1>(*it) + (int)std::get<2>(*it).size();
             break;
         }
     }

@@ -6,7 +6,6 @@
 #include "Area.h"
 #include "AreaOrderer.h"
 
-#include <limits>
 #include <map>
 
 double CArea::m_accuracy = 0.01;

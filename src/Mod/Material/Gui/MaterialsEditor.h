@@ -82,7 +82,11 @@ public:
 
     Materials::MaterialManager& getMaterialManager()
     {
-        return Materials::MaterialManager::getManager();
+        return _materialManager;
+    }
+    Materials::ModelManager& getModelManager()
+    {
+        return _modelManager;
     }
 
     static QString libraryPath(const std::shared_ptr<Materials::Material>& material);
@@ -110,6 +114,8 @@ protected:
 
 private:
     std::unique_ptr<Ui_MaterialsEditor> ui;
+    Materials::MaterialManager _materialManager;
+    Materials::ModelManager _modelManager;
     std::shared_ptr<Materials::Material> _material;
     AppearancePreview* _rendered;
     bool _materialSelected;

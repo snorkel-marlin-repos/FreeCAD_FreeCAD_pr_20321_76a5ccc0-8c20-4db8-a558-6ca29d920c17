@@ -278,7 +278,7 @@ PyObject* GeometryFacadePy::getExtensionOfType(PyObject* args)
 
         Base::Type type = Base::Type::fromName(o);
 
-        if (!type.isBad()) {
+        if (type != Base::Type::badType()) {
             try {
                 std::shared_ptr<const Part::GeometryExtension> ext(
                     this->getGeometryFacadePtr()->getExtension(type));
@@ -355,7 +355,7 @@ PyObject* GeometryFacadePy::hasExtensionOfType(PyObject* args)
 
         Base::Type type = Base::Type::fromName(o);
 
-        if (!type.isBad()) {
+        if (type != Base::Type::badType()) {
             try {
                 return Py::new_reference_to(
                     Py::Boolean(this->getGeometryFacadePtr()->hasExtension(type)));
@@ -403,7 +403,7 @@ PyObject* GeometryFacadePy::deleteExtensionOfType(PyObject* args)
 
         Base::Type type = Base::Type::fromName(o);
 
-        if (!type.isBad()) {
+        if (type != Base::Type::badType()) {
             try {
                 this->getGeometryFacadePtr()->deleteExtension(type);
                 Py_Return;

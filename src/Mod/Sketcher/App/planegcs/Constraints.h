@@ -228,7 +228,7 @@ public:
 
 private:
     std::vector<double> weights;
-    std::size_t numpoints;
+    double numpoints;
 };
 
 // Weighted Linear Combination

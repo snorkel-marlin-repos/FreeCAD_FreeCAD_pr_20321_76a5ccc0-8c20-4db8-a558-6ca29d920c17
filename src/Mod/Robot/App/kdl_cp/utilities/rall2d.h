@@ -26,7 +26,7 @@
 #ifndef Rall2D_H
 #define Rall2D_H
 
-#include <cmath>
+#include <math.h>
 #include <assert.h>
 #include "utility.h"
 

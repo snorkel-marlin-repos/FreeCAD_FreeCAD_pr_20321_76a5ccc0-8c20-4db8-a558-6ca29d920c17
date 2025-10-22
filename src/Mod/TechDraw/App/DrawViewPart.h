@@ -115,8 +115,9 @@ public:
 
     App::PropertyLinkList Source;
     App::PropertyXLinkList XSource;
-    App::PropertyDirection Direction;  // the projection direction
-    App::PropertyDirection XDirection;
+    App::PropertyVector
+        Direction;//TODO: Rename to YAxisDirection or whatever this actually is  (ProjectionDirection)
+    App::PropertyVector XDirection;
     App::PropertyBool Perspective;
     App::PropertyDistance Focus;
 
@@ -139,8 +140,6 @@ public:
     App::DocumentObjectExecReturn* execute() override;
     const char* getViewProviderName() const override { return "TechDrawGui::ViewProviderViewPart"; }
     PyObject* getPyObject() override;
-    void handleChangedPropertyType(
-        Base::XMLReader &reader, const char * TypeName, App::Property * prop) override;
 
     static TopoDS_Shape centerScaleRotate(const DrawViewPart* dvp, TopoDS_Shape& inOutShape,
                                           Base::Vector3d centroid);

@@ -23,6 +23,7 @@
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
+#include <cfloat>
 #include <qmessagebox.h>
 #endif
 
@@ -54,46 +55,45 @@ DlgRegularSolidImp::DlgRegularSolidImp(QWidget* parent, Qt::WindowFlags fl)
     Gui::Command::doCommand(Gui::Command::Doc, "import Mesh,BuildRegularGeoms");
 
     // set limits
-    constexpr double doubleMax = std::numeric_limits<double>::max();
     // Box
-    ui->boxLength->setMaximum(doubleMax);
+    ui->boxLength->setMaximum(DBL_MAX);
     ui->boxLength->setMinimum(0);
-    ui->boxWidth->setMaximum(doubleMax);
+    ui->boxWidth->setMaximum(DBL_MAX);
     ui->boxWidth->setMinimum(0);
-    ui->boxHeight->setMaximum(doubleMax);
+    ui->boxHeight->setMaximum(DBL_MAX);
     ui->boxHeight->setMinimum(0);
     // Cylinder
-    ui->cylinderRadius->setMaximum(doubleMax);
+    ui->cylinderRadius->setMaximum(DBL_MAX);
     ui->cylinderRadius->setMinimum(0);
-    ui->cylinderLength->setMaximum(doubleMax);
+    ui->cylinderLength->setMaximum(DBL_MAX);
     ui->cylinderLength->setMinimum(0);
-    ui->cylinderEdgeLength->setMaximum(doubleMax);
+    ui->cylinderEdgeLength->setMaximum(DBL_MAX);
     ui->cylinderEdgeLength->setMinimum(0);
     ui->cylinderCount->setMaximum(1000);
     // Cone
-    ui->coneRadius1->setMaximum(doubleMax);
+    ui->coneRadius1->setMaximum(DBL_MAX);
     ui->coneRadius1->setMinimum(0);
-    ui->coneRadius2->setMaximum(doubleMax);
+    ui->coneRadius2->setMaximum(DBL_MAX);
     ui->coneRadius2->setMinimum(0);
-    ui->coneLength->setMaximum(doubleMax);
+    ui->coneLength->setMaximum(DBL_MAX);
     ui->coneLength->setMinimum(0);
-    ui->coneEdgeLength->setMaximum(doubleMax);
+    ui->coneEdgeLength->setMaximum(DBL_MAX);
     ui->coneEdgeLength->setMinimum(0);
     ui->coneCount->setMaximum(1000);
     // Sphere
-    ui->sphereRadius->setMaximum(doubleMax);
+    ui->sphereRadius->setMaximum(DBL_MAX);
     ui->sphereRadius->setMinimum(0);
     ui->sphereCount->setMaximum(1000);
     // Ellipsoid
-    ui->ellipsoidRadius1->setMaximum(doubleMax);
+    ui->ellipsoidRadius1->setMaximum(DBL_MAX);
     ui->ellipsoidRadius1->setMinimum(0);
-    ui->ellipsoidRadius2->setMaximum(doubleMax);
+    ui->ellipsoidRadius2->setMaximum(DBL_MAX);
     ui->ellipsoidRadius2->setMinimum(0);
     ui->ellipsoidCount->setMaximum(1000);
     // Torus
-    ui->toroidRadius1->setMaximum(doubleMax);
+    ui->toroidRadius1->setMaximum(DBL_MAX);
     ui->toroidRadius1->setMinimum(0);
-    ui->toroidRadius2->setMaximum(doubleMax);
+    ui->toroidRadius2->setMaximum(DBL_MAX);
     ui->toroidRadius2->setMinimum(0);
     ui->toroidCount->setMaximum(1000);
 }

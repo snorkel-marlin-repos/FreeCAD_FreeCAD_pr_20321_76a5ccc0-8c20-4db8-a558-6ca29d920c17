@@ -41,9 +41,8 @@ class Material;
  * This class is used to set options for a material tree search
  *
  */
-class MaterialsExport MaterialFilterOptions: public Base::BaseClass
+class MaterialsExport MaterialFilterOptions
 {
-    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
     MaterialFilterOptions();

@@ -22,7 +22,6 @@
 
 #include "PreCompiled.h"
 #ifndef _PreComp_
-#include <limits>
 #include <sstream>
 
 #include <QDialog>
@@ -58,7 +57,7 @@ public:
         std::vector<float> values;
         MeshCore::PlaneFit fit;
         fit.AddPoints(pts.points);
-        if (fit.Fit() < std::numeric_limits<float>::max()) {
+        if (fit.Fit() < FLOAT_MAX) {
             Base::Vector3f base = fit.GetBase();
             Base::Vector3f axis = fit.GetNormal();
             values.push_back(base.x);
@@ -91,7 +90,7 @@ public:
 #endif
         }
 
-        if (fit.Fit() < std::numeric_limits<float>::max()) {
+        if (fit.Fit() < FLOAT_MAX) {
             Base::Vector3f base, top;
             fit.GetBounding(base, top);
             Base::Vector3f axis = fit.GetAxis();
@@ -146,7 +145,7 @@ public:
         std::vector<float> values;
         MeshCore::SphereFit fit;
         fit.AddPoints(pts.points);
-        if (fit.Fit() < std::numeric_limits<float>::max()) {
+        if (fit.Fit() < FLOAT_MAX) {
             Base::Vector3f base = fit.GetCenter();
             float radius = fit.GetRadius();
             values.push_back(base.x);
@@ -229,7 +228,7 @@ ParametersDialog::ParametersDialog(std::vector<float>& val,
 
         QDoubleSpinBox* doubleSpinBox = new QDoubleSpinBox(groupBox);
         doubleSpinBox->setObjectName(it.first);
-        doubleSpinBox->setRange(-std::numeric_limits<int>::max(), std::numeric_limits<int>::max());
+        doubleSpinBox->setRange(-INT_MAX, INT_MAX);
         doubleSpinBox->setValue(it.second);
         layout->addWidget(doubleSpinBox, index, 1, 1, 1);
         spinBoxes.push_back(doubleSpinBox);
@@ -336,11 +335,11 @@ SegmentationBestFit::SegmentationBestFit(Mesh::Feature* mesh, QWidget* parent, Q
     ui->setupUi(this);
     setupConnections();
 
-    ui->numPln->setRange(1, std::numeric_limits<int>::max());
+    ui->numPln->setRange(1, INT_MAX);
     ui->numPln->setValue(100);
-    ui->numCyl->setRange(1, std::numeric_limits<int>::max());
+    ui->numCyl->setRange(1, INT_MAX);
     ui->numCyl->setValue(100);
-    ui->numSph->setRange(1, std::numeric_limits<int>::max());
+    ui->numSph->setRange(1, INT_MAX);
     ui->numSph->setValue(100);
 
     Gui::SelectionObject obj(myMesh);

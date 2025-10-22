@@ -129,17 +129,16 @@ EndMill* MillSimulation::GetTool(int toolId)
     return nullptr;
 }
 
-void MillSimulation::RemoveTool(const int toolId)
+void MillSimulation::RemoveTool(int toolId)
 {
-    EndMill* tool = GetTool(toolId);
-    if (tool == nullptr) {
-        return;
+    EndMill* tool;
+    if ((tool = GetTool(toolId)) != nullptr) {
+        auto it = std::find(mToolTable.begin(), mToolTable.end(), tool);
+        if (it != mToolTable.end()) {
+            mToolTable.erase(it);
+        }
+        delete tool;
     }
-
-    if (const auto it = std::ranges::find(mToolTable, tool); it != mToolTable.end()) {
-        mToolTable.erase(it);
-    }
-    delete tool;
 }
 
 

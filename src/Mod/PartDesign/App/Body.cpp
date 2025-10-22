@@ -353,7 +353,7 @@ std::vector<App::DocumentObject*> Body::removeObject(App::DocumentObject* featur
     }
 
     std::vector<App::DocumentObject*> model = Group.getValues();
-    const auto it = std::ranges::find(model, feature);
+    std::vector<App::DocumentObject*>::iterator it = std::find(model.begin(), model.end(), feature);
 
     // Adjust Tip feature if it is pointing to the deleted object
     if (Tip.getValue()== feature) {

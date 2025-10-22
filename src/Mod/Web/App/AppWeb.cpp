@@ -22,7 +22,6 @@
 
 #include "PreCompiled.h"
 #ifndef _PreComp_
-#include <limits>
 #include <sstream>
 #endif
 
@@ -90,7 +89,7 @@ private:
         if (!PyArg_ParseTuple(args.ptr(), "|si", &addr, &port)) {
             throw Py::Exception();
         }
-        if (port > std::numeric_limits<unsigned short>::max()) {
+        if (port > USHRT_MAX) {
             throw Py::OverflowError("port number is greater than maximum");
         }
         else if (port < 0) {
@@ -122,7 +121,7 @@ private:
         if (!PyArg_ParseTuple(args.ptr(), "|sii", &addr, &port, &timeout)) {
             throw Py::Exception();
         }
-        if (port > std::numeric_limits<unsigned short>::max()) {
+        if (port > USHRT_MAX) {
             throw Py::OverflowError("port number is greater than maximum");
         }
         else if (port < 0) {

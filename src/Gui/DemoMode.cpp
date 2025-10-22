@@ -22,7 +22,6 @@
 
 #include "PreCompiled.h"
 #ifndef _PreComp_
-#include <limits>
 #include <QCursor>
 #include <QTimer>
 #include <Inventor/nodes/SoCamera.h>
@@ -167,7 +166,7 @@ SbVec3f DemoMode::getDirection(Gui::View3DInventor* view) const
     SbRotation inv = rot.inverse();
     SbVec3f vec(this->viewAxis);
     inv.multVec(vec, vec);
-    if (vec.length() < std::numeric_limits<float>::epsilon()) {
+    if (vec.length() < FLT_EPSILON) {
         vec = this->viewAxis;
     }
     vec.normalize();

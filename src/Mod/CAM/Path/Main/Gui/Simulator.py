@@ -137,7 +137,7 @@ class PathSimulation:
                 setJobIdx = jIdx
             jIdx += 1
 
-        # Preselect GUI-selected job in the combobox
+        # Pre-select GUI-selected job in the combobox
         if jobName or jCnt == 1:
             form.comboJobs.setCurrentIndex(setJobIdx)
         else:

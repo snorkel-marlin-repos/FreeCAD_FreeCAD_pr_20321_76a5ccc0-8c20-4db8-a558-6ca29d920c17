@@ -88,12 +88,14 @@ void PropertyMaterial::Save(Base::Writer& writer) const
 
 void PropertyMaterial::Restore(Base::XMLReader& reader)
 {
+    MaterialManager manager;
+
     // read my Element
     reader.readElement("PropertyMaterial");
     // get the value of my Attribute
     auto uuid = reader.getAttribute("uuid");
 
-    setValue(*MaterialManager::getManager().getMaterial(QString::fromLatin1(uuid)));
+    setValue(*manager.getMaterial(QString::fromLatin1(uuid)));
 }
 
 const char* PropertyMaterial::getEditorName() const

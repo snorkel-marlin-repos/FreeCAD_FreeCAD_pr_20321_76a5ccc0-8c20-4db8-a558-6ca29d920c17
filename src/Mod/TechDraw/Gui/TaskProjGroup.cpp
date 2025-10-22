@@ -112,9 +112,13 @@ void TaskProjGroup::connectWidgets()
     connect(ui->sbScaleDen,   qOverload<int>(&QSpinBox::valueChanged), this, &TaskProjGroup::scaleManuallyChanged);
 
     // Slot for Projection Type (layout)
+#if QT_VERSION < QT_VERSION_CHECK(5,15,0)
+    connect(ui->projection, qOverload<const QString&>(&QComboBox::currentIndexChanged), this, &TaskProjGroup::projectionTypeChanged);
+#else
     connect(ui->projection, qOverload<int>(&QComboBox::currentIndexChanged), this, [this](int index) {
         projectionTypeChanged(ui->projection->itemText(index));
     });
+#endif
 
     // Spacing
     connect(ui->cbAutoDistribute, &QPushButton::clicked, this, &TaskProjGroup::AutoDistributeClicked);
@@ -365,13 +369,12 @@ void TaskProjGroup::turnProjGroupToView()
 
     Gui::Command::doCommand(Gui::Command::Gui, "App.activeDocument().removeObject('%s')", multiView->getNameInDocument());
 
-    viewPart->recomputeFeature();
     Gui::Document* activeGui = Gui::Application::Instance->getDocument(m_page->getDocument());
-    auto* vpView = static_cast<ViewProviderProjGroupItem*>(activeGui->getViewProvider(viewPart));
-    if (vpView) {
-        vpView->updateIcon();
-        vpView->fixSceneDependencies();
+    auto* vp = static_cast<ViewProviderProjGroupItem*>(activeGui->getViewProvider(viewPart));
+    if (vp) {
+        vp->updateIcon();
     }
+    viewPart->recomputeFeature();
 
     view = viewPart;
     multiView = nullptr;

@@ -33,6 +33,10 @@
 
 #include "Datums.h"
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 using namespace App;
 
 PROPERTY_SOURCE(App::DatumElement, App::GeoFeature)
@@ -204,7 +208,7 @@ App::Point* LocalCoordinateSystem::getPoint(const char* role) const
 bool LocalCoordinateSystem::hasObject(const DocumentObject* obj) const
 {
     const auto& features = OriginFeatures.getValues();
-    return std::ranges::find(features, obj) != features.end();
+    return std::find(features.begin(), features.end(), obj) != features.end();
 }
 
 short LocalCoordinateSystem::mustExecute() const
@@ -239,16 +243,14 @@ App::DocumentObjectExecReturn* LocalCoordinateSystem::execute()
 
 const std::vector<LocalCoordinateSystem::SetupData>& LocalCoordinateSystem::getSetupData()
 {
-    using std::numbers::pi;
-
     static const std::vector<SetupData> setupData = {
         // clang-format off
         {App::Line::getClassTypeId(),  AxisRoles[0],  tr("X-axis"),   Base::Rotation()},
-        {App::Line::getClassTypeId(),  AxisRoles[1],  tr("Y-axis"),   Base::Rotation(Base::Vector3d(1, 1, 1), pi * 2 / 3)},
-        {App::Line::getClassTypeId(),  AxisRoles[2],  tr("Z-axis"),   Base::Rotation(Base::Vector3d(1,-1, 1), pi * 2 / 3)},
+        {App::Line::getClassTypeId(),  AxisRoles[1],  tr("Y-axis"),   Base::Rotation(Base::Vector3d(1, 1, 1), M_PI * 2 / 3)},
+        {App::Line::getClassTypeId(),  AxisRoles[2],  tr("Z-axis"),   Base::Rotation(Base::Vector3d(1,-1, 1), M_PI * 2 / 3)},
         {App::Plane::getClassTypeId(), PlaneRoles[0], tr("XY-plane"), Base::Rotation()},
         {App::Plane::getClassTypeId(), PlaneRoles[1], tr("XZ-plane"), Base::Rotation(1.0, 0.0, 0.0, 1.0)},
-        {App::Plane::getClassTypeId(), PlaneRoles[2], tr("YZ-plane"), Base::Rotation(Base::Vector3d(1, 1, 1), pi * 2 / 3)},
+        {App::Plane::getClassTypeId(), PlaneRoles[2], tr("YZ-plane"), Base::Rotation(Base::Vector3d(1, 1, 1), M_PI * 2 / 3)},
         {App::Point::getClassTypeId(), PointRoles[0], tr("Origin"),   Base::Rotation()}
         // clang-format on
     };
@@ -300,12 +302,12 @@ void LocalCoordinateSystem::unsetupObject()
 {
     const auto& objsLnk = OriginFeatures.getValues();
     // Copy to set to assert we won't call method more then one time for each object
-    const std::set<App::DocumentObject*> objs(objsLnk.begin(), objsLnk.end());
+    std::set<App::DocumentObject*> objs(objsLnk.begin(), objsLnk.end());
     // Remove all controlled objects
     for (auto obj : objs) {
         // Check that previous deletes didn't indirectly remove one of our objects
-        const auto& objsLnk2 = OriginFeatures.getValues();
-        if (std::ranges::find(objsLnk2, obj) != objsLnk2.end()) {
+        const auto& objsLnk = OriginFeatures.getValues();
+        if (std::find(objsLnk.begin(), objsLnk.end(), obj) != objsLnk.end()) {
             if (!obj->isRemoving()) {
                 obj->getDocument()->removeObject(obj->getNameInDocument());
             }
@@ -329,7 +331,7 @@ void LocalCoordinateSystem::migrateOriginPoint()
         return obj->isDerivedFrom<App::DatumElement>() &&
             strcmp(static_cast<App::DatumElement*>(obj)->Role.getValue(), PointRoles[0]) == 0;
     };
-    if (std::ranges::none_of(features, isOrigin)) {
+    if (std::none_of(features.begin(), features.end(), isOrigin)) {
         auto data = getData(PointRoles[0]);
         auto* origin = createDatum(data);
         origin->purgeTouched();

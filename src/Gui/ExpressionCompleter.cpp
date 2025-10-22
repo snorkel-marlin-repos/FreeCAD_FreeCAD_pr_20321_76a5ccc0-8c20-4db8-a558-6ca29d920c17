@@ -956,11 +956,6 @@ void ExpressionLineEdit::setExactMatch(bool enabled)
     }
 }
 
-ExpressionCompleter *ExpressionLineEdit::getCompleter(void)
-{
-    return this->completer;
-}
-
 bool ExpressionLineEdit::completerActive() const
 {
     return completer && completer->popup() && completer->popup()->isVisible();

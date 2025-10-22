@@ -54,8 +54,6 @@ public:
 
 private:
     ParameterGrp::handle hGrp;
-    ParameterGrp::handle hLightSourcesGrp;
-
     std::vector<View3DInventorViewer*> _viewers;
 };
 

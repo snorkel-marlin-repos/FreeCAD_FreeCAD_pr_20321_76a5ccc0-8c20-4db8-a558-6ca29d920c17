@@ -87,7 +87,7 @@ namespace Part {
     // 6. Register your type and corresponding python type in AppPart.cpp
 
     template <typename T>
-    Base::Type GeometryDefaultExtension<T>::classTypeId{Base::Type::BadType};
+    Base::Type GeometryDefaultExtension<T>::classTypeId{Base::Type::badType()};
 
     // Must be explicitly declared here
     template<> void * GeometryDefaultExtension<long>::create();

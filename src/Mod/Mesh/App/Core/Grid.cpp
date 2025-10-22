@@ -25,7 +25,6 @@
 #ifndef _PreComp_
 #include <algorithm>
 #include <cmath>
-#include <limits>
 #endif
 
 #include "Algorithm.h"
@@ -640,7 +639,7 @@ unsigned long
 MeshGrid::GetIndexToPosition(unsigned long ulX, unsigned long ulY, unsigned long ulZ) const
 {
     if (!CheckPos(ulX, ulY, ulZ)) {
-        return std::numeric_limits<unsigned long>::max();
+        return ULONG_MAX;
     }
     return (ulZ * _ulCtGridsY + ulY) * _ulCtGridsX + ulX;
 }
@@ -655,9 +654,9 @@ bool MeshGrid::GetPositionToIndex(unsigned long id,
     ulZ = id / (_ulCtGridsX * _ulCtGridsY);
 
     if (!CheckPos(ulX, ulY, ulZ)) {
-        ulX = std::numeric_limits<unsigned long>::max();
-        ulY = std::numeric_limits<unsigned long>::max();
-        ulZ = std::numeric_limits<unsigned long>::max();
+        ulX = ULONG_MAX;
+        ulY = ULONG_MAX;
+        ulZ = ULONG_MAX;
         return false;
     }
 
@@ -761,7 +760,7 @@ void MeshFacetGrid::RebuildGrid()
 unsigned long MeshFacetGrid::SearchNearestFromPoint(const Base::Vector3f& rclPt) const
 {
     ElementIndex ulFacetInd = ELEMENT_INDEX_MAX;
-    float fMinDist = std::numeric_limits<float>::max();
+    float fMinDist = FLOAT_MAX;
     Base::BoundBox3f clBB = GetBoundBox();
 
     if (clBB.IsInBox(rclPt)) {  // Point lies within
@@ -1155,7 +1154,7 @@ bool MeshGridIterator::InitOnRay(const Base::Vector3f& rclPt,
     // needed in NextOnRay() to avoid an infinite loop
     _cSearchPositions.clear();
 
-    _fMaxSearchArea = std::numeric_limits<float>::max();
+    _fMaxSearchArea = FLOAT_MAX;
 
     raulElements.clear();
 

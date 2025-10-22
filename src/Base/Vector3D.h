@@ -24,9 +24,34 @@
 #ifndef BASE_VECTOR3D_H
 #define BASE_VECTOR3D_H
 
-#include <limits>
+
 #include <cmath>
-#include <numbers>
+#include <cfloat>
+
+#ifndef F_PI
+#define F_PI 3.1415926f
+#endif
+
+#ifndef D_PI
+#define D_PI 3.141592653589793
+#endif
+
+#ifndef FLOAT_MAX
+#define FLOAT_MAX 3.402823466E+38F
+#endif
+
+#ifndef FLOAT_MIN
+#define FLOAT_MIN 1.175494351E-38F
+#endif
+
+#ifndef DOUBLE_MAX
+#define DOUBLE_MAX 1.7976931348623157E+308 /* max decimal value of a "double"*/
+#endif
+
+#ifndef DOUBLE_MIN
+#define DOUBLE_MIN 2.2250738585072014E-308 /* min decimal value of a "double"*/
+#endif
+
 
 namespace Base
 {
@@ -35,22 +60,21 @@ struct float_traits
 {
 };
 
-// TODO: Remove these specializations and use the default implementation for all types.
 template<>
 struct float_traits<float>
 {
     using float_type = float;
-    [[nodiscard]] static consteval float_type pi()
+    [[nodiscard]] static constexpr float_type pi()
     {
-        return std::numbers::pi_v<float_type>;
+        return F_PI;
     }
-    [[nodiscard]] static consteval float_type epsilon()
+    [[nodiscard]] static constexpr float_type epsilon()
     {
-        return std::numeric_limits<float_type>::epsilon();
+        return FLT_EPSILON;
     }
-    [[nodiscard]] static consteval float_type maximum()
+    [[nodiscard]] static constexpr float_type maximum()
     {
-        return std::numeric_limits<float_type>::max();
+        return FLT_MAX;
     }
 };
 
@@ -58,17 +82,17 @@ template<>
 struct float_traits<double>
 {
     using float_type = double;
-    [[nodiscard]] static consteval float_type pi()
+    [[nodiscard]] static constexpr float_type pi()
     {
-        return std::numbers::pi_v<float_type>;
+        return D_PI;
     }
-    [[nodiscard]] static consteval float_type epsilon()
+    [[nodiscard]] static constexpr float_type epsilon()
     {
-        return std::numeric_limits<float_type>::epsilon();
+        return DBL_EPSILON;
     }
-    [[nodiscard]] static consteval float_type maximum()
+    [[nodiscard]] static constexpr float_type maximum()
     {
-        return std::numeric_limits<float_type>::max();
+        return DBL_MAX;
     }
 };
 
@@ -251,7 +275,7 @@ template<class float_type>
     float_type x = v1.x - v2.x;
     float_type y = v1.y - v2.y;
     float_type z = v1.z - v2.z;
-    return static_cast<float_type>(std::sqrt((x * x) + (y * y) + (z * z)));
+    return static_cast<float_type>(sqrt((x * x) + (y * y) + (z * z)));
 }
 
 /// Returns the squared distance between two points

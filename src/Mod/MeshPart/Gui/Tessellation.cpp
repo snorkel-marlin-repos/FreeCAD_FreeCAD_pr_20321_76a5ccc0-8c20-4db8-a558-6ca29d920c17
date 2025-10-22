@@ -71,11 +71,11 @@ Tessellation::Tessellation(QWidget* parent)
     relative = handle->GetBool("RelativeLinearDeflection", relative);
     ui->relativeDeviation->setChecked(relative);
 
-    ui->spinSurfaceDeviation->setMaximum(std::numeric_limits<int>::max());
+    ui->spinSurfaceDeviation->setMaximum(INT_MAX);
     ui->spinSurfaceDeviation->setValue(value);
     ui->spinAngularDeviation->setValue(angle);
 
-    ui->spinMaximumEdgeLength->setRange(0, std::numeric_limits<int>::max());
+    ui->spinMaximumEdgeLength->setRange(0, INT_MAX);
 
     ui->comboFineness->setCurrentIndex(2);
     onComboFinenessCurrentIndexChanged(2);

@@ -29,7 +29,6 @@
 #include <gp_Dir.hxx>
 #include <gp_Pnt.hxx>
 #include <gp_Vec.hxx>
-#include <limits>
 #include <sstream>
 #endif
 
@@ -143,7 +142,7 @@ void DrawProjGroup::onChanged(const App::Property* prop)
     if (prop == &ScaleType) {
         if (ScaleType.isValue("Page")) {
             double newScale = page->Scale.getValue();
-            if (std::abs(getScale() - newScale) > std::numeric_limits<float>::epsilon()) {
+            if (std::abs(getScale() - newScale) > FLT_EPSILON) {
                 Scale.setValue(newScale);
                 updateChildrenScale();
             }
@@ -1147,9 +1146,9 @@ void DrawProjGroup::spin(const SpinDirection& spindirection)
 {
     double angle;
     if (spindirection == SpinDirection::CW)
-        angle = std::numbers::pi / 2.0;// Top -> Right -> Bottom -> Left -> Top
+        angle = M_PI / 2.0;// Top -> Right -> Bottom -> Left -> Top
     if (spindirection == SpinDirection::CCW)
-        angle = -std::numbers::pi / 2.0;// Top -> Left -> Bottom -> Right -> Top
+        angle = -M_PI / 2.0;// Top -> Left -> Bottom -> Right -> Top
 
     spin(angle);
 }

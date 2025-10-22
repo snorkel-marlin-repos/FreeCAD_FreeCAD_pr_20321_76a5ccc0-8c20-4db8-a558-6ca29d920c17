@@ -296,7 +296,7 @@ void TaskLeaderLine::recomputeFeature()
 {
     App::DocumentObject* objVP = m_lineVP->getObject();
     assert(objVP);
-    objVP->recomputeFeature();
+    objVP->getDocument()->recomputeFeature(objVP);
 }
 
 void TaskLeaderLine::onStartSymbolChanged()

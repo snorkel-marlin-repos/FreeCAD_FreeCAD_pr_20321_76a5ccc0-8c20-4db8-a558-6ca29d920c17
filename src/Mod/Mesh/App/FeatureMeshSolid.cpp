@@ -21,9 +21,6 @@
  ***************************************************************************/
 
 #include "PreCompiled.h"
-#ifndef _PreComp_
-#include <limits>
-#endif
 
 #include <App/Document.h>
 
@@ -32,10 +29,8 @@
 
 namespace Mesh
 {
-const App::PropertyIntegerConstraint::Constraints intSampling = {0,
-                                                                 std::numeric_limits<int>::max(),
-                                                                 1};
-const App::PropertyLength::Constraints floatRange = {0.0, std::numeric_limits<float>::max(), 1.0};
+const App::PropertyIntegerConstraint::Constraints intSampling = {0, INT_MAX, 1};
+const App::PropertyLength::Constraints floatRange = {0.0, FLT_MAX, 1.0};
 }  // namespace Mesh
 
 using namespace Mesh;

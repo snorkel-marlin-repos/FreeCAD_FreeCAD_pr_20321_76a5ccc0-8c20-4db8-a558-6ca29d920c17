@@ -24,7 +24,6 @@
 #ifndef GUI_SelectionFilter_H
 #define GUI_SelectionFilter_H
 
-#include <limits>
 #include <memory>
 #include <string>
 #include <CXX/Extensions.hxx>
@@ -173,9 +172,8 @@ private:
 
 struct Node_Slice
 {
-    explicit Node_Slice(int min = 1, int max = std::numeric_limits<int>::max())
-        : Min(min), Max(max) {}
-    int Min, Max;
+    explicit Node_Slice(int min=1,int max=INT_MAX):Min(min),Max(max){}
+    int Min,Max;
 
 };
 

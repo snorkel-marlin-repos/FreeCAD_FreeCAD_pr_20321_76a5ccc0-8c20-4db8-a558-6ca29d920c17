@@ -25,7 +25,6 @@
 #ifndef _PreComp_
 #include <boost/core/ignore_unused.hpp>
 #include <numeric>
-#include <limits>
 
 #include <BRepBuilderAPI_MakeVertex.hxx>
 #include <BRepClass3d_SolidClassifier.hxx>
@@ -317,7 +316,7 @@ InspectNominalMesh::~InspectNominalMesh()
 float InspectNominalMesh::getDistance(const Base::Vector3f& point) const
 {
     if (!_box.IsInBox(point)) {
-        return std::numeric_limits<float>::max();  // must be inside bbox
+        return FLT_MAX;  // must be inside bbox
     }
 
     std::vector<unsigned long> indices;
@@ -328,7 +327,7 @@ float InspectNominalMesh::getDistance(const Base::Vector3f& point) const
         indices.insert(indices.begin(), inds.begin(), inds.end());
     }
 
-    float fMinDist = std::numeric_limits<float>::max();
+    float fMinDist = FLT_MAX;
     bool positive = true;
     for (unsigned long it : indices) {
         MeshCore::MeshGeomFacet geomFace = _mesh.GetFacet(it);
@@ -394,7 +393,7 @@ InspectNominalFastMesh::~InspectNominalFastMesh()
 float InspectNominalFastMesh::getDistance(const Base::Vector3f& point) const
 {
     if (!_box.IsInBox(point)) {
-        return std::numeric_limits<float>::max();  // must be inside bbox
+        return FLT_MAX;  // must be inside bbox
     }
 
     std::set<unsigned long> indices;
@@ -414,7 +413,7 @@ float InspectNominalFastMesh::getDistance(const Base::Vector3f& point) const
     }
 #endif
 
-    float fMinDist = std::numeric_limits<float>::max();
+    float fMinDist = FLT_MAX;
     bool positive = true;
     for (unsigned long it : indices) {
         MeshCore::MeshGeomFacet geomFace = _mesh.GetFacet(it);
@@ -458,7 +457,7 @@ float InspectNominalPoints::getDistance(const Base::Vector3f& point) const
     _pGrid->Position(pointd, x, y, z);
     _pGrid->GetElements(x, y, z, indices);
 
-    double fMinDist = std::numeric_limits<double>::max();
+    double fMinDist = DBL_MAX;
     for (unsigned long it : indices) {
         Base::Vector3d pt = _rKernel.getPoint(it);
         double fDist = Base::Distance(pointd, pt);
@@ -502,7 +501,7 @@ float InspectNominalShape::getDistance(const Base::Vector3f& point) const
     BRepBuilderAPI_MakeVertex mkVert(pnt3d);
     distss->LoadS2(mkVert.Vertex());
 
-    float fMinDist = std::numeric_limits<float>::max();
+    float fMinDist = FLT_MAX;
     if (distss->Perform() && distss->NbSolution() > 0) {
         fMinDist = (float)distss->Value();
         // the shape is a solid, check if the vertex is inside
@@ -714,7 +713,7 @@ struct DistanceInspection
     {
         Base::Vector3f pnt = actual->getPoint(index);
 
-        float fMinDist = std::numeric_limits<float>::max();
+        float fMinDist = FLT_MAX;
         for (auto it : nominal) {
             float fDist = it->getDistance(pnt);
             if (fabs(fDist) < fabs(fMinDist)) {
@@ -723,10 +722,10 @@ struct DistanceInspection
         }
 
         if (fMinDist > this->radius) {
-            fMinDist = std::numeric_limits<float>::max();
+            fMinDist = FLT_MAX;
         }
         else if (-fMinDist > this->radius) {
-            fMinDist = -std::numeric_limits<float>::max();
+            fMinDist = -FLT_MAX;
         }
 
         return fMinDist;
@@ -885,7 +884,7 @@ App::DocumentObjectExecReturn* Feature::execute()
     float fRMS = 0;
     int countRMS = 0;
     for (std::vector<float>::iterator it = vals.begin(); it != vals.end(); ++it) {
-        if (fabs(*it) < std::numeric_limits<float>::max()) {
+        if (fabs(*it) < FLT_MAX) {
             fRMS += (*it) * (*it);
             countRMS++;
         }
@@ -905,7 +904,7 @@ App::DocumentObjectExecReturn* Feature::execute()
         DistanceInspectionRMS res;
         Base::Vector3f pnt = actual->getPoint(index);
 
-        float fMinDist = std::numeric_limits<float>::max();
+        float fMinDist = FLT_MAX;
         for (auto it : inspectNominal) {
             float fDist = it->getDistance(pnt);
             if (fabs(fDist) < fabs(fMinDist)) {
@@ -914,10 +913,10 @@ App::DocumentObjectExecReturn* Feature::execute()
         }
 
         if (fMinDist > this->SearchRadius.getValue()) {
-            fMinDist = std::numeric_limits<float>::max();
+            fMinDist = FLT_MAX;
         }
         else if (-fMinDist > this->SearchRadius.getValue()) {
-            fMinDist = -std::numeric_limits<float>::max();
+            fMinDist = -FLT_MAX;
         }
         else {
             res.m_sumsq += fMinDist * fMinDist;

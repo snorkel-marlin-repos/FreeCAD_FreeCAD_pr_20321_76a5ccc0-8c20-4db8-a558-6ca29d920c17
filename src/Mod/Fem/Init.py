@@ -93,9 +93,9 @@ FreeCAD.addImportType(
 
 if "BUILD_FEM_VTK" in FreeCAD.__cmake__:
     FreeCAD.addImportType(
-        "FEM result VTK (*.vtk *.VTK *.vtu *.VTU *.pvtu *.PVTU *.vtm .VTM)",
+        "FEM result VTK (*.vtk *.VTK *.vtu *.VTU *.pvtu *.PVTU)",
         "feminout.importVTKResults",
     )
     FreeCAD.addExportType(
-        "FEM result VTK (*.vtu *.vtp *.vts *.vtr *.vti *.vtm)", "feminout.importVTKResults"
+        "FEM result VTK (*.vtu *.vtp *.vts *.vtr *.vti)", "feminout.importVTKResults"
     )

@@ -179,7 +179,7 @@ Base::Type DlgExpressionInput::determineTypeVarSet()
     std::string unitTypeString = impliedUnit.getTypeString();
     if (unitTypeString.empty()) {
         // no type was provided
-        return Base::Type::BadType;
+        return Base::Type::badType();
     }
 
     std::string typeString = "App::Property" + unitTypeString;
@@ -190,7 +190,7 @@ Base::Type DlgExpressionInput::determineTypeVarSet()
 bool DlgExpressionInput::typeOkForVarSet()
 {
     std::string unitType = impliedUnit.getTypeString();
-    return !determineTypeVarSet().isBad();
+    return determineTypeVarSet() != Base::Type::badType();
 }
 
 void DlgExpressionInput::initializeVarSets()

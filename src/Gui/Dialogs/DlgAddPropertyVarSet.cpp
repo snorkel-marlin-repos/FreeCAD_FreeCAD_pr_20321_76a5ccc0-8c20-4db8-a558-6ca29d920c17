@@ -441,7 +441,7 @@ void DlgAddPropertyVarSet::checkGroup() {
 void DlgAddPropertyVarSet::checkType() {
     std::string type = ui->comboBoxType->currentText().toStdString();
 
-    if (Base::Type::fromName(type.c_str()).isBad()) {
+    if (Base::Type::fromName(type.c_str()) == Base::Type::badType()) {
         throw CreatePropertyException("Invalid name");
     }
 }

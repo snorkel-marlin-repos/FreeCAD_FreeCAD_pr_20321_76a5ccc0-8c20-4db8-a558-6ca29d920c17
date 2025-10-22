@@ -1,5 +1,3 @@
-add_library(Points SHARED)
-
 if(WIN32)
     add_definitions(-DFCAppPoints)
 endif(WIN32)
@@ -9,22 +7,18 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_include_directories(
-    Points
+include_directories(
     SYSTEM
-    PUBLIC
+    ${Boost_INCLUDE_DIRS}
     ${EIGEN3_INCLUDE_DIR}
+    ${PYCXX_INCLUDE_DIR}
+    ${Python3_INCLUDE_DIRS}
+    ${XercesC_INCLUDE_DIRS}
+    ${ZIPIOS_INCLUDES}
+    ${ZLIB_INCLUDE_DIR}
+    ${CMAKE_BINARY_DIR}/src/3rdParty/libE57Format
+    ${CMAKE_SOURCE_DIR}/src/3rdParty/libE57Format/include
 )
-
-if (NOT FREECAD_USE_EXTERNAL_E57FORMAT)
-    target_include_directories(
-        Points
-        SYSTEM
-        PUBLIC
-        ${CMAKE_BINARY_DIR}/src/3rdParty/libE57Format
-        ${CMAKE_SOURCE_DIR}/src/3rdParty/libE57Format/include
-    )
-endif()
 
 set(Points_LIBS
     FreeCADApp
@@ -74,11 +68,9 @@ if(FREECAD_USE_PCH)
     ADD_MSVC_PRECOMPILED_HEADER(Points PreCompiled.h PreCompiled.cpp PCH_SRCS)
 endif(FREECAD_USE_PCH)
 
-target_sources(Points PRIVATE ${Points_SRCS} ${Points_Scripts})
+add_library(Points SHARED ${Points_SRCS} ${Points_Scripts})
 
-if (NOT FREECAD_USE_EXTERNAL_E57FORMAT)
-    link_directories(${CMAKE_BINARY_DIR}/src/3rdParty/libE57Format)
-endif()
+link_directories(${CMAKE_BINARY_DIR}/src/3rdParty/libE57Format)
 
 target_link_libraries(Points E57Format ${Points_LIBS})
 if (FREECAD_WARN_ERROR)

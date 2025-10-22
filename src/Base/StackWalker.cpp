@@ -92,7 +92,6 @@
 #include <tchar.h>
 #include <windows.h>
 #include <new>
-#include <cassert>
 
 #pragma comment(lib, "version.lib") // for "VerQueryValue"
 
@@ -811,9 +810,6 @@ private:
                     case 8:  // SymVirtual:
                         szSymType = "Virtual";
                         break;
-                    case NumSymTypes:                    // Not a real option, should never hit
-                        assert(false && "Unreachable");  // in C++23 use std::unreachable
-                        break;
                 }
             }
             LPCSTR pdbName = Module.LoadedImageName;
@@ -1472,7 +1468,7 @@ void StackWalker::OnLoadModule(LPCSTR img,
     if (fileVersion == 0) {
         _snprintf_s(buffer,
                     maxLen,
-                    "%s:%s (%p), size: %ld (result: %ld), SymType: '%s', PDB: '%s'\n",
+                    "%s:%s (%p), size: %d (result: %d), SymType: '%s', PDB: '%s'\n",
                     img,
                     mod,
                     (LPVOID)baseAddr,
@@ -1488,8 +1484,8 @@ void StackWalker::OnLoadModule(LPCSTR img,
         DWORD v1 = (DWORD)((fileVersion >> 48) & 0xFFFF);
         _snprintf_s(buffer,
                     maxLen,
-                    "%s:%s (%p), size: %ld (result: %ld), SymType: '%s', PDB: '%s', fileVersion: "
-                    "%ld.%ld.%ld.%ld\n",
+                    "%s:%s (%p), size: %d (result: %d), SymType: '%s', PDB: '%s', fileVersion: "
+                    "%d.%d.%d.%d\n",
                     img,
                     mod,
                     (LPVOID)baseAddr,
@@ -1539,7 +1535,7 @@ void StackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry& ent
         else {
             _snprintf_s(buffer,
                         maxLen,
-                        "%s (%ld): %s\n",
+                        "%s (%d): %s\n",
                         entry.lineFileName,
                         entry.lineNumber,
                         entry.name);
@@ -1558,7 +1554,7 @@ void StackWalker::OnDbgHelpErr(LPCSTR szFuncName, DWORD gle, DWORD64 addr)
 #endif
     _snprintf_s(buffer,
                 maxLen,
-                "ERROR: %s, GetLastError: %ld (Address: %p)\n",
+                "ERROR: %s, GetLastError: %d (Address: %p)\n",
                 szFuncName,
                 gle,
                 (LPVOID)addr);
@@ -1575,7 +1571,7 @@ void StackWalker::OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUser
 #endif
     _snprintf_s(buffer,
                 maxLen,
-                "SymInit: Symbol-SearchPath: '%s', symOptions: %ld, UserName: '%s'\n",
+                "SymInit: Symbol-SearchPath: '%s', symOptions: %d, UserName: '%s'\n",
                 szSearchPath,
                 symOptions,
                 szUserName);
@@ -1608,7 +1604,7 @@ void StackWalker::OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUser
     if (GetVersionExA((OSVERSIONINFOA*)&ver) != FALSE) {
         _snprintf_s(buffer,
                     maxLen,
-                    "OS-Version: %ld.%ld.%ld (%s) 0x%x-0x%x\n",
+                    "OS-Version: %d.%d.%d (%s) 0x%x-0x%x\n",
                     ver.dwMajorVersion,
                     ver.dwMinorVersion,
                     ver.dwBuildNumber,

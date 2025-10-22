@@ -948,7 +948,7 @@ void StdCmdToggleTransparency::activated(int iMsg)
                     }
                 }
 
-                if (std::ranges::find(views, view) == views.end()) {
+                if (std::find(views.begin(), views.end(), view) == views.end()) {
                     views.push_back(view);
                 }
             }
@@ -2029,8 +2029,11 @@ void StdViewScreenShot::activated(int iMsg)
                 // Replace newline escape sequence through '\\n' string to build one big string,
                 // otherwise Python would interpret it as an invalid command.
                 // Python does the decoding for us.
+#if QT_VERSION >= QT_VERSION_CHECK(5,15,0)
                 QStringList lines = comment.split(QLatin1String("\n"), Qt::KeepEmptyParts);
-
+#else
+                QStringList lines = comment.split(QLatin1String("\n"), QString::KeepEmptyParts);
+#endif
                 comment = lines.join(QLatin1String("\\n"));
                 doCommand(Gui, "Gui.activeDocument().activeView().saveImage('%s',%d,%d,'%s','%s')",
                           fn.toUtf8().constData(), w, h, background, comment.toUtf8().constData());
@@ -3454,7 +3457,7 @@ StdTreePreSelection::StdTreePreSelection()
   : Command("Std_TreePreSelection")
 {
     sGroup       = "TreeView";
-    sMenuText    = QT_TR_NOOP("&4 Preselection");
+    sMenuText    = QT_TR_NOOP("&4 Pre-selection");
     sToolTipText = QT_TR_NOOP("Preselect the object in 3D view when hovering the cursor over the tree item");
     sStatusTip   = sToolTipText;
     sWhatsThis   = "Std_TreePreSelection";

@@ -195,16 +195,12 @@ private:
                                     Drawing::ProjectionAlgos::ExtractionType type =
                                         Drawing::ProjectionAlgos::Plain;
                                     if (hidden) {
-                                        type = (Drawing::ProjectionAlgos::
-                                                    ExtractionType)(type
-                                                                    | Drawing::ProjectionAlgos::
-                                                                        WithHidden);
+                                        type = (Drawing::ProjectionAlgos::ExtractionType)(
+                                            type | Drawing::ProjectionAlgos::WithHidden);
                                     }
                                     if (smooth) {
-                                        type = (Drawing::ProjectionAlgos::
-                                                    ExtractionType)(type
-                                                                    | Drawing::ProjectionAlgos::
-                                                                        WithSmooth);
+                                        type = (Drawing::ProjectionAlgos::ExtractionType)(
+                                            type | Drawing::ProjectionAlgos::WithSmooth);
                                     }
                                     float scale = view->Scale.getValue();
                                     float tol = view->Tolerance.getValue();

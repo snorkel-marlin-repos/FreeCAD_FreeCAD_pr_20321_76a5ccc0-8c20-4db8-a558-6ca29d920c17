@@ -26,7 +26,6 @@
 #ifndef _PreComp_
 #include <QAction>
 #include <QMessageBox>
-#include <limits>
 #include <sstream>
 #endif
 
@@ -65,7 +64,7 @@ TaskFemConstraintPressure::TaskFemConstraintPressure(
     // Fill data into dialog elements
     ui->if_pressure->setUnit(pcConstraint->Pressure.getUnit());
     ui->if_pressure->setMinimum(0);
-    ui->if_pressure->setMaximum(std::numeric_limits<float>::max());
+    ui->if_pressure->setMaximum(FLOAT_MAX);
     ui->if_pressure->setValue(pcConstraint->Pressure.getQuantityValue());
     ui->if_pressure->bind(pcConstraint->Pressure);
 
@@ -150,7 +149,9 @@ void TaskFemConstraintPressure::addToSelection()
                 QMessageBox::warning(this, tr("Selection error"), tr("Only faces can be picked"));
                 return;
             }
-            for (auto itr = std::ranges::find(SubElements, subName); itr != SubElements.end();
+            for (std::vector<std::string>::iterator itr =
+                     std::find(SubElements.begin(), SubElements.end(), subName);
+                 itr != SubElements.end();
                  itr = std::find(++itr,
                                  SubElements.end(),
                                  subName)) {  // for every sub element in selection that
@@ -197,7 +198,9 @@ void TaskFemConstraintPressure::removeFromSelection()
         const App::DocumentObject* obj = it.getObject();
 
         for (const auto& subName : subNames) {  // for every selected sub element
-            for (auto itr = std::ranges::find(SubElements, subName); itr != SubElements.end();
+            for (std::vector<std::string>::iterator itr =
+                     std::find(SubElements.begin(), SubElements.end(), subName);
+                 itr != SubElements.end();
                  itr = std::find(++itr,
                                  SubElements.end(),
                                  subName)) {  // for every sub element in selection that
@@ -212,7 +215,7 @@ void TaskFemConstraintPressure::removeFromSelection()
             }
         }
     }
-    std::ranges::sort(itemsToDel);
+    std::sort(itemsToDel.begin(), itemsToDel.end());
     while (!itemsToDel.empty()) {
         Objects.erase(Objects.begin() + itemsToDel.back());
         SubElements.erase(SubElements.begin() + itemsToDel.back());

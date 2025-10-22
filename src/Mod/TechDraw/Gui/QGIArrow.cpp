@@ -46,7 +46,8 @@ QGIArrow::QGIArrow() :
     setFlipped(false);
     setFillStyle(Qt::SolidPattern);
     m_brush.setStyle(m_fill);
-    m_colNormalFill = getNormalColor();
+    m_colDefFill = getNormalColor();
+    m_colNormalFill = m_colDefFill;
 
     setCacheMode(QGraphicsItem::NoCache);
     setAcceptHoverEvents(false);

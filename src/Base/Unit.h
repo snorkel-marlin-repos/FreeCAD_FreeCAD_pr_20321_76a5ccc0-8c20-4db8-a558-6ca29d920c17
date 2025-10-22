@@ -111,7 +111,6 @@ public:
     static const Unit ElectricPotential;
     static const Unit ElectricCharge;
     static const Unit SurfaceChargeDensity;
-    static const Unit VolumeChargeDensity;
     static const Unit MagneticFieldStrength;
     static const Unit MagneticFlux;
     static const Unit MagneticFluxDensity;

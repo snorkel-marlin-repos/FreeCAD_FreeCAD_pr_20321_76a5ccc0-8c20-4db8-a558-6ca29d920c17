@@ -30,6 +30,7 @@
 #ifdef _PreComp_
 
 // standard
+#include <cfloat>
 #include <cmath>
 
 // STL

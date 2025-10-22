@@ -76,7 +76,11 @@ DlgSettingsEditor::DlgSettingsEditor(QWidget* parent)
 
     setupConnections();
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+    ui->textEdit1->setTabStopWidth(40);
+#else
     ui->textEdit1->setTabStopDistance(40.0);
+#endif
 
     d = new DlgSettingsEditorP();
     QColor col;
@@ -169,10 +173,17 @@ void DlgSettingsEditor::setupConnections()
             this, &DlgSettingsEditor::onDisplayItemsCurrentItemChanged);
     connect(ui->colorButton, &ColorButton::changed,
             this, &DlgSettingsEditor::onColorButtonChanged);
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+    connect(ui->fontFamily, qOverload<const QString&>(&QComboBox::activated),
+            this, &DlgSettingsEditor::onFontFamilyActivated);
+    connect(ui->fontSize, qOverload<const QString&>(&PrefSpinBox::valueChanged),
+            this, &DlgSettingsEditor::onFontSizeValueChanged);
+#else
     connect(ui->fontFamily, &QComboBox::textActivated,
             this, &DlgSettingsEditor::onFontFamilyActivated);
     connect(ui->fontSize, &PrefSpinBox::textChanged,
             this, &DlgSettingsEditor::onFontSizeValueChanged);
+#endif
     // clang-format on
 }
 
@@ -202,7 +213,11 @@ void DlgSettingsEditor::setEditorTabWidth(int tabWidth)
 {
     QFontMetrics metric(font());
     int fontSize = QtTools::horizontalAdvance(metric, QLatin1Char('0'));
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+    ui->textEdit1->setTabStopWidth(tabWidth * fontSize);
+#else
     ui->textEdit1->setTabStopDistance(tabWidth * fontSize);
+#endif
 }
 
 void DlgSettingsEditor::saveSettings()

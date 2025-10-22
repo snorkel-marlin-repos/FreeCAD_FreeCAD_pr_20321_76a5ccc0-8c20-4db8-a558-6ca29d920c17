@@ -30,7 +30,7 @@
 
 #ifndef _PreComp_
 # include <algorithm>
-# include <limits>
+# include <cfloat>
 # include <map>
 # include <Inventor/SoPickedPoint.h>
 # include <Inventor/SoPrimitiveVertex.h>
@@ -67,8 +67,6 @@
 // Should come after glext.h to avoid warnings
 # include <Inventor/C/glue/gl.h>
 #endif
-
-#include <Base/Profiler.h>
 
 #include <Gui/SoFCInteractiveElement.h>
 #include <Gui/Selection/SoFCSelectionAction.h>
@@ -194,7 +192,7 @@ void SoBrepFaceSet::doAction(SoAction* action)
         const SoDetail* detail = hlaction->getElement();
         if (!detail) {
             SelContextPtr ctx = Gui::SoFCSelectionRoot::getActionContext(action,this,selContext);
-            ctx->highlightIndex = std::numeric_limits<int>::max();
+            ctx->highlightIndex = INT_MAX;
             ctx->highlightColor = hlaction->getColor();
             touch();
         }else {
@@ -495,8 +493,6 @@ void SoBrepFaceSet::renderColoredArray(SoMaterialBundle *const materials)
 
 void SoBrepFaceSet::GLRender(SoGLRenderAction *action)
 {
-    ZoneScoped;
-
     //SoBase::staticDataLock();
     static bool init = false;
     if (!init) {
@@ -534,7 +530,7 @@ void SoBrepFaceSet::GLRender(SoGLRenderAction *action)
 
         // There are a few factors affects the rendering order.
         //
-        // 1) For normal case, the highlight (preselection) is the top layer. And since
+        // 1) For normal case, the highlight (pre-selection) is the top layer. And since
         // the depth buffer clipping is on here, we shall draw highlight first, then
         // selection, then the rest part.
         //
@@ -549,7 +545,7 @@ void SoBrepFaceSet::GLRender(SoGLRenderAction *action)
         // Transparency complicates stuff even more, but not here. It will be handled inside
         // overrideMaterialBinding()
         //
-        if(ctx && ctx->highlightIndex == std::numeric_limits<int>::max()) {
+        if(ctx && ctx->highlightIndex==INT_MAX) {
             if(ctx->selectionIndex.empty() || ctx->isSelectAll()) {
                 if(ctx2) {
                     ctx2->selectionColor = ctx->highlightColor;
@@ -1222,7 +1218,7 @@ void SoBrepFaceSet::renderHighlight(SoGLRenderAction *action, SelContextPtr ctx)
     mb.sendFirst(); // make sure we have the correct material
 
     int id = ctx->highlightIndex;
-    if (id != std::numeric_limits<int>::max() && id >= this->partIndex.getNum()) {
+    if (id!=INT_MAX && id >= this->partIndex.getNum()) {
         SoDebugError::postWarning("SoBrepFaceSet::renderHighlight", "highlightIndex out of range");
     }
     else {
@@ -1234,7 +1230,7 @@ void SoBrepFaceSet::renderHighlight(SoGLRenderAction *action, SelContextPtr ctx)
         // coords
         int start=0;
         int length;
-        if(id == std::numeric_limits<int>::max()) {
+        if(id==INT_MAX) {
             length = numindices;
             id = 0;
         } else {

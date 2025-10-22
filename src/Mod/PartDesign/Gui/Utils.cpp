@@ -327,7 +327,7 @@ void fixSketchSupport (Sketcher::SketchObject* sketch)
         // Offset to base plane
         // Find out which direction we need to offset
         double a = sketchVector.GetAngle(pnt);
-        if ((a < -std::numbers::pi/2) || (a > std::numbers::pi/2))
+        if ((a < -M_PI_2) || (a > M_PI_2))
             offset *= -1.0;
 
         std::string Datum = doc->getUniqueObjectName("DatumPlane");

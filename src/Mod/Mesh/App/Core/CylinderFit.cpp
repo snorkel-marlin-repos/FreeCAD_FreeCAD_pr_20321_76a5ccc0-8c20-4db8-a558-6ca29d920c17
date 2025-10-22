@@ -59,7 +59,6 @@
 #include <algorithm>
 #include <cstdlib>
 #include <iterator>
-#include <limits>
 #endif
 
 #include <Base/Console.h>
@@ -82,7 +81,7 @@ void CylinderFit::SetApproximations(double radius,
                                     const Base::Vector3d& axis)
 {
     _bIsFitted = false;
-    _fLastResult = std::numeric_limits<float>::max();
+    _fLastResult = FLOAT_MAX;
     _numIter = 0;
     _dRadius = radius;
     _vBase = base;
@@ -95,7 +94,7 @@ void CylinderFit::SetApproximations(double radius,
 void CylinderFit::SetApproximations(const Base::Vector3d& base, const Base::Vector3d& axis)
 {
     _bIsFitted = false;
-    _fLastResult = std::numeric_limits<float>::max();
+    _fLastResult = FLOAT_MAX;
     _numIter = 0;
     _vBase = base;
     _vAxis = axis;
@@ -169,7 +168,7 @@ int CylinderFit::GetNumIterations() const
 
 float CylinderFit::GetDistanceToCylinder(const Base::Vector3f& rcPoint) const
 {
-    float fResult = std::numeric_limits<float>::max();
+    float fResult = FLOAT_MAX;
     if (_bIsFitted) {
         Base::Vector3d pt(rcPoint.x, rcPoint.y, rcPoint.z);
         fResult = static_cast<float>(pt.DistanceToLine(_vBase, _vAxis) - _dRadius);
@@ -183,7 +182,7 @@ float CylinderFit::GetStdDeviation() const
     // Variance: VAR=(N/N-1)*[(1/N)*SUM(Xi^2)-M^2]
     // Standard deviation: SD=SQRT(VAR)
     if (!_bIsFitted) {
-        return std::numeric_limits<float>::max();
+        return FLOAT_MAX;
     }
 
     double sumXi = 0.0;
@@ -240,7 +239,7 @@ void CylinderFit::ProjectToCylinder()
 void CylinderFit::ComputeApproximationsLine()
 {
     _bIsFitted = false;
-    _fLastResult = std::numeric_limits<float>::max();
+    _fLastResult = FLOAT_MAX;
     _numIter = 0;
     _vBase.Set(0.0, 0.0, 0.0);
     _vAxis.Set(0.0, 0.0, 0.0);
@@ -267,13 +266,13 @@ void CylinderFit::ComputeApproximationsLine()
 float CylinderFit::Fit()
 {
     _bIsFitted = false;
-    _fLastResult = std::numeric_limits<float>::max();
+    _fLastResult = FLOAT_MAX;
     _numIter = 0;
 
     // A minimum of 5 surface points is needed to define a cylinder
     const int minPts = 5;
     if (CountPoints() < minPts) {
-        return std::numeric_limits<float>::max();
+        return FLOAT_MAX;
     }
 
     // If approximations have not been set/computed then compute some now using the line fit method
@@ -309,7 +308,7 @@ float CylinderFit::Fit()
         // Solve the equations for the unknown corrections
         Eigen::LLT<Matrix5x5> llt(atpa);
         if (llt.info() != Eigen::Success) {
-            return std::numeric_limits<float>::max();
+            return FLOAT_MAX;
         }
         Eigen::VectorXd x = llt.solve(atpl);
 
@@ -328,7 +327,7 @@ float CylinderFit::Fit()
         // convergence
         bool vConverged {};
         if (!computeResiduals(solDir, x, residuals, sigma0, _vConvLimit, vConverged)) {
-            return std::numeric_limits<float>::max();
+            return FLOAT_MAX;
         }
         if (!vConverged) {
             cont = true;
@@ -336,13 +335,13 @@ float CylinderFit::Fit()
 
         // Update the parameters
         if (!updateParameters(solDir, x)) {
-            return std::numeric_limits<float>::max();
+            return FLOAT_MAX;
         }
     }
 
     // Check for convergence
     if (cont) {
-        return std::numeric_limits<float>::max();
+        return FLOAT_MAX;
     }
 
     _bIsFitted = true;

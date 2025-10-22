@@ -23,8 +23,6 @@
 #ifndef INSPECTIOGUI_VIEWPROVIDERINSPECTION_H
 #define INSPECTIOGUI_VIEWPROVIDERINSPECTION_H
 
-#include <limits>
-
 #include <App/ComplexGeoData.h>
 #include <Base/Observer.h>
 #include <Gui/ViewProviderDocumentObject.h>
@@ -109,7 +107,7 @@ private:
     SoCoordinate3* pcCoords;
 
 private:
-    float search_radius {std::numeric_limits<float>::max()};
+    float search_radius {FLT_MAX};
     static bool addflag;
     static App::PropertyFloatConstraint::Constraints floatRange;
 };

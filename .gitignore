@@ -56,8 +56,6 @@ tags
 /CMakeUserPresets.json
 Testing
 compile_commands.json
-*.sublime-project
-*.sublime-workspace
 
 # crowdin file
 src/Tools/freecad.zip

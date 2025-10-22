@@ -64,7 +64,7 @@ void RectItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
         styleOption.state |= QStyle::State_Selected;
         QPalette palette = styleOption.palette;
         QColor tempColor = palette.color(QPalette::Active, QPalette::Highlight);
-        tempColor.setAlphaF(0.15F);
+        tempColor.setAlphaF(0.15);
         palette.setColor(QPalette::Inactive, QPalette::Highlight, tempColor);
         styleOption.palette = palette;
       }

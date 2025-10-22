@@ -105,7 +105,6 @@
 # include <boost/random.hpp>
 # include <cmath>
 # include <ctime>
-# include <limits>
 #endif //_PreComp_
 
 #include <Base/Console.h>
@@ -470,7 +469,7 @@ void Geometry::createNewTag()
     boost::lock_guard<boost::mutex> guard(random_number_mutex);
 
     if (!seeded) {
-        ran.seed(static_cast<std::uint64_t>(std::time(nullptr)));
+        ran.seed(static_cast<unsigned int>(std::time(nullptr)));
         seeded = true;
     }
     static boost::uuids::basic_random_generator<boost::mt19937> gen(&ran);
@@ -766,8 +765,8 @@ GeomLineSegment* GeomCurve::toLineSegment(KeepTag clone) const
 
     Base::Vector3d start, end;
     if (isDerivedFrom<GeomBoundedCurve>()) {
-        start = static_cast<const GeomBoundedCurve*>(this)->getStartPoint();
-        end = static_cast<const GeomBoundedCurve*>(this)->getEndPoint();
+        start = dynamic_cast<const GeomBoundedCurve*>(this)->getStartPoint();
+        end = dynamic_cast<const GeomBoundedCurve*>(this)->getEndPoint();
     } else {
         start = pointAtParameter(getFirstParameter());
         end = pointAtParameter(getLastParameter());
@@ -2641,7 +2640,7 @@ GeomCurve* GeomCircle::createArc(double first, double last) const
 GeomBSplineCurve* GeomCircle::toNurbs(double first, double last) const
 {
     // for an arc of circle use the generic method
-    if (first != 0 || last != 2 * std::numbers::pi) {
+    if (first != 0 || last != 2*M_PI) {
         return GeomConic::toNurbs(first, last);
     }
 
@@ -2675,8 +2674,8 @@ GeomBSplineCurve* GeomCircle::toNurbs(double first, double last) const
 
     TColStd_Array1OfReal knots(1, 3);
     knots(1) = 0;
-    knots(2) = std::numbers::pi;
-    knots(3) = 2 * std::numbers::pi;
+    knots(2) = M_PI;
+    knots(3) = 2*M_PI;
 
     Handle(Geom_BSplineCurve) spline = new Geom_BSplineCurve(poles, weights,knots, mults, 3,
         Standard_False, Standard_True);
@@ -2907,9 +2906,9 @@ void GeomArcOfCircle::getRange(double& u, double& v, bool emulateCCWXY) const
         }
 
         if (v < u)
-            v += 2 * std::numbers::pi;
-        if (v-u > 2 * std::numbers::pi)
-            v -= 2 * std::numbers::pi;
+            v += 2*M_PI;
+        if (v-u > 2*M_PI)
+            v -= 2*M_PI;
     }
 }
 
@@ -3087,7 +3086,7 @@ GeomCurve* GeomEllipse::createArc(double first, double last) const
 GeomBSplineCurve* GeomEllipse::toNurbs(double first, double last) const
 {
     // for an arc of ellipse use the generic method
-    if (first != 0 || last != 2 * std::numbers::pi) {
+    if (first != 0 || last != 2*M_PI) {
         return GeomConic::toNurbs(first, last);
     }
 
@@ -3466,9 +3465,9 @@ void GeomArcOfEllipse::getRange(double& u, double& v, bool emulateCCWXY) const
             std::swap(u,v);
             u = -u; v = -v;
             if (v < u)
-                v += 2 * std::numbers::pi;
-            if (v-u > 2 * std::numbers::pi)
-                v -= 2 * std::numbers::pi;
+                v += 2*M_PI;
+            if (v-u > 2*M_PI)
+                v -= 2*M_PI;
         }
     }
 }
@@ -4528,7 +4527,7 @@ bool GeomLine::isSame(const Geometry &_other, double tol, double atol) const
 {
     if(_other.getTypeId() != getTypeId()) {
         if (_other.isDerivedFrom<GeomCurve>()) {
-            std::unique_ptr<Geometry> geo(static_cast<const GeomCurve&>(_other).toLine());
+            std::unique_ptr<Geometry> geo(dynamic_cast<const GeomCurve&>(_other).toLine());
             if (geo)
                 return isSame(*geo, tol, atol);
         }
@@ -4684,12 +4683,11 @@ void GeomLineSegment::Restore    (Base::XMLReader &reader)
         // for other objects, the best effort may be just to leave default values.
         reader.setPartialRestore(true);
 
-        constexpr double increment{std::numeric_limits<double>::epsilon()};
         if(start.x == 0) {
-            end = start + Base::Vector3d(increment, 0, 0);
+            end = start + Base::Vector3d(DBL_EPSILON,0,0);
         }
         else {
-            end = start + Base::Vector3d(start.x * increment, 0, 0);
+            end = start + Base::Vector3d(start.x*DBL_EPSILON,0,0);
         }
 
         setPoints(start, end);
@@ -4820,10 +4818,10 @@ GeomPlane* GeomSurface::toPlane(bool clone, double tol) const
 {
     if (isDerivedFrom<GeomPlane>()) {
         if (clone) {
-            return static_cast<GeomPlane*>(this->clone());
+            return dynamic_cast<GeomPlane*>(this->clone());
         }
         else {
-            return static_cast<GeomPlane*>(this->copy());
+            return dynamic_cast<GeomPlane*>(this->copy());
         }
     }
 
@@ -5411,7 +5409,7 @@ gp_Vec GeomCone::getDN(double u, double v, int Nu, int Nv) const
     {
        gp_XYZ Xdir = Pos.XDirection().XYZ();
        gp_XYZ Ydir = Pos.YDirection().XYZ();
-       Standard_Real Um = U + Nu * std::numbers::pi/2;
+       Standard_Real Um = U + Nu * M_PI_2;  // M_PI * 0.5
        Xdir.Multiply(cos(Um));
        Ydir.Multiply(sin(Um));
        Xdir.Add(Ydir);
@@ -6230,11 +6228,11 @@ GeomArcOfCircle *createFilletGeometry(const GeomLineSegment *lineSeg1, const Geo
     if (endAngle < startAngle)
         std::swap(startAngle, endAngle);
 
-    if (endAngle > 2 * std::numbers::pi)
-        endAngle -= 2 * std::numbers::pi;
+    if (endAngle > 2*M_PI )
+        endAngle -= 2*M_PI;
 
-    if (startAngle < 0)
-        endAngle += 2 * std::numbers::pi;
+    if (startAngle < 0 )
+        endAngle += 2*M_PI;
 
     // Create Arc Segment
     GeomArcOfCircle *arc = new GeomArcOfCircle();

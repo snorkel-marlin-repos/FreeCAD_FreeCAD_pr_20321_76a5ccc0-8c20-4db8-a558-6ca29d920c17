@@ -139,6 +139,7 @@ void DrawViewDetail::onChanged(const App::Property* prop)
 
 App::DocumentObjectExecReturn* DrawViewDetail::execute()
 {
+    //    Base::Console().Message("DVD::execute() - %s\n", getNameInDocument());
     if (!keepUpdated()) {
         return DrawView::execute();
     }
@@ -186,12 +187,6 @@ void DrawViewDetail::detailExec(TopoDS_Shape& shape, DrawViewPart* dvp, DrawView
 {
     if (waitingForHlr() || waitingForDetail()) {
         return;
-    }
-
-    if (!DU::isGuiUp()) {
-        makeDetailShape(shape, dvp, dvs);
-        onMakeDetailFinished();
-        waitingForDetail(false);
     }
 
     //note that &m_detailWatcher in the third parameter is not strictly required, but using the
@@ -259,7 +254,6 @@ void DrawViewDetail::makeDetailShape(const TopoDS_Shape& shape3d, DrawViewPart* 
 
     TopoDS_Face extrusionFace;
     Base::Vector3d extrudeVec = dirDetail * extrudeLength;
-
     gp_Vec extrudeDir(extrudeVec.x, extrudeVec.y, extrudeVec.z);
     TopoDS_Shape tool;
     if (Preferences::mattingStyle()) {
@@ -387,6 +381,7 @@ void DrawViewDetail::makeDetailShape(const TopoDS_Shape& shape3d, DrawViewPart* 
 
 void DrawViewDetail::postHlrTasks(void)
 {
+    //    Base::Console().Message("DVD::postHlrTasks()\n");
     DrawViewPart::postHlrTasks();
 
     geometryObject->pruneVertexGeom(Base::Vector3d(0.0, 0.0, 0.0),
@@ -409,10 +404,8 @@ void DrawViewDetail::onMakeDetailFinished(void)
     waitingForDetail(false);
     QObject::disconnect(connectDetailWatcher);
 
+    //ancestor's buildGeometryObject will run HLR and face finding in a separate thread
     m_tempGeometryObject = buildGeometryObject(m_scaledShape, m_viewAxis);
-    if (!DU::isGuiUp()) {
-        onHlrFinished();
-    }
 }
 
 bool DrawViewDetail::waitingForResult() const
@@ -472,35 +465,9 @@ bool DrawViewDetail::debugDetail() const
     return Preferences::getPreferenceGroup("debug")->GetBool("debugDetail", false);
 }
 
-void DrawViewDetail::handleChangedPropertyType(Base::XMLReader &reader, const char * TypeName, App::Property * prop)
-{
-    if (prop == &AnchorPoint) {
-        // AnchorPoint was PropertyVector but is now PropertyPosition
-        App::PropertyVector tmp;
-        if (strcmp(tmp.getTypeId().getName(), TypeName)==0) {
-            tmp.setContainer(this);
-            tmp.Restore(reader);
-            auto tmpValue = tmp.getValue();
-            AnchorPoint.setValue(tmpValue);
-        }
-        return;
-    }
-
-    if (prop == &Radius) {
-        // Radius was PropertyFloat but is now PropertyLength
-        App::PropertyLength tmp;
-        if (strcmp(tmp.getTypeId().getName(), TypeName)==0) {
-            tmp.setContainer(this);
-            tmp.Restore(reader);
-            auto tmpValue = tmp.getValue();
-            Radius.setValue(tmpValue);
-        }
-        return;
-    }
-}
-
 void DrawViewDetail::unsetupObject()
 {
+    //    Base::Console().Message("DVD::unsetupObject()\n");
     App::DocumentObject* baseObj = BaseView.getValue();
     DrawView* base = dynamic_cast<DrawView*>(baseObj);
     if (base) {

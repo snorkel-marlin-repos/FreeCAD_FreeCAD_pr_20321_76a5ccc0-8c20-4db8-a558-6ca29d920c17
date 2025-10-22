@@ -47,7 +47,7 @@ PropertyConstraintListItem::PropertyConstraintListItem()
 PropertyConstraintListItem::~PropertyConstraintListItem()
 {}
 
-QString PropertyConstraintListItem::toString(const QVariant& prop) const
+QVariant PropertyConstraintListItem::toString(const QVariant& prop) const
 {
     const QList<Base::Quantity>& value = prop.value<QList<Base::Quantity>>();
     std::stringstream out;
@@ -59,7 +59,7 @@ QString PropertyConstraintListItem::toString(const QVariant& prop) const
         out << it->getUserString();
     }
     out << "]";
-    return QString::fromStdString(out.str());
+    return QVariant(QString::fromStdString(out.str()));
 }
 
 void PropertyConstraintListItem::initialize()
@@ -380,7 +380,7 @@ QWidget* PropertyConstraintListItem::createEditor(QWidget* parent,
 void PropertyConstraintListItem::setEditorData(QWidget* editor, const QVariant& data) const
 {
     QLineEdit* le = qobject_cast<QLineEdit*>(editor);
-    le->setText(toString(data));
+    le->setText(toString(data).toString());
 }
 
 QVariant PropertyConstraintListItem::editorData(QWidget* editor) const

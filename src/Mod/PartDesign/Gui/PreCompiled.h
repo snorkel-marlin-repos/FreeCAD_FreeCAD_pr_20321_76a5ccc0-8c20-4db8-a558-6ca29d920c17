@@ -55,14 +55,15 @@
 #include <TopoDS.hxx>
 #include <TopTools_IndexedMapOfShape.hxx>
 
-// stl
-#include <limits>
-
 // Qt
+#ifndef __QtAll__
 # include <Gui/QtAll.h>
+#endif
 
 // Inventor
+#ifndef __InventorAll__
 # include <Gui/InventorAll.h>
+#endif
 
 #endif // _PreComp_
 #endif // __PRECOMPILED_GUI__

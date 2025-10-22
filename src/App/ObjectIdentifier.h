@@ -26,7 +26,6 @@
 
 #include <bitset>
 #include <map>
-#include <limits>
 #include <set>
 #include <string>
 #include <vector>
@@ -212,13 +211,13 @@ public:
 
         Component(const String& _name = String(),
                   typeEnum _type = SIMPLE,
-                  int begin = std::numeric_limits<int>::max(),
-                  int end = std::numeric_limits<int>::max(),
+                  int begin = INT_MAX,
+                  int end = INT_MAX,
                   int step = 1);  // explicit bombs
         Component(String&& _name,
                   typeEnum _type = SIMPLE,
-                  int begin = std::numeric_limits<int>::max(),
-                  int end = std::numeric_limits<int>::max(),
+                  int begin = INT_MAX,
+                  int end = INT_MAX,
                   int step = 1);  // explicit bombs
 
         static Component SimpleComponent(const char* _component);
@@ -228,9 +227,7 @@ public:
 
         static Component ArrayComponent(int _index);
 
-        static Component RangeComponent(int _begin,
-                                        int _end = std::numeric_limits<int>::max(),
-                                        int _step = 1);
+        static Component RangeComponent(int _begin, int _end = INT_MAX, int _step = 1);
 
         static Component MapComponent(const String& _key);
         static Component MapComponent(String&& _key);
@@ -328,9 +325,7 @@ public:
         return Component::ArrayComponent(_index);
     }
 
-    static Component RangeComponent(int _begin,
-                                    int _end = std::numeric_limits<int>::max(),
-                                    int _step = 1)
+    static Component RangeComponent(int _begin, int _end = INT_MAX, int _step = 1)
     {
         return Component::RangeComponent(_begin, _end, _step);
     }
@@ -347,12 +342,11 @@ public:
 
     explicit ObjectIdentifier(const App::PropertyContainer* _owner = nullptr,
                               const std::string& property = std::string(),
-                              int index = std::numeric_limits<int>::max());
+                              int index = INT_MAX);
 
     ObjectIdentifier(const App::PropertyContainer* _owner, bool localProperty);
 
-    ObjectIdentifier(const App::Property& prop,
-                     int index = std::numeric_limits<int>::max());  // explicit bombs
+    ObjectIdentifier(const App::Property& prop, int index = INT_MAX);  // explicit bombs
 
     FC_DEFAULT_CTORS(ObjectIdentifier)
     {

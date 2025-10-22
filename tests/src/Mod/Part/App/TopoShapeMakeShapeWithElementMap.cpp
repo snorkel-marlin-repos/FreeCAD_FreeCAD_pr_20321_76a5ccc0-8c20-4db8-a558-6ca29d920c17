@@ -8,6 +8,7 @@
 #include "PartTestHelpers.h"
 #include <Mod/Part/App/TopoShape.h>
 #include <Mod/Part/App/TopoShapeOpCode.h>
+// #include <MappedName.h>
 
 #include <TopoDS_Vertex.hxx>
 #include <TopoDS_Edge.hxx>

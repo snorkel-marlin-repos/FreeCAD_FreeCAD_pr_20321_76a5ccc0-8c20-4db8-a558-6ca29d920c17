@@ -34,13 +34,13 @@
 #include <QVBoxLayout>
 #include <QApplication>
 #include <QPushButton>
-#include <QString>
 #endif
 
 #include "FileCardDelegate.h"
 #include "../App/DisplayedFilesModel.h"
 #include "App/Application.h"
 #include <Base/Color.h>
+#include <gsl/pointers>
 
 using namespace Start;
 
@@ -49,7 +49,11 @@ FileCardDelegate::FileCardDelegate(QObject* parent)
 {
     _parameterGroup = App::GetApplication().GetParameterGroupByPath(
         "User parameter:BaseApp/Preferences/Mod/Start");
-    setObjectName(QStringLiteral("thumbnailWidget"));
+    _widget = std::make_unique<QPushButton>();
+    _widget->setObjectName(QLatin1String("thumbnailWidget"));
+    auto layout = gsl::owner<QVBoxLayout*>(new QVBoxLayout());
+    layout->setSpacing(0);
+    _widget->setLayout(layout);
 }
 
 void FileCardDelegate::paint(QPainter* painter,
@@ -57,9 +61,10 @@ void FileCardDelegate::paint(QPainter* painter,
                              const QModelIndex& index) const
 {
     painter->save();
+
     // Step 1: Styling
     QStyleOptionButton buttonOption;
-    buttonOption.initFrom(option.widget);
+    buttonOption.initFrom(_widget.get());
     buttonOption.rect = option.rect;
     buttonOption.state = QStyle::State_Enabled;
 
@@ -72,7 +77,8 @@ void FileCardDelegate::paint(QPainter* painter,
     if ((option.state & QStyle::State_Sunken) != 0) {
         buttonOption.state |= QStyle::State_Sunken;
     }
-    qApp->style()->drawControl(QStyle::CE_PushButton, &buttonOption, painter, &styleButton);
+
+    QApplication::style()->drawControl(QStyle::CE_PushButton, &buttonOption, painter);
 
     // Step 2: Fetch required data
     auto thumbnailSize =

@@ -146,8 +146,8 @@ void QGIViewClip::drawClip()
     for (; it != qgItems.end(); it++) {
         QGIView* qv = dynamic_cast<QGIView*>((*it));
         if (qv) {
-            if (auto qvName = std::string(qv->getViewName());
-                std::ranges::find(childNames, qvName) == childNames.end()) {
+            std::string qvName = std::string(qv->getViewName());
+            if (std::find(childNames.begin(), childNames.end(), qvName) == childNames.end()) {
                 m_cliparea->removeFromGroup(qv);
                 removeFromGroup(qv);
                 qv->isInnerView(false);

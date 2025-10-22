@@ -131,7 +131,11 @@ void TaskTransformedParameters::setupUI()
     ui->buttonGroupMode->setId(ui->radioTransformToolShapes, static_cast<int>(Mode::TransformToolShapes));
 
     connect(ui->buttonGroupMode,
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+            qOverload<int>(&QButtonGroup::buttonClicked),
+#else
             &QButtonGroup::idClicked,
+#endif
             this,
             &TaskTransformedParameters::onModeChanged);
 
@@ -234,7 +238,7 @@ bool TaskTransformedParameters::originalSelected(const Gui::SelectionChanges& ms
 
             // Do the same like in TaskDlgTransformedParameters::accept() but without doCommand
             std::vector<App::DocumentObject*> originals = pcTransformed->Originals.getValues();
-            const auto or_iter = std::ranges::find(originals, selectedObject);
+            auto or_iter = std::find(originals.begin(), originals.end(), selectedObject);
             if (selectionMode == SelectionMode::AddFeature) {
                 if (or_iter == originals.end()) {
                     originals.push_back(selectedObject);

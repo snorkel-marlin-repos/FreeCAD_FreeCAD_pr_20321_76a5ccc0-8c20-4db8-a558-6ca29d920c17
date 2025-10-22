@@ -35,6 +35,7 @@
 #ifdef _PreComp_
 
 // STL
+#include <cfloat>
 
 // Inventor
 #include <Inventor/SoPickedPoint.h>

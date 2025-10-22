@@ -44,19 +44,14 @@ namespace App
 class PropertyContainer;
 class ObjectIdentifier;
 
-/**
- * @brief %Base class of all properties
- * @ingroup PropertyFramework
- *
- * @details This is the father of all properties. Properties are objects which that used
- * in the document tree to parameterize e.g. features and their graphical output.
+/** Base class of all properties
+ * This is the father of all properties. Properties are objects which are used
+ * in the document tree to parametrize e.g. features and their graphical output.
  * They are also used to gain access from the scripting facility.
- * @par
+ * /par
  * This abstract base class defines all methods shared by all
- * possible properties.  It is also possible to define user properties
- * and use them in the framework.
- *
- * For a more high-level overview see topic @ref PropertyFramework "Property Framework".
+ * possible properties. It is also possible to define user properties
+ * and use them in the framework...
  */
 class AppExport Property: public Base::Persistence
 {

@@ -37,7 +37,6 @@
 #include "ViewProviderFemPostFunction.h"
 #include "ViewProviderFemPostPipeline.h"
 #include "ViewProviderFemPostPipelinePy.h"
-#include "TaskPostBoxes.h"
 
 
 using namespace FemGui;
@@ -46,36 +45,58 @@ PROPERTY_SOURCE(FemGui::ViewProviderFemPostPipeline, FemGui::ViewProviderFemPost
 
 ViewProviderFemPostPipeline::ViewProviderFemPostPipeline()
 {
-    ViewProviderGroupExtension::initExtension(this);
     sPixmap = "FEM_PostPipelineFromResult";
 }
 
 ViewProviderFemPostPipeline::~ViewProviderFemPostPipeline() = default;
 
+std::vector<App::DocumentObject*> ViewProviderFemPostPipeline::claimChildren() const
+{
+
+    Fem::FemPostPipeline* pipeline = getObject<Fem::FemPostPipeline>();
+    std::vector<App::DocumentObject*> children;
+
+    if (pipeline->Functions.getValue()) {
+        children.push_back(pipeline->Functions.getValue());
+    }
+
+    children.insert(children.end(),
+                    pipeline->Filter.getValues().begin(),
+                    pipeline->Filter.getValues().end());
+    return children;
+}
+
+std::vector<App::DocumentObject*> ViewProviderFemPostPipeline::claimChildren3D() const
+{
+
+    return claimChildren();
+}
 
 void ViewProviderFemPostPipeline::updateData(const App::Property* prop)
 {
     FemGui::ViewProviderFemPostObject::updateData(prop);
-
     Fem::FemPostPipeline* pipeline = getObject<Fem::FemPostPipeline>();
-    if ((prop == &pipeline->Data) || (prop == &pipeline->Group)) {
-
+    if (prop == &pipeline->Functions) {
         updateFunctionSize();
     }
 }
 
 void ViewProviderFemPostPipeline::updateFunctionSize()
 {
+
     // we need to get the bounding box and set the function provider size
     Fem::FemPostPipeline* obj = getObject<Fem::FemPostPipeline>();
-    Fem::FemPostFunctionProvider* fp = obj->getFunctionProvider();
-    if (!fp) {
+
+    if (!obj->Functions.getValue()
+        || !obj->Functions.getValue()->isDerivedFrom(
+            Fem::FemPostFunctionProvider::getClassTypeId())) {
         return;
     }
 
+    // get the function provider
     FemGui::ViewProviderFemPostFunctionProvider* vp =
         static_cast<FemGui::ViewProviderFemPostFunctionProvider*>(
-            Gui::Application::Instance->getViewProvider(fp));
+            Gui::Application::Instance->getViewProvider(obj->Functions.getValue()));
 
     if (obj->Data.getValue() && obj->Data.getValue()->IsA("vtkDataSet")) {
         vtkBoundingBox box = obj->getBoundingBox();
@@ -159,7 +180,8 @@ void ViewProviderFemPostPipeline::transformField(char* FieldName, double FieldFa
 {
     Fem::FemPostPipeline* obj = getObject<Fem::FemPostPipeline>();
 
-    vtkDataSet* dset = obj->getDataSet();
+    vtkSmartPointer<vtkDataObject> data = obj->Data.getValue();
+    vtkDataSet* dset = vtkDataSet::SafeDownCast(data);
     if (!dset) {
         return;
     }
@@ -215,34 +237,6 @@ void ViewProviderFemPostPipeline::scaleField(vtkDataSet* dset,
         }
     }
 }
-
-void ViewProviderFemPostPipeline::setupTaskDialog(TaskDlgPost* dlg)
-{
-    // add the function box
-    assert(dlg->getView() == this);
-    ViewProviderFemPostObject::setupTaskDialog(dlg);
-    dlg->appendBox(new TaskPostFrames(this));
-}
-
-
-bool ViewProviderFemPostPipeline::acceptReorderingObjects() const
-{
-    return true;
-}
-
-bool ViewProviderFemPostPipeline::canDragObjectToTarget(App::DocumentObject*,
-                                                        App::DocumentObject* target) const
-{
-
-    // allow drag only to other post groups
-    if (target) {
-        return target->hasExtension(Fem::FemPostGroupExtension::getExtensionClassTypeId());
-    }
-    else {
-        return false;
-    }
-}
-
 
 PyObject* ViewProviderFemPostPipeline::getPyObject()
 {

@@ -361,7 +361,9 @@ void Sketch::fixParametersAndDiagnose(std::vector<double*>& params_to_block)
 {
     if (!params_to_block.empty()) {  // only there are parameters to fix
         for (auto p : params_to_block) {
-            if (auto findparam = std::ranges::find(Parameters, p); findparam != Parameters.end()) {
+            auto findparam = std::find(Parameters.begin(), Parameters.end(), p);
+
+            if (findparam != Parameters.end()) {
                 FixParameters.push_back(*findparam);
                 Parameters.erase(findparam);
             }
@@ -417,11 +419,15 @@ bool Sketch::analyseBlockedConstraintDependentParameters(
 
             double* thisparam = *std::next(groups[i].begin(), j);
 
-            if (auto element = param2geoelement.find(thisparam);
-                element != param2geoelement.end()) {
+            auto element = param2geoelement.find(thisparam);
 
-                if (auto blockable = std::ranges::find(blockedGeoIds, std::get<0>(element->second));
-                    blockable != blockedGeoIds.end()) {
+            if (element != param2geoelement.end()) {
+
+                auto blockable = std::find(blockedGeoIds.begin(),
+                                           blockedGeoIds.end(),
+                                           std::get<0>(element->second));
+
+                if (blockable != blockedGeoIds.end()) {
                     // This dependent parameter group contains at least one parameter that should be
                     // blocked, so added to the blockable list.
                     prop_groups[i].blockable_params_in_group.push_back(thisparam);
@@ -436,7 +442,7 @@ bool Sketch::analyseBlockedConstraintDependentParameters(
         for (size_t j = prop_groups[i].blockable_params_in_group.size(); j-- > 0;) {
             // check if parameter is already satisfying one group
             double* thisparam = prop_groups[i].blockable_params_in_group[j];
-            auto pos = std::ranges::find(params_to_block, thisparam);
+            auto pos = std::find(params_to_block.begin(), params_to_block.end(), thisparam);
 
             if (pos == params_to_block.end()) {  // not found, so add
                 params_to_block.push_back(thisparam);
@@ -2953,7 +2959,7 @@ int Sketch::addTangentLineAtBSplineKnotConstraint(int checkedlinegeoId,
 
     size_t knotindex = b.knots.size();
 
-    const auto knotIt = std::ranges::find(b.knotpointGeoids, checkedknotgeoid);
+    auto knotIt = std::find(b.knotpointGeoids.begin(), b.knotpointGeoids.end(), checkedknotgeoid);
 
     knotindex = std::distance(b.knotpointGeoids.begin(), knotIt);
 
@@ -3006,7 +3012,7 @@ int Sketch::addTangentLineEndpointAtBSplineKnotConstraint(int checkedlinegeoId,
 
     size_t knotindex = b.knots.size();
 
-    auto knotIt = std::ranges::find(b.knotpointGeoids, checkedknotgeoid);
+    auto knotIt = std::find(b.knotpointGeoids.begin(), b.knotpointGeoids.end(), checkedknotgeoid);
 
     knotindex = std::distance(b.knotpointGeoids.begin(), knotIt);
 
@@ -3060,7 +3066,6 @@ int Sketch::addAngleAtPointConstraint(int geoId1,
                                       ConstraintType cTyp,
                                       bool driving)
 {
-    using std::numbers::pi;
     if (!(cTyp == Angle || cTyp == Tangent || cTyp == Perpendicular)) {
         // assert(0);//none of the three types. Why are we here??
         return -1;
@@ -3133,28 +3138,28 @@ int Sketch::addAngleAtPointConstraint(int geoId1,
         // the desired angle value (and we are to decide if 180* should be added to it)
         double angleDesire = 0.0;
         if (cTyp == Tangent) {
-            angleOffset = -pi / 2;
+            angleOffset = -M_PI / 2;
             angleDesire = 0.0;
         }
         if (cTyp == Perpendicular) {
             angleOffset = 0;
-            angleDesire = pi / 2;
+            angleDesire = M_PI / 2;
         }
 
         if (*value
             == 0.0) {  // autodetect tangency internal/external (and same for perpendicularity)
             double angleErr = GCSsys.calculateAngleViaPoint(*crv1, *crv2, p) - angleDesire;
             // bring angleErr to -pi..pi
-            if (angleErr > pi) {
-                angleErr -= pi * 2;
+            if (angleErr > M_PI) {
+                angleErr -= M_PI * 2;
             }
-            if (angleErr < -pi) {
-                angleErr += pi * 2;
+            if (angleErr < -M_PI) {
+                angleErr += M_PI * 2;
             }
 
             // the autodetector
-            if (fabs(angleErr) > pi / 2) {
-                angleDesire += pi;
+            if (fabs(angleErr) > M_PI / 2) {
+                angleDesire += M_PI;
             }
 
             *angle = angleDesire;
@@ -4543,7 +4548,7 @@ bool Sketch::updateNonDrivingConstraints()
             }
             else if ((*it).constr->Type == Angle) {
 
-                (*it).constr->setValue(std::fmod(*((*it).value), 2.0 * std::numbers::pi));
+                (*it).constr->setValue(std::fmod(*((*it).value), 2.0 * M_PI));
             }
             else if ((*it).constr->Type == Diameter && (*it).constr->First >= 0) {
 
@@ -4565,7 +4570,9 @@ bool Sketch::updateNonDrivingConstraints()
                     rad = a.rad;
                 }
 
-                if (auto pos = std::ranges::find(FixParameters, rad); pos != FixParameters.end()) {
+                auto pos = std::find(FixParameters.begin(), FixParameters.end(), rad);
+
+                if (pos != FixParameters.end()) {
                     (*it).constr->setValue(*((*it).value));
                 }
                 else {

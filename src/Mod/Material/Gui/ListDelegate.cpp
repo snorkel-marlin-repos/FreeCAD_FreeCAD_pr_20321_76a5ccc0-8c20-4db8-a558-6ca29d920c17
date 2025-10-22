@@ -42,6 +42,7 @@
 #include <Gui/PrefWidgets.h>
 #include <Gui/SpinBox.h>
 #include <Gui/WaitCursor.h>
+// #include <Gui/FileDialog.h>
 
 #include <Mod/Material/App/Exceptions.h>
 #include <Mod/Material/App/ModelManager.h>

@@ -22,10 +22,6 @@
 
 #include <PreCompiled.h>
 
-#ifndef _PreComp_
-#include <limits>
-#endif
-
 #include <QImage>
 #include <QScreen>
 #include <QString>
@@ -52,6 +48,8 @@
 #include <Gui/View3DInventorViewer.h>
 #include <Gui/ViewProvider.h>
 
+constexpr float MAX_FLOAT = std::numeric_limits<float>::max();
+
 long NavlibInterface::GetSelectionTransform(navlib::matrix_t&) const
 {
     return navlib::make_result_code(navlib::navlib_errc::no_data_available);
@@ -68,7 +66,7 @@ long NavlibInterface::SetSelectionTransform(const navlib::matrix_t&)
     return navlib::make_result_code(navlib::navlib_errc::no_data_available);
 }
 
-long NavlibInterface::GetPivotPosition(navlib::point_t&) const
+long NavlibInterface::GetPivotPosition(navlib::point_t& position) const
 {
     return navlib::make_result_code(navlib::navlib_errc::no_data_available);
 }
@@ -130,7 +128,7 @@ long NavlibInterface::GetHitLookAt(navlib::point_t& position) const
     SoRayPickAction rayPickAction(inventorViewer->getSoRenderManager()->getViewportRegion());
     SbMatrix cameraMatrix;
     SbVec3f closestHitPoint;
-    float minLength = std::numeric_limits<float>::max();
+    float minLength = MAX_FLOAT;
 
     // Get the camera rotation
     SoCamera* pCamera = getCamera<SoCamera*>();
@@ -198,7 +196,7 @@ long NavlibInterface::GetHitLookAt(navlib::point_t& position) const
         }
     }
 
-    if (minLength < std::numeric_limits<float>::max()) {
+    if (minLength < MAX_FLOAT) {
         std::copy(closestHitPoint.getValue(), closestHitPoint.getValue() + 3, &position.x);
         return 0;
     }
@@ -225,12 +223,12 @@ long NavlibInterface::GetSelectionExtents(navlib::box_t& extents) const
                       return 0l;
                   });
 
-    extents = {{boundingBox.MinX,
-                boundingBox.MinY,
-                boundingBox.MinZ},
-               {boundingBox.MaxX,
-                boundingBox.MaxY,
-                boundingBox.MaxZ}};
+    extents = {boundingBox.MinX,
+               boundingBox.MinY,
+               boundingBox.MinZ,
+               boundingBox.MaxX,
+               boundingBox.MaxY,
+               boundingBox.MaxZ};
 
     return 0;
 }

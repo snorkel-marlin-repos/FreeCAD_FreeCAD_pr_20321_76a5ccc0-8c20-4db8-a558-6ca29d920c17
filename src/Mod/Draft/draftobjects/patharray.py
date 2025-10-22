@@ -679,14 +679,14 @@ def placements_on_path(shapeRotation, pathwire, count, xlate, align,
         segCount = max(segCount, 1)
 
         if useSpacingPattern:
-            # Available length will be non-uniformly divided in proportions from SpacingPattern:
+            # Available lenth will be non-uniformly divided in proportions from SpacingPattern:
             fullSpacingPattern = [spacingPattern[i % len(spacingPattern)] for i in range(segCount)]
             sumWeights = sum(fullSpacingPattern)
             distPerWeightUnit = totalDist / sumWeights
             steps = [distPerWeightUnit * weigth for weigth in fullSpacingPattern]
 
         else:
-            # Available length will be evenly divided (the original spacing method):
+            # Available lenght will be evenly divided (the original spacing method):
             steps = [totalDist / segCount]
 
     if useFixedSpacing:

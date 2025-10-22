@@ -23,7 +23,6 @@
 
 #include "PreCompiled.h"
 #ifndef _PreComp_
-#include <limits>
 #include <string>
 #include <vector>
 
@@ -1264,10 +1263,10 @@ protected:
             return;
         }
 
-        double minX = std::numeric_limits<double>::max();
-        double minY = std::numeric_limits<double>::max();
-        double maxX = -std::numeric_limits<double>::max();
-        double maxY = -std::numeric_limits<double>::max();
+        double minX = DBL_MAX;
+        double minY = DBL_MAX;
+        double maxX = -DBL_MAX;
+        double maxY = -DBL_MAX;
         for (auto dim : dims) {
             TechDraw::pointPair pp = dim->getLinearPoints();
             Base::Vector3d pnt1 = Rez::guiX(pp.first());

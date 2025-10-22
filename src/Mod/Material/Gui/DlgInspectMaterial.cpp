@@ -120,7 +120,7 @@ void DlgInspectMaterial::appendClip(QString text)
 {
     // Need to add indent
     QString indent(clipboardIndent * 4, QLatin1Char(' '));
-    clipboardText += indent + text + QStringLiteral("\n");
+    clipboardText += indent + text + QLatin1String("\n");
 }
 
 QStandardItem* DlgInspectMaterial::clipItem(QString text)
@@ -144,7 +144,7 @@ void DlgInspectMaterial::unindent()
 
 void DlgInspectMaterial::update(std::vector<Gui::ViewProvider*>& views)
 {
-    clipboardText = QStringLiteral("");
+    clipboardText = QLatin1String("");
     clipboardIndent = 0;
     App::Document* doc = App::GetApplication().getActiveDocument();
     if (doc) {
@@ -166,7 +166,7 @@ void DlgInspectMaterial::update(std::vector<Gui::ViewProvider*>& views)
                 appendClip(tr("Label: ") + QString::fromUtf8(labelProp->getValue()));
             }
             else {
-                ui->editObjectLabel->setText(QStringLiteral(""));
+                ui->editObjectLabel->setText(QLatin1String(""));
             }
             ui->editObjectName->setText(QLatin1String(obj->getNameInDocument()));
             appendClip(tr("Internal Name: ") + QString::fromUtf8(obj->getNameInDocument()));
@@ -178,15 +178,15 @@ void DlgInspectMaterial::update(std::vector<Gui::ViewProvider*>& views)
                     ui->editSubShape->setText(QString::fromStdString(subObject.getSubNames()[0]));
                 }
                 else {
-                    ui->editSubShape->setText(QStringLiteral(""));
+                    ui->editSubShape->setText(QLatin1String(""));
                 }
             }
             else {
-                ui->editSubShape->setText(QStringLiteral(""));
+                ui->editSubShape->setText(QLatin1String(""));
             }
 
             auto subShapeType = QString::fromUtf8(obj->getTypeId().getName());
-            subShapeType.remove(subShapeType.indexOf(QStringLiteral("::")), subShapeType.size());
+            subShapeType.remove(subShapeType.indexOf(QLatin1String("::")), subShapeType.size());
             appendClip(tr("Type: ") + subShapeType);
             ui->editSubShapeType->setText(subShapeType);
             appendClip(tr("TypeID: ") + QString::fromUtf8(obj->getTypeId().getName()));
@@ -248,7 +248,7 @@ void DlgInspectMaterial::addModels(QTreeView* tree,
     }
     else {
         for (const QString& uuid : *models) {
-            auto model = Materials::ModelManager::getManager().getModel(uuid);
+            auto model = modelManager.getModel(uuid);
             auto name = clipItem(tr("Name: ") + model->getName());
             addExpanded(tree, parent, name);
 
@@ -287,7 +287,7 @@ void DlgInspectMaterial::addModelDetails(QTreeView* tree,
     }
     else {
         for (const QString& inherited : inheritedUuids) {
-            auto inheritedModel = Materials::ModelManager::getManager().getModel(inherited);
+            auto inheritedModel = modelManager.getModel(inherited);
 
             auto name = clipItem(tr("Name: ") + inheritedModel->getName());
             addExpanded(tree, inherits, name);
@@ -340,10 +340,10 @@ void DlgInspectMaterial::addMaterialDetails(QTreeView* tree,
 {
     auto uuid = clipItem(tr("UUID: ") + material.getUUID());
     addExpanded(tree, parent, uuid);
-    auto library =
-        clipItem(tr("Library: ") + material.getLibrary()->getName());
+    auto library = clipItem(tr("Library: ") + material.getLibrary()->getName());
     addExpanded(tree, parent, library);
-    auto libraryPath = clipItem(tr("Library Directory: ") + material.getLibrary()->getDirectoryPath());
+    auto libraryPath =
+        clipItem(tr("Library Directory: ") + material.getLibrary()->getDirectoryPath());
     addExpanded(tree, parent, libraryPath);
     auto directory = clipItem(tr("Sub Directory: ") + material.getDirectory());
     addExpanded(tree, parent, directory);
@@ -353,7 +353,7 @@ void DlgInspectMaterial::addMaterialDetails(QTreeView* tree,
     indent();
     auto parentUUID = material.getParentUUID();
     if (!parentUUID.isEmpty()) {
-        auto parentMaterial = Materials::MaterialManager::getManager().getMaterial(material.getParentUUID());
+        auto parentMaterial = materialManager.getMaterial(material.getParentUUID());
         addMaterial(tree, inherits, *parentMaterial);
     }
     else {

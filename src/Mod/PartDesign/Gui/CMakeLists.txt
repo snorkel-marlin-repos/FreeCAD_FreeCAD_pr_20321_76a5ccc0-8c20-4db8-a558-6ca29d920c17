@@ -6,10 +6,20 @@ include_directories(
 
 include_directories(
     SYSTEM
+    ${Boost_INCLUDE_DIRS}
+    ${OCC_INCLUDE_DIR}
+    ${COIN3D_INCLUDE_DIRS}
+    ${ZLIB_INCLUDE_DIR}
+    ${PYCXX_INCLUDE_DIR}
+    ${Python3_INCLUDE_DIRS}
+    ${XercesC_INCLUDE_DIRS}
+    ${EIGEN3_INCLUDE_DIR}
+    ${ZIPIOS_INCLUDES}
     ${CMAKE_SOURCE_DIR}/src/3rdParty/json/single_include/nlohmann/
 )
+link_directories(${OCC_LIBRARY_DIR})
 
-generate_from_py(ViewProvider)
+generate_from_xml(ViewProviderPy)
 
 
 set(PartDesignGui_LIBS
@@ -229,7 +239,7 @@ SOURCE_GROUP("Module" FILES ${PartDesignGuiModule_SRCS})
 
 
 SET(Python_SRCS
-    ViewProvider.pyi
+    ViewProviderPy.xml
     ViewProviderPyImp.cpp
 )
 SOURCE_GROUP("Python" FILES ${Python_SRCS})

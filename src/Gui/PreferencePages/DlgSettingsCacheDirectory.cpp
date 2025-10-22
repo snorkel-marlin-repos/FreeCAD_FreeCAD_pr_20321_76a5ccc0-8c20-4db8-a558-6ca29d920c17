@@ -23,9 +23,6 @@
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
-# include <cmath>
-# include <limits>
-# include <vector>
 # include <QCoreApplication>
 # include <QDate>
 # include <QDesktopServices>
@@ -34,6 +31,8 @@
 # include <QMessageBox>
 # include <QSettings>
 # include <QUrl>
+# include <cmath>
+# include <vector>
 #endif
 
 #include <App/Application.h>
@@ -183,7 +182,7 @@ void ApplicationCache::setPeriod(ApplicationCache::Period period)
         numDays = 365;
         break;
     case Period::Never:
-        numDays = std::numeric_limits<int>::max();
+        numDays = INT_MAX;
         break;
     }
 }

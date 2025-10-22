@@ -108,14 +108,11 @@ protected:
     int _changed{0};
 };
 
-
 /**
-  * @brief %Base class for expressions.
-  * @ingroup ExpressionFramework
+  * Base class for expressions.
   *
-  * @details For a high-level overview of the %Expression framework see topic
-  * @ref ExpressionFramework "Expression Framework".
   */
+
 class AppExport Expression : public Base::BaseClass {
     TYPESYSTEM_HEADER_WITH_OVERRIDE();
 

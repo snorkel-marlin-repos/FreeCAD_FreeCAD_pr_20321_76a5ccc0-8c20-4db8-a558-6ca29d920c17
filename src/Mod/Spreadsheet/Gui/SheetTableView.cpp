@@ -23,7 +23,6 @@
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
-#include <limits>
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
@@ -699,9 +698,9 @@ void SheetTableView::copySelection()
 
 void SheetTableView::_copySelection(const std::vector<App::Range>& ranges, bool copy)
 {
-    int minRow = std::numeric_limits<int>::max();
+    int minRow = INT_MAX;
     int maxRow = 0;
-    int minCol = std::numeric_limits<int>::max();
+    int minCol = INT_MAX;
     int maxCol = 0;
     for (auto& range : ranges) {
         minRow = std::min(minRow, range.from().row());

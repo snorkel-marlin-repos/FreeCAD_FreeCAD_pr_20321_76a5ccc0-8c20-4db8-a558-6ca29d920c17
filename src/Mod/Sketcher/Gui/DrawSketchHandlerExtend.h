@@ -110,9 +110,6 @@ public:
     void mouseMove(Base::Vector2d onSketchPos) override
     {
         Q_UNUSED(onSketchPos);
-
-        using std::numbers::pi;
-
         if (Mode == STATUS_SEEK_Second) {
             const Part::Geometry* geom = sketchgui->getSketchObject()->getGeometry(BaseGeoId);
             if (geom->is<Part::GeomLineSegment>()) {
@@ -145,7 +142,7 @@ public:
                  */
                 bool inCurve = (projection.Length() < recenteredLine.Length()
                                 && projection.GetAngle(recenteredLine)
-                                    < 0.1);  // Two possible values here, pi and 0, but 0.1 is to
+                                    < 0.1);  // Two possible values here, M_PI and 0, but 0.1 is to
                                              // avoid floating point problems.
                 if (inCurve) {
                     Increment = SavedExtendFromStart
@@ -188,8 +185,8 @@ public:
                     bool isCCWFromStart = crossProduct(angle, startAngle) < 0;
                     if (outOfArc) {
                         if (isCCWFromStart) {
-                            modStartAngle -= 2 * pi - angleToStartAngle;
-                            modArcAngle += 2 * pi - angleToStartAngle;
+                            modStartAngle -= 2 * M_PI - angleToStartAngle;
+                            modArcAngle += 2 * M_PI - angleToStartAngle;
                         }
                         else {
                             modStartAngle -= angleToStartAngle;
@@ -202,8 +199,8 @@ public:
                             modArcAngle -= angleToStartAngle;
                         }
                         else {
-                            modStartAngle += 2 * pi - angleToStartAngle;
-                            modArcAngle -= 2 * pi - angleToStartAngle;
+                            modStartAngle += 2 * M_PI - angleToStartAngle;
+                            modArcAngle -= 2 * M_PI - angleToStartAngle;
                         }
                     }
                 }
@@ -211,7 +208,7 @@ public:
                     bool isCWFromEnd = crossProduct(angle, endAngle) >= 0;
                     if (outOfArc) {
                         if (isCWFromEnd) {
-                            modArcAngle += 2 * pi - angleToEndAngle;
+                            modArcAngle += 2 * M_PI - angleToEndAngle;
                         }
                         else {
                             modArcAngle += angleToEndAngle;
@@ -222,7 +219,7 @@ public:
                             modArcAngle -= angleToEndAngle;
                         }
                         else {
-                            modArcAngle -= 2 * pi - angleToEndAngle;
+                            modArcAngle -= 2 * M_PI - angleToEndAngle;
                         }
                     }
                 }

@@ -67,10 +67,11 @@ public:
     virtual void onDragFinished();
 
     void setWidth(double w);
-    double getWidth() { return m_pen.widthF(); }
+    double getWidth() { return m_width; }
     void setStyle(Qt::PenStyle s);
     void setColor(QColor c);
     QColor getColor() { return m_colNormal; }
+    void setFill(Qt::BrushStyle bs) { m_brushCurrent = bs; }
     void makeMark(double x, double y);
     void makeMark(Base::Vector3d v);
 
@@ -83,7 +84,11 @@ protected:
     virtual QColor prefSelectColor();
     QPen m_pen;
     QBrush m_brush;
+    QColor m_colCurrent;
     QColor m_colNormal;
+    double m_width;
+    Qt::PenStyle m_styleCurrent;
+    Qt::BrushStyle m_brushCurrent;
 
     DragState m_dragState;
 

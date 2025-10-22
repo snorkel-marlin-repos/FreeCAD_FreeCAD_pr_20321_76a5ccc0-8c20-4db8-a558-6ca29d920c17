@@ -51,9 +51,6 @@ public:
     std::vector<App::DocumentObject*> claimChildren(void) const override;
 
     TechDraw::DrawViewAnnotation* getViewObject() const override;
-
-    bool doubleClicked() override;
-    bool setEdit(int ModNum) override;
 };
 
 }// namespace TechDrawGui

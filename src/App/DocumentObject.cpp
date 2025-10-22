@@ -55,6 +55,10 @@ FC_LOG_LEVEL_INIT("App", true, true)
 
 using namespace App;
 
+/** \defgroup DocObject Document Object
+    \ingroup APP
+    \brief Base class of all objects handled in the Document
+*/
 
 PROPERTY_SOURCE(App::DocumentObject, App::TransactionalObject)
 
@@ -586,7 +590,7 @@ bool DocumentObject::isInInListRecursive(DocumentObject* linkTo) const
 
 bool DocumentObject::isInInList(DocumentObject* linkTo) const
 {
-    if (std::ranges::find(_inList, linkTo) != _inList.end()) {
+    if (std::find(_inList.begin(), _inList.end(), linkTo) != _inList.end()) {
         return true;
     }
     else {
@@ -1158,7 +1162,7 @@ void DocumentObject::Save(Base::Writer& writer) const
 
 void DocumentObject::setExpression(const ObjectIdentifier& path, std::shared_ptr<Expression> expr)
 {
-    ExpressionEngine.setValue(path, std::move(expr));
+    ExpressionEngine.setValue(path, expr);
 }
 
 /**
@@ -1249,7 +1253,7 @@ void App::DocumentObject::_removeBackLink(DocumentObject* rmvObj)
 {
     // do not use erase-remove idom, as this erases ALL entries that match. we only want to remove a
     // single one.
-    auto it = std::ranges::find(_inList, rmvObj);
+    auto it = std::find(_inList.begin(), _inList.end(), rmvObj);
     if (it != _inList.end()) {
         _inList.erase(it);
     }

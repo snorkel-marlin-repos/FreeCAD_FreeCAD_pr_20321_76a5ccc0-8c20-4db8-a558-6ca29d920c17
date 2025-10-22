@@ -159,6 +159,7 @@ void AssemblyLink::onChanged(const App::Property* prop)
                 propPlc->setValue(movePlc);
             }
         }
+
         return;
     }
     App::Part::onChanged(prop);
@@ -174,6 +175,7 @@ void AssemblyLink::updateContents()
     else {
         synchronizeJoints();
     }
+
     purgeTouched();
 }
 
@@ -217,6 +219,7 @@ void AssemblyLink::synchronizeComponents()
                 // We consider only Links and AssemblyLinks in the AssemblyLink.
                 continue;
             }
+
 
             if (linkedObj == obj) {
                 found = true;
@@ -269,6 +272,24 @@ void AssemblyLink::synchronizeComponents()
         if (objLinkMap.find(link) != objLinkMap.end()) {
             doc->removeObject(link->getNameInDocument());
         }
+
+        /*if (!link->isDerivedFrom<App::Link>() && !link->isDerivedFrom<AssemblyLink>()) {
+            // AssemblyLink should contain only Links or assembly links.
+            continue;
+        }
+
+        auto* linkedObj = link->getLinkedObject(false);  // not recursive
+
+        bool found = false;
+        for (auto* obj2 : assemblyGroup) {
+            if (obj2 == linkedObj) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            doc->removeObject(link->getNameInDocument());
+        }*/
     }
 }
 
@@ -546,6 +567,7 @@ bool AssemblyLink::isRigid()
     if (!prop) {
         return true;
     }
+
     return prop->getValue();
 }
 
@@ -556,5 +578,6 @@ std::vector<App::DocumentObject*> AssemblyLink::getJoints()
     if (!jointGroup) {
         return {};
     }
+
     return jointGroup->getJoints();
 }
